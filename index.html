@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flower Shop Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -26,7 +27,7 @@
 <body class="bg-mint-100 min-h-screen font-sans text-gray-800 p-6">
 
     <div class="max-w-7xl mx-auto">
-        
+
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-mint-600 drop-shadow-sm">
                 <i class="fa-solid fa-seedling"></i> <span id="mainHeaderName">Loading...</span>
@@ -38,7 +39,33 @@
         </div>
 
         <div id="dashboardSection" class="hidden">
-            
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Income Graph -->
+                <div class="bg-pastel rounded-xl shadow p-5 border border-gray-100">
+                    <h3 class="text-gray-700 font-bold mb-4"><i class="fa-solid fa-chart-line text-green-500"></i> Daily Gross Income</h3>
+                    <div class="relative h-64 w-full">
+                        <canvas id="incomeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Customers Graph -->
+                <div class="bg-pastel rounded-xl shadow p-5 border border-gray-100">
+                    <h3 class="text-gray-700 font-bold mb-4"><i class="fa-solid fa-users text-purple-500"></i> Daily Customers</h3>
+                    <div class="relative h-64 w-full">
+                        <canvas id="customersChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upgrades Summary -->
+            <div id="upgradesSection" class="bg-pastel rounded-xl shadow p-5 mb-6 border border-gray-100 hidden">
+                <h3 class="text-gray-700 font-bold mb-4 border-b pb-2"><i class="fa-solid fa-level-up-alt text-mint-500"></i> Company Upgrades</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="upgradesContainer">
+                    <!-- Upgrades will be inserted here -->
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div class="bg-pastel rounded-xl shadow p-5 border-l-4 border-blue-400 relative overflow-hidden">
                     <i class="fa-solid fa-briefcase absolute -right-4 -bottom-4 text-blue-100 text-6xl opacity-50"></i>
@@ -72,15 +99,26 @@
                         <div class="bg-blue-500 px-5 py-3">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock</h3>
                         </div>
-                        <div class="p-4 overflow-y-auto" style="max-height: 400px;">
+                        <div class="p-4 overflow-y-auto" style="max-height: 300px;">
                             <ul id="stockList" class="divide-y divide-gray-200">
                                 </ul>
+                        </div>
+                    </div>
+
+                    <!-- News Timeline -->
+                    <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100">
+                        <div class="bg-orange-400 px-5 py-3">
+                            <h3 class="text-white font-bold"><i class="fa-solid fa-newspaper"></i> Company Events</h3>
+                        </div>
+                        <div class="p-4 overflow-y-auto" style="max-height: 300px;">
+                            <ul id="newsList" class="space-y-4">
+                            </ul>
                         </div>
                     </div>
                 </div>
 
                 <div class="lg:col-span-3">
-                    
+
                     <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100">
                         <div class="bg-mint-500 px-5 py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-users-gear"></i> Detailed Employee Status</h3>
@@ -116,8 +154,8 @@
     </div>
 
     <script>
-        const MY_API_KEY = "9tXBZpdj9XekBNVf"; 
-        
+        const MY_API_KEY = "9tXBZpdj9XekBNVf";
+
         const dailyGainsMap = {
             "Manager": "36 END / 18 INT",
             "Marketer": "36 INT / 18 END",
@@ -126,8 +164,8 @@
             "Arranger": "30 INT / 15 MAN",
             "Apprentice": "25 END / 13 MAN",
             "Cleaner": "25 MAN / 13 END",
-            "Trainer": "0", 
-            "Director": "0" 
+            "Trainer": "0",
+            "Director": "0"
         };
 
         async function fetchCompanyData() {
@@ -141,10 +179,10 @@
             try {
                 // ยิง API 2 เส้นพร้อมกัน (ดึงบริษัท + ดึงไอดีตัวเอง)
                 const [compRes, userRes] = await Promise.all([
-                    fetch(`https://api.torn.com/company/?selections=profile,employees,detailed,stock&key=${MY_API_KEY}`),
+                    fetch(`https://api.torn.com/company/?selections=profile,employees,detailed,stock,news&key=${MY_API_KEY}`),
                     fetch(`https://api.torn.com/user/?selections=profile,workstats&key=${MY_API_KEY}`)
                 ]);
-                
+
                 const data = await compRes.json();
                 const userData = await userRes.json();
 
@@ -164,15 +202,45 @@
                 document.getElementById('compIncome').textContent = "$" + (data.company.daily_income || 0).toLocaleString();
                 document.getElementById('compCustomers').textContent = `${data.company.customers_served || 0} / ${data.company.customer_capacity || 0}`;
                 document.getElementById('compPop').textContent = data.company.popularity || 0;
-                
+
                 if(data.company_detailed) {
                     document.getElementById('compTrains').textContent = (data.company_detailed.trains_available || 0) + " Trains";
                     document.getElementById('compAd').textContent = "$" + (data.company_detailed.advertising_budget || 0).toLocaleString();
-                    
+
                     // จัดการข้อมูล Upgrades แปะไว้บนตารางพนักงาน
                     let upgradesHtml = 'None';
-                    if (data.company_detailed.upgrades && data.company_detailed.upgrades.length > 0) {
-                        upgradesHtml = data.company_detailed.upgrades.join(' | ');
+
+                    if (data.company_detailed.upgrades) {
+                        const upg = data.company_detailed.upgrades;
+                        const upgradesContainer = document.getElementById('upgradesContainer');
+                        upgradesContainer.innerHTML = '';
+
+                        if (upg.company_size || upg.staffroom_size || upg.storage_size) {
+                            document.getElementById('upgradesSection').classList.remove('hidden');
+
+                            const addUpgradeCard = (icon, title, value) => {
+                                upgradesContainer.insertAdjacentHTML('beforeend', `
+                                    <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                        <div class="bg-white p-2 rounded-full shadow-sm text-mint-500">
+                                            <i class="${icon} text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 font-bold uppercase">${title}</p>
+                                            <p class="text-gray-800 font-semibold">${value}</p>
+                                        </div>
+                                    </div>
+                                `);
+                            };
+
+                            if (upg.company_size) addUpgradeCard('fa-solid fa-building', 'Company Size', upg.company_size + ' Employees');
+                            if (upg.staffroom_size) addUpgradeCard('fa-solid fa-mug-hot', 'Staff Room', upg.staffroom_size);
+                            if (upg.storage_size) addUpgradeCard('fa-solid fa-warehouse', 'Storage', upg.storage_size);
+                            if (upg.storage_space) addUpgradeCard('fa-solid fa-boxes-stacked', 'Capacity', upg.storage_space.toLocaleString() + ' items');
+
+                            upgradesHtml = `${upg.company_size} Emp | ${upg.staffroom_size} | ${upg.storage_size}`;
+                        } else if (Array.isArray(upg) && upg.length > 0) {
+                            upgradesHtml = upg.join(' | ');
+                        }
                     }
                     document.getElementById('companyUpgradesTop').innerHTML = `<i class="fa-solid fa-level-up-alt"></i> Upgrades: ${upgradesHtml}`;
                 }
@@ -195,16 +263,116 @@
                     stockList.innerHTML = '<li class="py-4 text-center text-gray-500">No stock data available.</li>';
                 }
 
-                // 3. จัดการตารางพนักงาน (สร้างแถว CEO + แถวพนักงาน)
+                // 3. Extract and plot historical data from news
+                if (data.news) {
+                    const days = [];
+                    const incomeData = [];
+                    const customersData = [];
+
+                    // Regex to parse daily reports
+                    const reportRegex = /([A-Za-z]+) report: We had a total of (\d+) customers and made a gross income of \$([\d,]+)\./;
+
+                    // Sort news by timestamp ascending (oldest first for graph)
+                    const newsEvents = Object.values(data.news).sort((a, b) => a.timestamp - b.timestamp);
+
+                    newsEvents.forEach(event => {
+                        const match = event.news.match(reportRegex);
+                        if (match) {
+                            const day = match[1];
+                            const customers = parseInt(match[2], 10);
+                            const incomeStr = match[3].replace(/,/g, '');
+                            const income = parseInt(incomeStr, 10);
+
+                            days.push(day);
+                            customersData.push(customers);
+                            incomeData.push(income);
+                        }
+                    });
+
+                    // Extract and render recent news timeline
+                    const newsList = document.getElementById('newsList');
+                    newsList.innerHTML = '';
+                    const recentNews = [...newsEvents].reverse().slice(0, 20); // Top 20 latest events
+
+                    recentNews.forEach(event => {
+                        const date = new Date(event.timestamp * 1000);
+                        const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                        let icon = '<i class="fa-solid fa-circle-info text-blue-400 mt-1"></i>';
+                        if (event.news.includes('report')) icon = '<i class="fa-solid fa-chart-pie text-green-500 mt-1"></i>';
+                        else if (event.news.includes('deposit') || event.news.includes('funds')) icon = '<i class="fa-solid fa-money-bill-wave text-green-600 mt-1"></i>';
+                        else if (event.news.includes('upgraded')) icon = '<i class="fa-solid fa-arrow-up text-orange-500 mt-1"></i>';
+                        else if (event.news.includes('accept') || event.news.includes('join')) icon = '<i class="fa-solid fa-user-plus text-purple-500 mt-1"></i>';
+
+                        const li = `
+                            <li class="flex space-x-3 text-sm">
+                                <div>${icon}</div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-medium">${dateStr}</p>
+                                    <p class="text-gray-700 leading-tight">${event.news}</p>
+                                </div>
+                            </li>
+                        `;
+                        newsList.insertAdjacentHTML('beforeend', li);
+                    });
+
+                    // Render charts if we have data
+                    if (days.length > 0) {
+                        const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+                        new Chart(incomeCtx, {
+                            type: 'line',
+                            data: {
+                                labels: days,
+                                datasets: [{
+                                    label: 'Gross Income ($)',
+                                    data: incomeData,
+                                    borderColor: '#22c55e', // green-500
+                                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                                    borderWidth: 2,
+                                    fill: true,
+                                    tension: 0.3
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+
+                        const customersCtx = document.getElementById('customersChart').getContext('2d');
+                        new Chart(customersCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: days,
+                                datasets: [{
+                                    label: 'Customers',
+                                    data: customersData,
+                                    backgroundColor: '#a855f7', // purple-500
+                                    borderRadius: 4
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+                    }
+                }
+
+                // 4. จัดการตารางพนักงาน (สร้างแถว CEO + แถวพนักงาน)
                 const tbody = document.getElementById('employeeTableBody');
-                tbody.innerHTML = ''; 
+                tbody.innerHTML = '';
 
                 // --- 3.1 สร้างแถวของ CEO โดยเฉพาะ (ดึงจาก User API) ---
                 const ceoM = userData.manual_labor || 0;
                 const ceoI = userData.intelligence || 0;
                 const ceoE = userData.endurance || 0;
                 const ceoTotal = ceoM + ceoI + ceoE;
-                
+
                 const fmtCeoM = ceoM > 1000 ? (ceoM/1000).toFixed(1)+'k' : ceoM;
                 const fmtCeoI = ceoI > 1000 ? (ceoI/1000).toFixed(1)+'k' : ceoI;
                 const fmtCeoE = ceoE > 1000 ? (ceoE/1000).toFixed(1)+'k' : ceoE;
@@ -237,14 +405,14 @@
                         <td class="py-3 px-4 text-right ${ceoActionColor} text-xs">${ceoAction}</td>
                     </tr>
                 `;
-                tbody.insertAdjacentHTML('beforeend', ceoRow); 
+                tbody.insertAdjacentHTML('beforeend', ceoRow);
 
                 // --- 3.2 สร้างแถวของลูกจ้างทั้งหมด ---
                 if (!data.company_employees) {
                     tbody.insertAdjacentHTML('beforeend', `<tr><td colspan="10" class="py-6 text-center text-red-500 bg-red-50 font-bold">ไม่พบข้อมูลลูกจ้างเพิ่มเติม (สิทธิ์ API อาจไม่เพียงพอ)</td></tr>`);
                 } else {
                     const staffs = Object.values(data.company_employees);
-                    
+
                     staffs.forEach(emp => {
                         let effColor = 'text-green-500';
                         const effTotal = emp.effectiveness ? emp.effectiveness.total : 0;
@@ -252,10 +420,10 @@
                         if (effTotal < 50) effColor = 'text-red-500';
 
                         const merits = emp.effectiveness && emp.effectiveness.merits ? emp.effectiveness.merits : 0;
-                        let meritsColor = 'text-gray-400'; 
-                        if (merits >= 10) meritsColor = 'text-green-500 font-bold'; 
-                        else if (merits >= 5) meritsColor = 'text-yellow-500 font-bold'; 
-                        else if (merits > 0) meritsColor = 'text-orange-400 font-bold'; 
+                        let meritsColor = 'text-gray-400';
+                        if (merits >= 10) meritsColor = 'text-green-500 font-bold';
+                        else if (merits >= 5) meritsColor = 'text-yellow-500 font-bold';
+                        else if (merits > 0) meritsColor = 'text-orange-400 font-bold';
 
                         let effTooltip = "Effectiveness Breakdown:\n";
                         if (emp.effectiveness) {
@@ -276,7 +444,7 @@
                         let lastActionText = emp.last_action ? emp.last_action.relative : '-';
                         let actionColor = 'text-gray-500';
                         if (lastActionText.includes('day') || lastActionText.includes('offline')) {
-                            actionColor = 'text-red-500 font-bold'; 
+                            actionColor = 'text-red-500 font-bold';
                         }
 
                         let statusIcon = '';

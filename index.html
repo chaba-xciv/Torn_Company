@@ -249,6 +249,8 @@
                 const stockList = document.getElementById('stockList');
                 stockList.innerHTML = '';
                 if(data.company_stock && Object.keys(data.company_stock).length > 0) {
+                    // ⚡ Bolt Performance Optimization: Batch DOM updates
+                    let stockHtml = '';
                     Object.entries(data.company_stock).forEach(([itemName, details]) => {
                         let stockColor = details.in_stock < 100 ? 'text-red-500 font-bold' : 'text-gray-800';
                         const li = `
@@ -257,8 +259,9 @@
                                 <span class="${stockColor} bg-gray-100 px-3 py-1 rounded-full text-xs font-bold">${details.in_stock.toLocaleString()} pcs</span>
                             </li>
                         `;
-                        stockList.insertAdjacentHTML('beforeend', li);
+                        stockHtml += li;
                     });
+                    stockList.innerHTML = stockHtml;
                 } else {
                     stockList.innerHTML = '<li class="py-2 text-center text-gray-500">No stock data available.</li>';
                 }
@@ -294,6 +297,8 @@
                     newsList.innerHTML = '';
                     const recentNews = [...newsEvents].reverse().slice(0, 20); // Top 20 latest events
 
+                    // ⚡ Bolt Performance Optimization: Batch DOM updates
+                    let newsHtml = '';
                     recentNews.forEach(event => {
                         const date = new Date(event.timestamp * 1000);
                         const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
@@ -313,8 +318,9 @@
                                 </div>
                             </li>
                         `;
-                        newsList.insertAdjacentHTML('beforeend', li);
+                        newsHtml += li;
                     });
+                    newsList.innerHTML = newsHtml;
 
                     // Render charts if we have data
                     if (days.length > 0) {
@@ -405,11 +411,13 @@
                         <td class="py-1.5 px-2 text-right ${ceoActionColor} text-xs">${ceoAction}</td>
                     </tr>
                 `;
-                tbody.insertAdjacentHTML('beforeend', ceoRow);
+
+                // ⚡ Bolt Performance Optimization: Batch DOM updates
+                let employeesHtml = ceoRow;
 
                 // --- 3.2 สร้างแถวของลูกจ้างทั้งหมด ---
                 if (!data.company_employees) {
-                    tbody.insertAdjacentHTML('beforeend', `<tr><td colspan="10" class="py-3 text-center text-red-500 bg-red-50 font-bold">ไม่พบข้อมูลลูกจ้างเพิ่มเติม (สิทธิ์ API อาจไม่เพียงพอ)</td></tr>`);
+                    employeesHtml += `<tr><td colspan="10" class="py-3 text-center text-red-500 bg-red-50 font-bold">ไม่พบข้อมูลลูกจ้างเพิ่มเติม (สิทธิ์ API อาจไม่เพียงพอ)</td></tr>`;
                 } else {
                     const staffs = Object.values(data.company_employees);
 
@@ -483,9 +491,10 @@
                                 <td class="py-1.5 px-2 text-right ${actionColor} text-xs">${lastActionText}</td>
                             </tr>
                         `;
-                        tbody.insertAdjacentHTML('beforeend', row);
+                        employeesHtml += row;
                     });
                 }
+                tbody.innerHTML = employeesHtml;
 
             } catch (error) {
                 loadingStatus.innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-xl shadow inline-block border-l-4 border-red-500"><i class="fa-solid fa-circle-xmark text-xl"></i><br><b>Error:</b><br>${error.message}</div>`;

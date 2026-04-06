@@ -6,6 +6,7 @@
     <title>Company Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="company_data.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -50,8 +51,8 @@
             <!-- Upgrades Summary -->
             <div id="upgradesSection" class="bg-pastel rounded-xl shadow p-3 mb-4 border border-gray-100 hidden">
                 <h3 class="text-gray-700 font-bold mb-4 border-b pb-2"><i class="fa-solid fa-level-up-alt text-mint-500"></i> Company Upgrades</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="upgradesContainer">
-                    <!-- Upgrades will be inserted here -->
+                <div class="flex flex-col space-y-3" id="upgradesContainer">
+                    <!-- Upgrades Progress Bars will be inserted here -->
                 </div>
             </div>
 
@@ -189,6 +190,19 @@
     <script>
         const MY_API_KEY = "9tXBZpdj9XekBNVf";
 
+        function escapeHTML(str) {
+            if (!str) return str;
+            return String(str).replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[m];
+            });
+        }
+
         const dailyGainsMap = {
             "Manager": "36 END / 18 INT",
             "Marketer": "36 INT / 18 END",
@@ -241,7 +255,7 @@
                     document.getElementById('compTrains').textContent = (data.company_detailed.trains_available || 0) + " Trains";
                     document.getElementById('compAd').textContent = "$" + (data.company_detailed.advertising_budget || 0).toLocaleString();
 
-                    // จัดการข้อมูล Upgrades แปะไว้บนตารางพนักงาน
+                    // จัดการข้อมูล Upgrades แบบ Progress Bar
                     let upgradesHtml = 'None';
 
                     if (data.company_detailed.upgrades) {
@@ -249,31 +263,129 @@
                         const upgradesContainer = document.getElementById('upgradesContainer');
                         upgradesContainer.innerHTML = '';
 
-                        if (upg.company_size || upg.staffroom_size || upg.storage_size) {
-                            document.getElementById('upgradesSection').classList.remove('hidden');
+                        // Get the company name, fallback to mapping if necessary
+                        const compType = data.company.name && TORN_COMPANIES[data.company.name] ? data.company.name : null;
+                        const compInfo = compType && TORN_COMPANIES[compType] ? TORN_COMPANIES[compType] : null;
 
-                            const addUpgradeCard = (icon, title, value) => {
+                        if ((upg.company_size || upg.staffroom_size || upg.storage_size) && compInfo) {
+                            document.getElementById('upgradesSection').classList.remove('hidden');
+                            document.getElementById('upgradesContainer').classList.remove('hidden');
+
+                            const renderProgressBar = (icon, title, currentLevel, maxLevel, currentEffect, nextEffect, spent, nextCost) => {
+                                const percentage = (currentLevel / maxLevel) * 100;
+                                let segmentsHtml = '';
+                                for (let i = 0; i < maxLevel; i++) {
+                                    segmentsHtml += `<div class="flex-1 h-2 rounded-sm ${i < currentLevel ? 'bg-mint-500' : 'bg-gray-200'} mx-0.5"></div>`;
+                                }
+
+                                const formatCurrency = (val) => val >= 1000000 ? '$' + (val/1000000).toFixed(2) + 'M' : (val >= 1000 ? '$' + (val/1000).toFixed(0) + 'k' : '$' + val);
+
+                                let nextCostDisplay = nextCost ? `<span class="text-orange-500 font-medium">Req: ${formatCurrency(nextCost)}</span>` : `<span class="text-green-500 font-medium">Max Level</span>`;
+                                let nextEffectDisplay = nextEffect ? `<span class="text-mint-600 font-medium whitespace-nowrap"><i class="fa-solid fa-arrow-right text-xs mx-1"></i> ${nextEffect}</span>` : '';
+
                                 upgradesContainer.insertAdjacentHTML('beforeend', `
-                                    <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                        <div class="bg-white p-2 rounded-full shadow-sm text-mint-500">
-                                            <i class="${icon} text-xl"></i>
+                                    <div class="flex flex-col md:flex-row items-center md:justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm gap-4">
+                                        <div class="flex items-center gap-3 md:w-1/4 shrink-0 w-full">
+                                            <div class="bg-mint-100 p-2 rounded-full text-mint-600">
+                                                <i class="${icon} text-lg"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-bold text-gray-800">${title}</p>
+                                                <p class="text-xs text-gray-500">Level ${currentLevel}/${maxLevel}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p class="text-xs text-gray-500 font-bold uppercase">${title}</p>
-                                            <p class="text-gray-800 font-semibold">${value}</p>
+
+                                        <div class="flex flex-row md:w-2/4 w-full px-2">
+                                            ${segmentsHtml}
+                                        </div>
+
+                                        <div class="flex flex-col md:w-1/4 shrink-0 text-sm w-full md:text-right">
+                                            <div class="flex justify-between md:justify-end gap-2 items-center">
+                                                <span class="text-gray-700 font-medium whitespace-nowrap">${currentEffect}</span>
+                                                ${nextEffectDisplay}
+                                            </div>
+                                            <div class="flex justify-between md:justify-end gap-3 mt-1 text-xs">
+                                                <span class="text-gray-500">Spent: ${formatCurrency(spent)}</span>
+                                                ${nextCostDisplay}
+                                            </div>
                                         </div>
                                     </div>
                                 `);
                             };
 
-                            if (upg.company_size) addUpgradeCard('fa-solid fa-building', 'Company Size', upg.company_size + ' Employees');
-                            if (upg.staffroom_size) addUpgradeCard('fa-solid fa-mug-hot', 'Staff Room', upg.staffroom_size);
-                            if (upg.storage_size) addUpgradeCard('fa-solid fa-warehouse', 'Storage', upg.storage_size);
-                            if (upg.storage_space) addUpgradeCard('fa-solid fa-boxes-stacked', 'Capacity', upg.storage_space.toLocaleString() + ' items');
+                            // Company Size
+                            if (upg.company_size) {
+                                let curSizeLvl = 0;
+                                let curSizeValue = compInfo.size;
+                                // find level based on employee count
+                                for (let i = 0; i <= UPGRADE_DATA.size.maxLevel; i++) {
+                                    if (Math.round(compInfo.size * UPGRADE_DATA.size.sizeMultipliers[i]) === upg.company_size) {
+                                        curSizeLvl = i;
+                                        break;
+                                    }
+                                    if (upg.company_size > Math.round(compInfo.size * UPGRADE_DATA.size.sizeMultipliers[i])) {
+                                        curSizeLvl = i; // in case of weird numbers, get closest lower
+                                    }
+                                }
 
-                            upgradesHtml = `${upg.company_size} Emp | ${upg.staffroom_size} | ${upg.storage_size}`;
+                                let spent = 0;
+                                // Start from level 1 to calculate spent money correctly (level 0 is startup, cost 0)
+                                // We sum up the *additional* cost paid at each tier?
+                                // Wait, the Torn Wiki says:
+                                // "Each upgrade costs an additional 10% of the initial startup costs"
+                                // So level 1 costs 10%. Level 2 costs 20%.
+                                // Do you pay 10% then 20%? Yes, total is 210%.
+                                for (let i = 1; i <= curSizeLvl; i++) {
+                                    spent += compInfo.cost * UPGRADE_DATA.size.costMultipliers[i];
+                                }
+
+                                let nextCost = curSizeLvl < UPGRADE_DATA.size.maxLevel ? compInfo.cost * UPGRADE_DATA.size.costMultipliers[curSizeLvl + 1] : 0;
+                                let nextEffect = curSizeLvl < UPGRADE_DATA.size.maxLevel ? Math.round(compInfo.size * UPGRADE_DATA.size.sizeMultipliers[curSizeLvl + 1]) + ' Emp' : '';
+
+                                renderProgressBar('fa-solid fa-users', 'Company Size', curSizeLvl, UPGRADE_DATA.size.maxLevel, upg.company_size + ' Emp', nextEffect, spent, nextCost);
+                            }
+
+                            // Staff Room
+                            if (upg.staffroom_size) {
+                                let curStaffLvl = UPGRADE_DATA.staffRoom.levels.indexOf(upg.staffroom_size);
+                                if(curStaffLvl === -1) curStaffLvl = 0;
+
+                                let spent = 0;
+                                for (let i = 1; i <= curStaffLvl; i++) {
+                                    spent += compInfo.cost * UPGRADE_DATA.staffRoom.costMultipliers[i];
+                                }
+
+                                let nextCost = curStaffLvl < 6 ? compInfo.cost * UPGRADE_DATA.staffRoom.costMultipliers[curStaffLvl + 1] : 0;
+                                let nextEffect = curStaffLvl < 6 ? UPGRADE_DATA.staffRoom.levels[curStaffLvl + 1] : '';
+
+                                renderProgressBar('fa-solid fa-mug-hot', 'Staff Room', curStaffLvl, 6, upg.staffroom_size, nextEffect, spent, nextCost);
+                            }
+
+                            // Storage
+                            if (upg.storage_size) {
+                                let curStorageLvl = UPGRADE_DATA.storage.levels.indexOf(upg.storage_size);
+                                if(curStorageLvl === -1) curStorageLvl = 0;
+
+                                let spent = 0;
+                                for (let i = 1; i <= curStorageLvl; i++) {
+                                    spent += compInfo.cost * UPGRADE_DATA.storage.costMultipliers[i];
+                                }
+
+                                let nextCost = curStorageLvl < 6 ? compInfo.cost * UPGRADE_DATA.storage.costMultipliers[curStorageLvl + 1] : 0;
+                                let nextEffect = curStorageLvl < 6 ? UPGRADE_DATA.storage.levels[curStorageLvl + 1] : '';
+
+                                let currentEffectStr = upg.storage_size;
+                                if(upg.storage_space) currentEffectStr += ` (${upg.storage_space.toLocaleString()} items)`;
+
+                                renderProgressBar('fa-solid fa-warehouse', 'Storage', curStorageLvl, 6, currentEffectStr, nextEffect, spent, nextCost);
+                            }
+
+                            upgradesHtml = `${escapeHTML(upg.company_size)} Emp | ${escapeHTML(upg.staffroom_size)} | ${escapeHTML(upg.storage_size)}`;
                         } else if (Array.isArray(upg) && upg.length > 0) {
                             upgradesHtml = upg.join(' | ');
+                        } else if (upg.company_size || upg.staffroom_size || upg.storage_size) {
+                            // Fallback if company type is not found in TORN_COMPANIES
+                             upgradesHtml = `${upg.company_size} Emp | ${upg.staffroom_size} | ${upg.storage_size} (Type unsupported for progress)`;
                         }
                     }
                     document.getElementById('companyUpgradesTop').innerHTML = `<i class="fa-solid fa-level-up-alt"></i> Upgrades: ${upgradesHtml}`;
@@ -283,9 +395,8 @@
                 const stockTableBody = document.getElementById('stockTableBody');
                 stockTableBody.innerHTML = '';
                 if(data.company_stock && Object.keys(data.company_stock).length > 0) {
-                    // ⚡ Bolt Performance Optimization: Batch DOM updates
-                    let stockHtml = '';
-                    Object.entries(data.company_stock).forEach(([itemName, details]) => {
+                    // ⚡ Bolt Performance Optimization: Refactored string concatenation to map().join('')
+                    const stockHtml = Object.entries(data.company_stock).map(([itemName, details]) => {
                         const inStock = details.in_stock || 0;
                         const onOrder = details.on_order || 0;
                         const cost = details.cost || 0;
@@ -299,9 +410,9 @@
                         let orderColor = onOrder > 0 ? 'text-blue-500 font-medium bg-blue-50/50' : 'text-gray-400';
                         let profitColor = profit > 0 ? 'text-purple-600 font-bold' : (profit < 0 ? 'text-red-500 font-bold' : 'text-gray-500');
 
-                        const row = `
+                        return `
                             <tr class="hover:bg-mint-50 transition duration-150">
-                                <td class="py-2 px-3 font-bold text-gray-700">${itemName}</td>
+                                <td class="py-2 px-3 font-bold text-gray-700">${escapeHTML(itemName)}</td>
                                 <td class="py-2 px-3 text-right ${stockColor}">${inStock.toLocaleString()}</td>
                                 <td class="py-2 px-3 text-right ${orderColor}">${onOrder > 0 ? '+' + onOrder.toLocaleString() : '-'}</td>
                                 <td class="py-2 px-3 text-right text-red-500 font-mono">$${cost.toLocaleString()}</td>
@@ -312,8 +423,7 @@
                                 <td class="py-2 px-3 text-right text-green-500 font-mono font-bold">$${soldWorth.toLocaleString()}</td>
                             </tr>
                         `;
-                        stockHtml += row;
-                    });
+                    }).join('');
                     stockTableBody.innerHTML = stockHtml;
                 } else {
                     stockTableBody.innerHTML = '<tr><td colspan="9" class="py-4 text-center text-gray-500">No stock data available.</td></tr>';
@@ -350,9 +460,8 @@
                     newsList.innerHTML = '';
                     const recentNews = [...newsEvents].reverse().slice(0, 20); // Top 20 latest events
 
-                    // ⚡ Bolt Performance Optimization: Batch DOM updates
-                    let newsHtml = '';
-                    recentNews.forEach(event => {
+                    // ⚡ Bolt Performance Optimization: Refactored string concatenation to map().join('')
+                    const newsHtml = recentNews.map(event => {
                         const date = new Date(event.timestamp * 1000);
                         const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
@@ -362,17 +471,16 @@
                         else if (event.news.includes('upgraded')) icon = '<i class="fa-solid fa-arrow-up text-orange-500 mt-1"></i>';
                         else if (event.news.includes('accept') || event.news.includes('join')) icon = '<i class="fa-solid fa-user-plus text-purple-500 mt-1"></i>';
 
-                        const li = `
+                        return `
                             <li class="flex space-x-3 text-sm">
                                 <div>${icon}</div>
                                 <div>
                                     <p class="text-xs text-gray-400 font-medium">${dateStr}</p>
-                                    <p class="text-gray-700 leading-tight">${event.news}</p>
+                                    <p class="text-gray-700 leading-tight">${escapeHTML(event.news)}</p>
                                 </div>
                             </li>
                         `;
-                        newsHtml += li;
-                    });
+                    }).join('');
                     newsList.innerHTML = newsHtml;
 
                     // Render charts if we have data
@@ -450,7 +558,7 @@
 
                 const ceoRow = `
                     <tr class="hover:bg-mint-50 transition duration-150 border-b border-gray-100 last:border-0 bg-blue-50/20">
-                        <td class="py-1.5 px-2 font-bold text-gray-800">${userData.name || 'Director'} ${ceoStatusIcon}</td>
+                        <td class="py-1.5 px-2 font-bold text-gray-800">${escapeHTML(userData.name) || 'Director'} ${ceoStatusIcon}</td>
                         <td class="py-1.5 px-2 text-center text-gray-600 bg-gray-50/50">Director</td>
                         <td class="py-1.5 px-2 text-right font-medium text-green-600">0</td>
                         <td class="py-1.5 px-2 text-center text-gray-400 bg-purple-50/30">0/10</td>
@@ -461,11 +569,11 @@
                         <td class="py-1.5 px-2 text-gray-500 text-center text-xs">${fmtCeoM} / ${fmtCeoI} / ${fmtCeoE}</td>
                         <td class="py-1.5 px-2 font-bold text-mint-600 text-center bg-mint-50/50">${fmtCeoTotal}</td>
                         <td class="py-1.5 px-2 text-center text-gray-600">${data.company.days_old || 0}</td>
-                        <td class="py-1.5 px-2 text-right ${ceoActionColor} text-xs">${ceoAction}</td>
+                        <td class="py-1.5 px-2 text-right ${ceoActionColor} text-xs">${escapeHTML(ceoAction)}</td>
                     </tr>
                 `;
 
-                // ⚡ Bolt Performance Optimization: Batch DOM updates
+                // ⚡ Bolt Performance Optimization: Refactored string concatenation to map().join('')
                 let employeesHtml = ceoRow;
 
                 // --- 3.2 สร้างแถวของลูกจ้างทั้งหมด ---
@@ -474,7 +582,7 @@
                 } else {
                     const staffs = Object.values(data.company_employees);
 
-                    staffs.forEach(emp => {
+                    employeesHtml += staffs.map(emp => {
                         let effColor = 'text-green-500';
                         const effTotal = emp.effectiveness ? emp.effectiveness.total : 0;
                         if (effTotal < 80) effColor = 'text-yellow-500';
@@ -528,10 +636,10 @@
                         const e = rawE > 1000 ? (rawE/1000).toFixed(1)+'k' : rawE;
                         const totalStats = rawTotal > 1000 ? (rawTotal/1000).toFixed(1)+'k' : rawTotal;
 
-                        const row = `
+                        return `
                             <tr class="hover:bg-mint-50 transition duration-150 border-b border-gray-100 last:border-0">
-                                <td class="py-1.5 px-2 font-bold text-gray-800">${emp.name || 'Unknown'} ${statusIcon}</td>
-                                <td class="py-1.5 px-2 text-center text-gray-600 bg-gray-50/50">${emp.position || '-'}</td>
+                                <td class="py-1.5 px-2 font-bold text-gray-800">${escapeHTML(emp.name) || 'Unknown'} ${statusIcon}</td>
+                                <td class="py-1.5 px-2 text-center text-gray-600 bg-gray-50/50">${escapeHTML(emp.position) || '-'}</td>
                                 <td class="py-1.5 px-2 text-right font-medium text-green-600">${salaryStr}</td>
                                 <td class="py-1.5 px-2 text-center ${meritsColor} bg-purple-50/30">${merits}/10</td>
                                 <td class="py-1.5 px-2 font-bold ${effColor} text-center cursor-help" title="${effTooltip}">
@@ -541,16 +649,15 @@
                                 <td class="py-1.5 px-2 text-gray-500 text-center text-xs">${m} / ${i} / ${e}</td>
                                 <td class="py-1.5 px-2 font-bold text-mint-600 text-center bg-mint-50/50">${totalStats}</td>
                                 <td class="py-1.5 px-2 text-center text-gray-600">${emp.days_in_company || 0}</td>
-                                <td class="py-1.5 px-2 text-right ${actionColor} text-xs">${lastActionText}</td>
+                                <td class="py-1.5 px-2 text-right ${actionColor} text-xs">${escapeHTML(lastActionText)}</td>
                             </tr>
                         `;
-                        employeesHtml += row;
-                    });
+                    }).join('');
                 }
                 tbody.innerHTML = employeesHtml;
 
             } catch (error) {
-                loadingStatus.innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-xl shadow inline-block border-l-4 border-red-500"><i class="fa-solid fa-circle-xmark text-xl"></i><br><b>Error:</b><br>${error.message}</div>`;
+                loadingStatus.innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-xl shadow inline-block border-l-4 border-red-500"><i class="fa-solid fa-circle-xmark text-xl"></i><br><b>Error:</b><br>${escapeHTML(error.message)}</div>`;
             }
         }
 

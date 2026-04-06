@@ -190,6 +190,19 @@
     <script>
         const MY_API_KEY = "9tXBZpdj9XekBNVf";
 
+        function escapeHTML(str) {
+            if (!str) return str;
+            return String(str).replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[m];
+            });
+        }
+
         const dailyGainsMap = {
             "Manager": "36 END / 18 INT",
             "Marketer": "36 INT / 18 END",
@@ -367,7 +380,7 @@
                                 renderProgressBar('fa-solid fa-warehouse', 'Storage', curStorageLvl, 6, currentEffectStr, nextEffect, spent, nextCost);
                             }
 
-                            upgradesHtml = `${upg.company_size} Emp | ${upg.staffroom_size} | ${upg.storage_size}`;
+                            upgradesHtml = `${escapeHTML(upg.company_size)} Emp | ${escapeHTML(upg.staffroom_size)} | ${escapeHTML(upg.storage_size)}`;
                         } else if (Array.isArray(upg) && upg.length > 0) {
                             upgradesHtml = upg.join(' | ');
                         } else if (upg.company_size || upg.staffroom_size || upg.storage_size) {
@@ -400,7 +413,7 @@
 
                         const row = `
                             <tr class="hover:bg-mint-50 transition duration-150">
-                                <td class="py-2 px-3 font-bold text-gray-700">${itemName}</td>
+                                <td class="py-2 px-3 font-bold text-gray-700">${escapeHTML(itemName)}</td>
                                 <td class="py-2 px-3 text-right ${stockColor}">${inStock.toLocaleString()}</td>
                                 <td class="py-2 px-3 text-right ${orderColor}">${onOrder > 0 ? '+' + onOrder.toLocaleString() : '-'}</td>
                                 <td class="py-2 px-3 text-right text-red-500 font-mono">$${cost.toLocaleString()}</td>
@@ -466,7 +479,7 @@
                                 <div>${icon}</div>
                                 <div>
                                     <p class="text-xs text-gray-400 font-medium">${dateStr}</p>
-                                    <p class="text-gray-700 leading-tight">${event.news}</p>
+                                    <p class="text-gray-700 leading-tight">${escapeHTML(event.news)}</p>
                                 </div>
                             </li>
                         `;
@@ -549,7 +562,7 @@
 
                 const ceoRow = `
                     <tr class="hover:bg-mint-50 transition duration-150 border-b border-gray-100 last:border-0 bg-blue-50/20">
-                        <td class="py-1.5 px-2 font-bold text-gray-800">${userData.name || 'Director'} ${ceoStatusIcon}</td>
+                        <td class="py-1.5 px-2 font-bold text-gray-800">${escapeHTML(userData.name) || 'Director'} ${ceoStatusIcon}</td>
                         <td class="py-1.5 px-2 text-center text-gray-600 bg-gray-50/50">Director</td>
                         <td class="py-1.5 px-2 text-right font-medium text-green-600">0</td>
                         <td class="py-1.5 px-2 text-center text-gray-400 bg-purple-50/30">0/10</td>
@@ -560,7 +573,7 @@
                         <td class="py-1.5 px-2 text-gray-500 text-center text-xs">${fmtCeoM} / ${fmtCeoI} / ${fmtCeoE}</td>
                         <td class="py-1.5 px-2 font-bold text-mint-600 text-center bg-mint-50/50">${fmtCeoTotal}</td>
                         <td class="py-1.5 px-2 text-center text-gray-600">${data.company.days_old || 0}</td>
-                        <td class="py-1.5 px-2 text-right ${ceoActionColor} text-xs">${ceoAction}</td>
+                        <td class="py-1.5 px-2 text-right ${ceoActionColor} text-xs">${escapeHTML(ceoAction)}</td>
                     </tr>
                 `;
 
@@ -629,8 +642,8 @@
 
                         const row = `
                             <tr class="hover:bg-mint-50 transition duration-150 border-b border-gray-100 last:border-0">
-                                <td class="py-1.5 px-2 font-bold text-gray-800">${emp.name || 'Unknown'} ${statusIcon}</td>
-                                <td class="py-1.5 px-2 text-center text-gray-600 bg-gray-50/50">${emp.position || '-'}</td>
+                                <td class="py-1.5 px-2 font-bold text-gray-800">${escapeHTML(emp.name) || 'Unknown'} ${statusIcon}</td>
+                                <td class="py-1.5 px-2 text-center text-gray-600 bg-gray-50/50">${escapeHTML(emp.position) || '-'}</td>
                                 <td class="py-1.5 px-2 text-right font-medium text-green-600">${salaryStr}</td>
                                 <td class="py-1.5 px-2 text-center ${meritsColor} bg-purple-50/30">${merits}/10</td>
                                 <td class="py-1.5 px-2 font-bold ${effColor} text-center cursor-help" title="${effTooltip}">
@@ -640,7 +653,7 @@
                                 <td class="py-1.5 px-2 text-gray-500 text-center text-xs">${m} / ${i} / ${e}</td>
                                 <td class="py-1.5 px-2 font-bold text-mint-600 text-center bg-mint-50/50">${totalStats}</td>
                                 <td class="py-1.5 px-2 text-center text-gray-600">${emp.days_in_company || 0}</td>
-                                <td class="py-1.5 px-2 text-right ${actionColor} text-xs">${lastActionText}</td>
+                                <td class="py-1.5 px-2 text-right ${actionColor} text-xs">${escapeHTML(lastActionText)}</td>
                             </tr>
                         `;
                         employeesHtml += row;
@@ -649,7 +662,7 @@
                 tbody.innerHTML = employeesHtml;
 
             } catch (error) {
-                loadingStatus.innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-xl shadow inline-block border-l-4 border-red-500"><i class="fa-solid fa-circle-xmark text-xl"></i><br><b>Error:</b><br>${error.message}</div>`;
+                loadingStatus.innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-xl shadow inline-block border-l-4 border-red-500"><i class="fa-solid fa-circle-xmark text-xl"></i><br><b>Error:</b><br>${escapeHTML(error.message)}</div>`;
             }
         }
 

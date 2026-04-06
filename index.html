@@ -6,6 +6,7 @@
     <title>Company Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="company_data.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -24,73 +25,83 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-mint-100 min-h-screen font-sans text-gray-800 p-4">
+<body id="bodyEl" class="bg-mint-100 min-h-screen font-sans text-gray-800 p-4 transition-colors duration-300">
+
+    <!-- Theme Switcher -->
+    <div class="fixed top-4 right-4 z-50 flex gap-2 bg-white/80 backdrop-blur-sm p-1.5 rounded-full shadow-sm border border-gray-200">
+        <button onclick="setTheme('company')" id="themeBtn-company" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-800 transition-colors bg-gray-100/50" title="Company Theme">
+            <i class="fa-solid fa-briefcase text-sm"></i>
+        </button>
+        <button onclick="setTheme('light')" id="themeBtn-light" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-yellow-500 transition-colors" title="Light Theme">
+            <i class="fa-solid fa-sun text-sm"></i>
+        </button>
+        <button onclick="setTheme('dark')" id="themeBtn-dark" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-indigo-400 transition-colors" title="Dark Theme">
+            <i class="fa-solid fa-moon text-sm"></i>
+        </button>
+    </div>
 
     <div class="max-w-7xl mx-auto">
 
         <div class="text-center mb-4">
-            <h1 class="text-2xl font-bold text-mint-600 drop-shadow-sm">
-                <i class="fa-solid fa-seedling"></i> <span id="mainHeaderName">Loading...</span>
+            <h1 id="headerTitle" class="text-3xl font-bold text-mint-600 drop-shadow-sm flex justify-center items-center gap-2 transition-colors">
+                <i id="mainHeaderIcon" class="fa-solid fa-seedling"></i> <span id="mainHeaderName">Loading...</span>
             </h1>
+            <div id="mainHeaderRating" class="mt-2 text-xl tracking-widest" title="Company Rating">
+                <!-- Stars will be injected here -->
+            </div>
         </div>
 
         <!-- Timer / Countdown Section -->
-        <div id="timerSection" class="text-center mb-4 bg-pastel rounded-xl shadow p-2 border border-gray-100 max-w-2xl mx-auto flex justify-around items-center text-sm hidden">
+        <div id="timerSection" class="theme-card text-center mb-4 bg-pastel rounded-xl shadow p-2 border border-gray-100 max-w-2xl mx-auto flex justify-around items-center text-sm hidden transition-colors">
             <div><span class="font-bold text-gray-500">Local:</span> <span id="localTimeDisplay" class="font-mono text-gray-800">--:--:--</span></div>
             <div><span class="font-bold text-gray-500">TCT:</span> <span id="tctTimeDisplay" class="font-mono text-blue-600">--:--:--</span></div>
             <div><span class="font-bold text-gray-500"><i class="fa-solid fa-clock-rotate-left"></i> Daily Snapshot in:</span> <span id="countdownDisplay" class="font-mono text-red-500 font-bold">--:--:--</span></div>
         </div>
 
         <div id="loadingStatus" class="text-center mb-4">
-            <p class="text-lg font-bold text-mint-600"><i class="fa-solid fa-spinner fa-spin"></i> กำลังดึงข้อมูลจาก Torn...</p>
+            <p id="loadingText" class="text-lg font-bold text-mint-600 transition-colors"><i class="fa-solid fa-spinner fa-spin"></i> กำลังดึงข้อมูลจาก Torn...</p>
         </div>
 
         <div id="dashboardSection" class="hidden">
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                <div class="bg-pastel rounded-xl shadow p-3 border-l-4 border-blue-400 relative overflow-hidden">
-                    <i class="fa-solid fa-briefcase absolute -right-2 -bottom-2 text-blue-100 text-5xl opacity-50"></i>
-                    <p class="text-xs text-gray-500 uppercase font-bold mb-1 relative z-10">Company Info</p>
-                    <h3 id="compName" class="text-lg font-bold text-blue-600 truncate relative z-10">-</h3>
-                    <p class="text-sm text-gray-600 mt-1 relative z-10">Rating: <span id="compRating" class="font-bold text-yellow-500"></span></p>
-                </div>
-                <div class="bg-pastel rounded-xl shadow p-3 border-l-4 border-green-500 relative overflow-hidden">
-                    <i class="fa-solid fa-sack-dollar absolute -right-2 -bottom-2 text-green-100 text-5xl opacity-50"></i>
-                    <p class="text-xs text-gray-500 uppercase font-bold mb-1 relative z-10 flex justify-between items-center">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="theme-card bg-pastel rounded-xl shadow p-3 border-l-4 border-green-500 relative overflow-hidden transition-colors">
+                    <i class="fa-solid fa-sack-dollar absolute -right-2 -bottom-2 text-green-100 text-5xl opacity-20"></i>
+                    <p class="theme-text-muted text-xs text-gray-500 uppercase font-bold mb-1 relative z-10 flex justify-between items-center transition-colors">
                         <span>Finances</span>
                     </p>
-                    <div class="text-xs text-gray-600 mt-2 relative z-10 space-y-1">
+                    <div class="theme-text text-xs text-gray-600 mt-2 relative z-10 space-y-1 transition-colors">
                         <div class="flex justify-between"><span class="font-medium">Daily Cust:</span> <span id="compDailyCust" class="font-bold"></span></div>
                         <div class="flex justify-between"><span class="font-medium">Daily Inc:</span> <span id="compDailyInc" class="font-bold text-green-500"></span></div>
                         <div class="flex justify-between"><span class="font-medium">Daily Prof:</span> <span id="compDailyProf" class="font-bold"></span></div>
-                        <div class="border-t border-gray-100 my-1"></div>
+                        <div class="theme-border border-t border-gray-100 my-1 transition-colors"></div>
                         <div class="flex justify-between"><span class="font-medium">Weekly Cust:</span> <span id="compWeeklyCust" class="font-bold"></span></div>
                         <div class="flex justify-between"><span class="font-medium">Weekly Inc:</span> <span id="compWeeklyInc" class="font-bold text-green-500"></span></div>
                         <div class="flex justify-between"><span class="font-medium">Weekly Prof:</span> <span id="compWeeklyProf" class="font-bold"></span></div>
                     </div>
                 </div>
-                <div class="bg-pastel rounded-xl shadow p-3 border-l-4 border-purple-400 relative overflow-hidden">
-                    <i class="fa-solid fa-people-group absolute -right-2 -bottom-2 text-purple-100 text-5xl opacity-50"></i>
-                    <p class="text-xs text-gray-500 uppercase font-bold mb-1 relative z-10">Customers / Popularity</p>
+                <div class="theme-card bg-pastel rounded-xl shadow p-3 border-l-4 border-purple-400 relative overflow-hidden transition-colors">
+                    <i class="fa-solid fa-people-group absolute -right-2 -bottom-2 text-purple-100 text-5xl opacity-20"></i>
+                    <p class="theme-text-muted text-xs text-gray-500 uppercase font-bold mb-1 relative z-10 transition-colors">Customers / Popularity</p>
                     <h3 id="compCustomers" class="text-lg font-bold text-purple-600 relative z-10">-</h3>
-                    <p class="text-sm text-gray-600 mt-1 relative z-10">Pop: <span id="compPop" class="font-bold text-purple-500"></span></p>
+                    <p class="theme-text text-sm text-gray-600 mt-1 relative z-10 transition-colors">Pop: <span id="compPop" class="font-bold text-purple-500"></span></p>
                 </div>
-                <div class="bg-pastel rounded-xl shadow p-3 border-l-4 border-orange-400 relative overflow-hidden">
-                    <i class="fa-solid fa-bullhorn absolute -right-2 -bottom-2 text-orange-100 text-5xl opacity-50"></i>
-                    <p class="text-xs text-gray-500 uppercase font-bold mb-1 relative z-10">Management</p>
+                <div class="theme-card bg-pastel rounded-xl shadow p-3 border-l-4 border-orange-400 relative overflow-hidden transition-colors">
+                    <i class="fa-solid fa-bullhorn absolute -right-2 -bottom-2 text-orange-100 text-5xl opacity-20"></i>
+                    <p class="theme-text-muted text-xs text-gray-500 uppercase font-bold mb-1 relative z-10 transition-colors">Management</p>
                     <h3 id="compTrains" class="text-lg font-bold text-orange-600 relative z-10">- Trains</h3>
-                    <p class="text-sm text-gray-600 mt-1 relative z-10">Ad Budget: <span id="compAd" class="font-bold text-orange-500"></span></p>
+                    <p class="theme-text text-sm text-gray-600 mt-1 relative z-10 transition-colors">Ad Budget: <span id="compAd" class="font-bold text-orange-500"></span></p>
                 </div>
             </div>
 
             <!-- Full Width Inventory Stock -->
-            <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 mb-4">
-                <div class="bg-blue-500 px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div class="theme-card bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 mb-4 transition-colors">
+                <div class="theme-header-blue bg-blue-500 px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 transition-colors">
                     <h3 class="text-white font-bold"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock Financials</h3>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm whitespace-nowrap">
-                        <thead class="bg-gray-50 border-b border-gray-200 text-gray-600">
+                        <thead class="theme-table-header bg-gray-50 border-b border-gray-200 text-gray-600 transition-colors">
                             <tr>
                                 <th class="py-2 px-3 font-semibold">Item Name</th>
                                 <th class="py-2 px-3 font-semibold text-right">In Stock</th>
@@ -103,7 +114,7 @@
                                 <th class="py-2 px-3 font-semibold text-right text-green-500">Sold Worth</th>
                             </tr>
                         </thead>
-                        <tbody id="stockTableBody" class="divide-y divide-gray-200">
+                        <tbody id="stockTableBody" class="theme-divide divide-y divide-gray-200 transition-colors">
                         </tbody>
                     </table>
                 </div>
@@ -112,8 +123,8 @@
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
                 <div class="lg:col-span-1 space-y-6">
                     <!-- News Timeline -->
-                    <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100">
-                        <div class="bg-orange-400 px-3 py-2">
+                    <div class="theme-card bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 transition-colors">
+                        <div class="theme-header-orange bg-orange-400 px-3 py-2 transition-colors">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-newspaper"></i> Company Events</h3>
                         </div>
                         <div class="p-4 overflow-y-auto" style="max-height: 500px;">
@@ -125,14 +136,14 @@
 
                 <div class="lg:col-span-3">
 
-                    <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 mb-4">
-                        <div class="bg-mint-500 px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div class="theme-card bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 mb-4 transition-colors">
+                        <div class="theme-header-mint bg-mint-500 px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 transition-colors">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-users-gear"></i> Detailed Employee Status</h3>
                         </div>
                         <div class="overflow-x-auto" style="max-height: 500px;">
                             <table class="w-full text-left border-collapse text-sm whitespace-nowrap">
-                                <thead class="sticky top-0 bg-gray-50 shadow-sm z-20">
-                                    <tr class="border-b border-gray-200 text-gray-600">
+                                <thead class="theme-table-header sticky top-0 bg-gray-50 shadow-sm z-20 transition-colors">
+                                    <tr class="theme-border border-b border-gray-200 text-gray-600 transition-colors">
                                         <th class="py-1.5 px-2 font-semibold">Name</th>
                                         <th class="py-1.5 px-2 font-semibold text-center">Position</th>
                                         <th class="py-1.5 px-2 font-semibold text-right">Salary</th>
@@ -145,15 +156,15 @@
                                         <th class="py-1.5 px-2 font-semibold text-right">Last Action</th>
                                     </tr>
                                 </thead>
-                                <tbody id="employeeTableBody" class="divide-y divide-gray-200">
+                                <tbody id="employeeTableBody" class="theme-divide divide-y divide-gray-200 transition-colors">
                                     </tbody>
                             </table>
                         </div>
                     </div>
 
                     <!-- Collapsible Graphs Section -->
-                    <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100">
-                        <button onclick="toggleGraphs()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 flex justify-between items-center transition-colors">
+                    <div class="theme-card bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 transition-colors">
+                        <button onclick="toggleGraphs()" class="theme-btn w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 flex justify-between items-center transition-colors">
                             <span><i class="fa-solid fa-chart-area text-blue-500 mr-2"></i> Historical Performance Graphs</span>
                             <i id="graphsChevron" class="fa-solid fa-chevron-down"></i>
                         </button>
@@ -161,16 +172,16 @@
                         <div id="graphsContainer" class="hidden p-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <!-- Income Graph -->
-                                <div class="bg-white rounded-xl border border-gray-100 p-3">
-                                    <h3 class="text-gray-700 font-bold mb-4"><i class="fa-solid fa-chart-line text-green-500"></i> Daily Gross Income</h3>
+                                <div class="theme-inner-card bg-white rounded-xl border border-gray-100 p-3 transition-colors">
+                                    <h3 class="theme-text text-gray-700 font-bold mb-4 transition-colors"><i class="fa-solid fa-chart-line text-green-500"></i> Daily Gross Income</h3>
                                     <div class="relative h-48 w-full">
                                         <canvas id="incomeChart"></canvas>
                                     </div>
                                 </div>
 
                                 <!-- Customers Graph -->
-                                <div class="bg-white rounded-xl border border-gray-100 p-3">
-                                    <h3 class="text-gray-700 font-bold mb-4"><i class="fa-solid fa-users text-purple-500"></i> Daily Customers</h3>
+                                <div class="theme-inner-card bg-white rounded-xl border border-gray-100 p-3 transition-colors">
+                                    <h3 class="theme-text text-gray-700 font-bold mb-4 transition-colors"><i class="fa-solid fa-users text-purple-500"></i> Daily Customers</h3>
                                     <div class="relative h-48 w-full">
                                         <canvas id="customersChart"></canvas>
                                     </div>
@@ -198,6 +209,75 @@
                     "'": '&#39;'
                 }[m];
             });
+        }
+
+        let currentThemeColor = 'mint'; // default
+
+        // Theme management
+        function setTheme(mode, forceColor = null) {
+            const bodyClasses = document.getElementById('bodyEl').classList;
+
+            // Remove previous theme classes
+            bodyClasses.remove('bg-mint-100', 'bg-gray-100', 'bg-gray-900', 'text-gray-800', 'text-gray-100');
+
+            // Remove specific colors if company theme
+            const colors = ['mint', 'pink', 'gray', 'blue', 'indigo', 'red', 'purple', 'orange', 'yellow', 'rose', 'cyan', 'emerald', 'fuchsia', 'sky', 'slate', 'lime', 'amber', 'zinc', 'violet', 'stone', 'neutral', 'teal', 'green'];
+            colors.forEach(c => {
+                bodyClasses.remove(`bg-${c}-100`);
+            });
+
+            // Set active button styles
+            ['company', 'light', 'dark'].forEach(id => {
+                document.getElementById(`themeBtn-${id}`).classList.remove('bg-gray-100/50', 'bg-yellow-100/50', 'bg-indigo-900/50');
+            });
+
+            // Setup new CSS rules
+            let styleEl = document.getElementById('theme-styles');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'theme-styles';
+                document.head.appendChild(styleEl);
+            }
+
+            if (mode === 'dark') {
+                bodyClasses.add('bg-gray-900', 'text-gray-100');
+                document.getElementById('themeBtn-dark').classList.add('bg-indigo-900/50');
+
+                styleEl.innerHTML = `
+                    .theme-card { background-color: #1f2937 !important; border-color: #374151 !important; color: #f3f4f6 !important; }
+                    .theme-inner-card { background-color: #111827 !important; border-color: #374151 !important; }
+                    .theme-text { color: #d1d5db !important; }
+                    .theme-text-muted { color: #9ca3af !important; }
+                    .theme-border { border-color: #374151 !important; }
+                    .theme-divide > * { border-color: #374151 !important; }
+                    .theme-table-header { background-color: #111827 !important; color: #9ca3af !important; }
+                    .theme-btn { background-color: #374151 !important; color: #f3f4f6 !important; }
+                    .theme-btn:hover { background-color: #4b5563 !important; }
+                    #headerTitle { color: #e5e7eb !important; }
+                    /* Overrides for specific components in dark mode */
+                    td.bg-gray-50\\/50 { background-color: rgba(31, 41, 55, 0.5) !important; }
+                    tr.hover\\:bg-mint-50:hover { background-color: rgba(55, 65, 81, 0.5) !important; }
+                `;
+            } else if (mode === 'light') {
+                bodyClasses.add('bg-gray-100', 'text-gray-800');
+                document.getElementById('themeBtn-light').classList.add('bg-yellow-100/50');
+                styleEl.innerHTML = `
+                    #headerTitle { color: #4b5563 !important; }
+                `; // Use tailwind defaults
+            } else if (mode === 'company') {
+                const color = forceColor || currentThemeColor;
+                bodyClasses.add(`bg-${color}-100`, 'text-gray-800');
+                document.getElementById('themeBtn-company').classList.add('bg-gray-100/50');
+
+                // Set the header text to match the company theme
+                styleEl.innerHTML = `
+                    #headerTitle { color: var(--tw-color-${color}-600, #4b5563) !important; }
+                    /* We attempt to use the color for header if available, fallback to default */
+                `;
+
+                // Add specific color to style rule if needed, or rely on Tailwind utility mapping if possible.
+                // Since arbitrary dynamic tailwind classes need to be compiled, we inject basic inline styles or let it fallback gracefully.
+            }
         }
 
         const dailyGainsMap = {
@@ -237,12 +317,56 @@
                 document.getElementById('dashboardSection').classList.remove('hidden');
                 document.getElementById('timerSection').classList.remove('hidden');
 
-                // เปลี่ยนชื่อ Header หลักด้านบนเป็นชื่อบริษัท
-                document.getElementById('mainHeaderName').textContent = data.company.name || "Flower Shop";
+                // เปลี่ยนชื่อและไอคอน Header หลักด้านบนเป็นชื่อบริษัท
+                const companyTypeInfo = getCompanyData(data.company.company_type);
+                document.getElementById('mainHeaderName').textContent = data.company.name || companyTypeInfo.name;
+                document.getElementById('mainHeaderIcon').className = companyTypeInfo.icon;
+
+                // Setup Theme
+                currentThemeColor = companyTypeInfo.theme;
+
+                // Fetch colors mapped in tailwind config to inject dynamically for headers if needed
+                const thmColorMap = {
+                    'mint': '#1e8449', 'pink': '#db2777', 'gray': '#4b5563', 'blue': '#2563eb',
+                    'indigo': '#4f46e5', 'red': '#dc2626', 'purple': '#9333ea', 'orange': '#ea580c',
+                    'yellow': '#ca8a04', 'rose': '#e11d48', 'cyan': '#0891b2', 'emerald': '#059669',
+                    'fuchsia': '#c026d3', 'sky': '#0284c7', 'slate': '#475569', 'lime': '#65a30d',
+                    'amber': '#d97706', 'zinc': '#52525b', 'violet': '#7c3aed', 'stone': '#57534e',
+                    'neutral': '#525252', 'teal': '#0f766e', 'green': '#16a34a'
+                };
+
+                // Override the style injection for company theme with precise color
+                const originalSetTheme = setTheme;
+                window.setTheme = function(mode, forceColor = null) {
+                    originalSetTheme(mode, forceColor);
+                    if (mode === 'company') {
+                        const c = forceColor || currentThemeColor;
+                        const hex = thmColorMap[c] || '#4b5563';
+                        const styleEl = document.getElementById('theme-styles');
+                        if (styleEl) {
+                            styleEl.innerHTML += `
+                                #headerTitle { color: ${hex} !important; }
+                            `;
+                        }
+                    }
+                };
+
+                // Initial theme setup
+                window.setTheme('company', currentThemeColor);
+
+                // สร้างดาวเรตติ้ง
+                const rating = data.company.rating || 0;
+                let starsHtml = '';
+                for (let i = 1; i <= 10; i++) {
+                    if (i <= rating) {
+                        starsHtml += '<i class="fa-solid fa-star text-yellow-500"></i>';
+                    } else {
+                        starsHtml += '<i class="fa-solid fa-star text-gray-300"></i>';
+                    }
+                }
+                document.getElementById('mainHeaderRating').innerHTML = starsHtml;
 
                 // 1. ใส่ข้อมูล Overview Cards
-                document.getElementById('compName').textContent = data.company.name || "Unknown Company";
-                document.getElementById('compRating').textContent = "⭐".repeat(data.company.rating) || "0 Stars";
 
                 // Calculate Total Wages
                 let totalWages = 0;

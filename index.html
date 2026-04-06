@@ -24,79 +24,79 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-mint-100 min-h-screen font-sans text-gray-800 p-6">
+<body class="bg-mint-100 min-h-screen font-sans text-gray-800 p-4">
 
     <div class="max-w-7xl mx-auto">
 
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-mint-600 drop-shadow-sm">
+        <div class="text-center mb-4">
+            <h1 class="text-2xl font-bold text-mint-600 drop-shadow-sm">
                 <i class="fa-solid fa-seedling"></i> <span id="mainHeaderName">Loading...</span>
             </h1>
         </div>
 
-        <div id="loadingStatus" class="text-center mb-6">
-            <p class="text-xl font-bold text-mint-600"><i class="fa-solid fa-spinner fa-spin"></i> กำลังดึงข้อมูลจาก Torn...</p>
+        <div id="loadingStatus" class="text-center mb-4">
+            <p class="text-lg font-bold text-mint-600"><i class="fa-solid fa-spinner fa-spin"></i> กำลังดึงข้อมูลจาก Torn...</p>
         </div>
 
         <div id="dashboardSection" class="hidden">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <!-- Income Graph -->
-                <div class="bg-pastel rounded-xl shadow p-5 border border-gray-100">
+                <div class="bg-pastel rounded-xl shadow p-3 border border-gray-100">
                     <h3 class="text-gray-700 font-bold mb-4"><i class="fa-solid fa-chart-line text-green-500"></i> Daily Gross Income</h3>
-                    <div class="relative h-64 w-full">
+                    <div class="relative h-40 w-full">
                         <canvas id="incomeChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Customers Graph -->
-                <div class="bg-pastel rounded-xl shadow p-5 border border-gray-100">
+                <div class="bg-pastel rounded-xl shadow p-3 border border-gray-100">
                     <h3 class="text-gray-700 font-bold mb-4"><i class="fa-solid fa-users text-purple-500"></i> Daily Customers</h3>
-                    <div class="relative h-64 w-full">
+                    <div class="relative h-40 w-full">
                         <canvas id="customersChart"></canvas>
                     </div>
                 </div>
             </div>
 
             <!-- Upgrades Summary -->
-            <div id="upgradesSection" class="bg-pastel rounded-xl shadow p-5 mb-6 border border-gray-100 hidden">
+            <div id="upgradesSection" class="bg-pastel rounded-xl shadow p-3 mb-4 border border-gray-100 hidden">
                 <h3 class="text-gray-700 font-bold mb-4 border-b pb-2"><i class="fa-solid fa-level-up-alt text-mint-500"></i> Company Upgrades</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="upgradesContainer">
                     <!-- Upgrades will be inserted here -->
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-pastel rounded-xl shadow p-5 border-l-4 border-blue-400 relative overflow-hidden">
-                    <i class="fa-solid fa-briefcase absolute -right-4 -bottom-4 text-blue-100 text-6xl opacity-50"></i>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div class="bg-pastel rounded-xl shadow p-3 border-l-4 border-blue-400 relative overflow-hidden">
+                    <i class="fa-solid fa-briefcase absolute -right-2 -bottom-2 text-blue-100 text-5xl opacity-50"></i>
                     <p class="text-xs text-gray-500 uppercase font-bold mb-1 relative z-10">Company Info</p>
-                    <h3 id="compName" class="text-xl font-bold text-blue-600 truncate relative z-10">-</h3>
+                    <h3 id="compName" class="text-lg font-bold text-blue-600 truncate relative z-10">-</h3>
                     <p class="text-sm text-gray-600 mt-1 relative z-10">Rating: <span id="compRating" class="font-bold text-yellow-500"></span></p>
                 </div>
-                <div class="bg-pastel rounded-xl shadow p-5 border-l-4 border-green-500 relative overflow-hidden">
-                    <i class="fa-solid fa-sack-dollar absolute -right-4 -bottom-4 text-green-100 text-6xl opacity-50"></i>
+                <div class="bg-pastel rounded-xl shadow p-3 border-l-4 border-green-500 relative overflow-hidden">
+                    <i class="fa-solid fa-sack-dollar absolute -right-2 -bottom-2 text-green-100 text-5xl opacity-50"></i>
                     <p class="text-xs text-gray-500 uppercase font-bold mb-1 relative z-10">Finances</p>
-                    <h3 id="compBalance" class="text-xl font-bold text-green-600 truncate relative z-10">-</h3>
+                    <h3 id="compBalance" class="text-lg font-bold text-green-600 truncate relative z-10">-</h3>
                     <p class="text-sm text-gray-600 mt-1 relative z-10">Daily Income: <span id="compIncome" class="font-bold text-green-500"></span></p>
                 </div>
-                <div class="bg-pastel rounded-xl shadow p-5 border-l-4 border-purple-400 relative overflow-hidden">
-                    <i class="fa-solid fa-people-group absolute -right-4 -bottom-4 text-purple-100 text-6xl opacity-50"></i>
+                <div class="bg-pastel rounded-xl shadow p-3 border-l-4 border-purple-400 relative overflow-hidden">
+                    <i class="fa-solid fa-people-group absolute -right-2 -bottom-2 text-purple-100 text-5xl opacity-50"></i>
                     <p class="text-xs text-gray-500 uppercase font-bold mb-1 relative z-10">Customers / Popularity</p>
-                    <h3 id="compCustomers" class="text-xl font-bold text-purple-600 relative z-10">-</h3>
+                    <h3 id="compCustomers" class="text-lg font-bold text-purple-600 relative z-10">-</h3>
                     <p class="text-sm text-gray-600 mt-1 relative z-10">Pop: <span id="compPop" class="font-bold text-purple-500"></span></p>
                 </div>
-                <div class="bg-pastel rounded-xl shadow p-5 border-l-4 border-orange-400 relative overflow-hidden">
-                    <i class="fa-solid fa-bullhorn absolute -right-4 -bottom-4 text-orange-100 text-6xl opacity-50"></i>
+                <div class="bg-pastel rounded-xl shadow p-3 border-l-4 border-orange-400 relative overflow-hidden">
+                    <i class="fa-solid fa-bullhorn absolute -right-2 -bottom-2 text-orange-100 text-5xl opacity-50"></i>
                     <p class="text-xs text-gray-500 uppercase font-bold mb-1 relative z-10">Management</p>
-                    <h3 id="compTrains" class="text-xl font-bold text-orange-600 relative z-10">- Trains</h3>
+                    <h3 id="compTrains" class="text-lg font-bold text-orange-600 relative z-10">- Trains</h3>
                     <p class="text-sm text-gray-600 mt-1 relative z-10">Ad Budget: <span id="compAd" class="font-bold text-orange-500"></span></p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
                 <div class="lg:col-span-1 space-y-6">
                     <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100">
-                        <div class="bg-blue-500 px-5 py-3">
+                        <div class="bg-blue-500 px-3 py-2">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock</h3>
                         </div>
                         <div class="p-4 overflow-y-auto" style="max-height: 300px;">
@@ -107,11 +107,11 @@
 
                     <!-- News Timeline -->
                     <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100">
-                        <div class="bg-orange-400 px-5 py-3">
+                        <div class="bg-orange-400 px-3 py-2">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-newspaper"></i> Company Events</h3>
                         </div>
                         <div class="p-4 overflow-y-auto" style="max-height: 300px;">
-                            <ul id="newsList" class="space-y-4">
+                            <ul id="newsList" class="space-y-2">
                             </ul>
                         </div>
                     </div>
@@ -120,7 +120,7 @@
                 <div class="lg:col-span-3">
 
                     <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100">
-                        <div class="bg-mint-500 px-5 py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div class="bg-mint-500 px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-users-gear"></i> Detailed Employee Status</h3>
                             <div class="text-xs text-white/90 font-medium" id="companyUpgradesTop">
                                 Upgrades: -
@@ -130,16 +130,16 @@
                             <table class="w-full text-left border-collapse text-sm whitespace-nowrap">
                                 <thead class="sticky top-0 bg-gray-50 shadow-sm z-20">
                                     <tr class="border-b border-gray-200 text-gray-600">
-                                        <th class="py-3 px-4 font-semibold">Name</th>
-                                        <th class="py-3 px-4 font-semibold text-center">Position</th>
-                                        <th class="py-3 px-4 font-semibold text-right">Salary</th>
-                                        <th class="py-3 px-4 font-semibold text-center text-purple-600" title="Employee Effectiveness Merits (Max 10)">Merits</th>
-                                        <th class="py-3 px-4 font-semibold text-center">Eff.</th>
-                                        <th class="py-3 px-4 font-semibold text-center text-blue-600">Daily Gains</th>
-                                        <th class="py-3 px-4 font-semibold text-center">Stats (M/I/E)</th>
-                                        <th class="py-3 px-4 font-semibold text-center text-mint-600">Total Stats</th>
-                                        <th class="py-3 px-4 font-semibold text-center">Days</th>
-                                        <th class="py-3 px-4 font-semibold text-right">Last Action</th>
+                                        <th class="py-1.5 px-2 font-semibold">Name</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center">Position</th>
+                                        <th class="py-1.5 px-2 font-semibold text-right">Salary</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-purple-600" title="Employee Effectiveness Merits (Max 10)">Merits</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center">Eff.</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-blue-600">Daily Gains</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center">Stats (M/I/E)</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-mint-600">Total Stats</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center">Days</th>
+                                        <th class="py-1.5 px-2 font-semibold text-right">Last Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="employeeTableBody" class="divide-y divide-gray-200">
@@ -252,7 +252,7 @@
                     Object.entries(data.company_stock).forEach(([itemName, details]) => {
                         let stockColor = details.in_stock < 100 ? 'text-red-500 font-bold' : 'text-gray-800';
                         const li = `
-                            <li class="py-3 flex justify-between items-center">
+                            <li class="py-1.5 flex justify-between items-center">
                                 <span class="font-medium text-gray-700">${itemName}</span>
                                 <span class="${stockColor} bg-gray-100 px-3 py-1 rounded-full text-xs font-bold">${details.in_stock.toLocaleString()} pcs</span>
                             </li>
@@ -260,7 +260,7 @@
                         stockList.insertAdjacentHTML('beforeend', li);
                     });
                 } else {
-                    stockList.innerHTML = '<li class="py-4 text-center text-gray-500">No stock data available.</li>';
+                    stockList.innerHTML = '<li class="py-2 text-center text-gray-500">No stock data available.</li>';
                 }
 
                 // 3. Extract and plot historical data from news
@@ -391,25 +391,25 @@
 
                 const ceoRow = `
                     <tr class="hover:bg-mint-50 transition duration-150 border-b border-gray-100 last:border-0 bg-blue-50/20">
-                        <td class="py-3 px-4 font-bold text-gray-800">${userData.name || 'Director'} ${ceoStatusIcon}</td>
-                        <td class="py-3 px-4 text-center text-gray-600 bg-gray-50/50">Director</td>
-                        <td class="py-3 px-4 text-right font-medium text-green-600">0</td>
-                        <td class="py-3 px-4 text-center text-gray-400 bg-purple-50/30">0/10</td>
-                        <td class="py-3 px-4 font-bold text-gray-400 text-center cursor-help" title="No effectiveness data for Director">
+                        <td class="py-1.5 px-2 font-bold text-gray-800">${userData.name || 'Director'} ${ceoStatusIcon}</td>
+                        <td class="py-1.5 px-2 text-center text-gray-600 bg-gray-50/50">Director</td>
+                        <td class="py-1.5 px-2 text-right font-medium text-green-600">0</td>
+                        <td class="py-1.5 px-2 text-center text-gray-400 bg-purple-50/30">0/10</td>
+                        <td class="py-1.5 px-2 font-bold text-gray-400 text-center cursor-help" title="No effectiveness data for Director">
                             <span class="underline decoration-dashed decoration-1 underline-offset-4">0%</span>
                         </td>
-                        <td class="py-3 px-4 text-center font-medium text-blue-600 bg-blue-50/30 text-xs">0</td>
-                        <td class="py-3 px-4 text-gray-500 text-center text-xs">${fmtCeoM} / ${fmtCeoI} / ${fmtCeoE}</td>
-                        <td class="py-3 px-4 font-bold text-mint-600 text-center bg-mint-50/50">${fmtCeoTotal}</td>
-                        <td class="py-3 px-4 text-center text-gray-600">${data.company.days_old || 0}</td>
-                        <td class="py-3 px-4 text-right ${ceoActionColor} text-xs">${ceoAction}</td>
+                        <td class="py-1.5 px-2 text-center font-medium text-blue-600 bg-blue-50/30 text-xs">0</td>
+                        <td class="py-1.5 px-2 text-gray-500 text-center text-xs">${fmtCeoM} / ${fmtCeoI} / ${fmtCeoE}</td>
+                        <td class="py-1.5 px-2 font-bold text-mint-600 text-center bg-mint-50/50">${fmtCeoTotal}</td>
+                        <td class="py-1.5 px-2 text-center text-gray-600">${data.company.days_old || 0}</td>
+                        <td class="py-1.5 px-2 text-right ${ceoActionColor} text-xs">${ceoAction}</td>
                     </tr>
                 `;
                 tbody.insertAdjacentHTML('beforeend', ceoRow);
 
                 // --- 3.2 สร้างแถวของลูกจ้างทั้งหมด ---
                 if (!data.company_employees) {
-                    tbody.insertAdjacentHTML('beforeend', `<tr><td colspan="10" class="py-6 text-center text-red-500 bg-red-50 font-bold">ไม่พบข้อมูลลูกจ้างเพิ่มเติม (สิทธิ์ API อาจไม่เพียงพอ)</td></tr>`);
+                    tbody.insertAdjacentHTML('beforeend', `<tr><td colspan="10" class="py-3 text-center text-red-500 bg-red-50 font-bold">ไม่พบข้อมูลลูกจ้างเพิ่มเติม (สิทธิ์ API อาจไม่เพียงพอ)</td></tr>`);
                 } else {
                     const staffs = Object.values(data.company_employees);
 
@@ -469,18 +469,18 @@
 
                         const row = `
                             <tr class="hover:bg-mint-50 transition duration-150 border-b border-gray-100 last:border-0">
-                                <td class="py-3 px-4 font-bold text-gray-800">${emp.name || 'Unknown'} ${statusIcon}</td>
-                                <td class="py-3 px-4 text-center text-gray-600 bg-gray-50/50">${emp.position || '-'}</td>
-                                <td class="py-3 px-4 text-right font-medium text-green-600">${salaryStr}</td>
-                                <td class="py-3 px-4 text-center ${meritsColor} bg-purple-50/30">${merits}/10</td>
-                                <td class="py-3 px-4 font-bold ${effColor} text-center cursor-help" title="${effTooltip}">
+                                <td class="py-1.5 px-2 font-bold text-gray-800">${emp.name || 'Unknown'} ${statusIcon}</td>
+                                <td class="py-1.5 px-2 text-center text-gray-600 bg-gray-50/50">${emp.position || '-'}</td>
+                                <td class="py-1.5 px-2 text-right font-medium text-green-600">${salaryStr}</td>
+                                <td class="py-1.5 px-2 text-center ${meritsColor} bg-purple-50/30">${merits}/10</td>
+                                <td class="py-1.5 px-2 font-bold ${effColor} text-center cursor-help" title="${effTooltip}">
                                     <span class="underline decoration-dashed decoration-1 underline-offset-4">${effTotal}%</span>
                                 </td>
-                                <td class="py-3 px-4 text-center font-medium text-blue-600 bg-blue-50/30 text-xs">${dailyGainsStr}</td>
-                                <td class="py-3 px-4 text-gray-500 text-center text-xs">${m} / ${i} / ${e}</td>
-                                <td class="py-3 px-4 font-bold text-mint-600 text-center bg-mint-50/50">${totalStats}</td>
-                                <td class="py-3 px-4 text-center text-gray-600">${emp.days_in_company || 0}</td>
-                                <td class="py-3 px-4 text-right ${actionColor} text-xs">${lastActionText}</td>
+                                <td class="py-1.5 px-2 text-center font-medium text-blue-600 bg-blue-50/30 text-xs">${dailyGainsStr}</td>
+                                <td class="py-1.5 px-2 text-gray-500 text-center text-xs">${m} / ${i} / ${e}</td>
+                                <td class="py-1.5 px-2 font-bold text-mint-600 text-center bg-mint-50/50">${totalStats}</td>
+                                <td class="py-1.5 px-2 text-center text-gray-600">${emp.days_in_company || 0}</td>
+                                <td class="py-1.5 px-2 text-right ${actionColor} text-xs">${lastActionText}</td>
                             </tr>
                         `;
                         tbody.insertAdjacentHTML('beforeend', row);

@@ -330,7 +330,7 @@
                                 <div>${icon}</div>
                                 <div>
                                     <p class="text-xs text-gray-400 font-medium">${dateStr}</p>
-                                    <p class="text-gray-700 leading-tight">${escapeHTML(event.news)}</p>
+                                    <p class="text-gray-700 leading-tight">${escapeHTML(event.news.replace(/<[^>]+>/g, ''))}</p>
                                 </div>
                             </li>
                         `;

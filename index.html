@@ -56,9 +56,19 @@
                 </div>
                 <div class="bg-pastel rounded-xl shadow p-3 border-l-4 border-green-500 relative overflow-hidden">
                     <i class="fa-solid fa-sack-dollar absolute -right-2 -bottom-2 text-green-100 text-5xl opacity-50"></i>
-                    <p class="text-xs text-gray-500 uppercase font-bold mb-1 relative z-10">Finances</p>
-                    <h3 id="compBalance" class="text-lg font-bold text-green-600 truncate relative z-10">-</h3>
-                    <p class="text-sm text-gray-600 mt-1 relative z-10">Daily Income: <span id="compIncome" class="font-bold text-green-500"></span></p>
+                    <p class="text-xs text-gray-500 uppercase font-bold mb-1 relative z-10 flex justify-between items-center">
+                        <span>Finances</span>
+                        <span id="compBalance" class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px]">-</span>
+                    </p>
+                    <div class="text-xs text-gray-600 mt-2 relative z-10 space-y-1">
+                        <div class="flex justify-between"><span class="font-medium">Daily Cust:</span> <span id="compDailyCust" class="font-bold"></span></div>
+                        <div class="flex justify-between"><span class="font-medium">Daily Inc:</span> <span id="compDailyInc" class="font-bold text-green-500"></span></div>
+                        <div class="flex justify-between"><span class="font-medium">Daily Prof:</span> <span id="compDailyProf" class="font-bold"></span></div>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <div class="flex justify-between"><span class="font-medium">Weekly Cust:</span> <span id="compWeeklyCust" class="font-bold"></span></div>
+                        <div class="flex justify-between"><span class="font-medium">Weekly Inc:</span> <span id="compWeeklyInc" class="font-bold text-green-500"></span></div>
+                        <div class="flex justify-between"><span class="font-medium">Weekly Prof:</span> <span id="compWeeklyProf" class="font-bold"></span></div>
+                    </div>
                 </div>
                 <div class="bg-pastel rounded-xl shadow p-3 border-l-4 border-purple-400 relative overflow-hidden">
                     <i class="fa-solid fa-people-group absolute -right-2 -bottom-2 text-purple-100 text-5xl opacity-50"></i>
@@ -235,15 +245,43 @@
                 document.getElementById('compName').textContent = data.company.name || "Unknown Company";
                 document.getElementById('compRating').textContent = "⭐".repeat(data.company.rating) || "0 Stars";
                 document.getElementById('compBalance').textContent = "$" + (data.company.company_bank || 0).toLocaleString();
-                document.getElementById('compIncome').textContent = "$" + (data.company.daily_income || 0).toLocaleString();
-                document.getElementById('compCustomers').textContent = `${data.company.customers_served || 0} / ${data.company.customer_capacity || 0}`;
-                document.getElementById('compPop').textContent = data.company.popularity || 0;
 
+                // Calculate Total Wages
+                let totalWages = 0;
+                if (data.company_employees) {
+                    totalWages = Object.values(data.company_employees).reduce((sum, emp) => sum + (emp.wage || 0), 0);
+                }
+
+                // Get ad budget
+                let adBudget = 0;
                 if(data.company_detailed) {
                     document.getElementById('compTrains').textContent = (data.company_detailed.trains_available || 0) + " Trains";
-                    document.getElementById('compAd').textContent = "$" + (data.company_detailed.advertising_budget || 0).toLocaleString();
-
+                    adBudget = data.company_detailed.advertising_budget || 0;
+                    document.getElementById('compAd').textContent = "$" + adBudget.toLocaleString();
                 }
+
+                // Finances calculations
+                const dailyInc = data.company.daily_income || 0;
+                const dailyProf = dailyInc - adBudget - totalWages;
+                const weeklyInc = data.company.weekly_income || 0;
+                const weeklyProf = weeklyInc - (adBudget * 7) - (totalWages * 7);
+
+                document.getElementById('compDailyCust').textContent = (data.company.daily_customers || 0).toLocaleString();
+                document.getElementById('compDailyInc').textContent = "$" + dailyInc.toLocaleString();
+
+                const dProfEl = document.getElementById('compDailyProf');
+                dProfEl.textContent = (dailyProf >= 0 ? "+$" : "-$") + Math.abs(dailyProf).toLocaleString();
+                dProfEl.className = dailyProf >= 0 ? "font-bold text-green-600" : "font-bold text-red-500";
+
+                document.getElementById('compWeeklyCust').textContent = (data.company.weekly_customers || 0).toLocaleString();
+                document.getElementById('compWeeklyInc').textContent = "$" + weeklyInc.toLocaleString();
+
+                const wProfEl = document.getElementById('compWeeklyProf');
+                wProfEl.textContent = (weeklyProf >= 0 ? "+$" : "-$") + Math.abs(weeklyProf).toLocaleString();
+                wProfEl.className = weeklyProf >= 0 ? "font-bold text-green-600" : "font-bold text-red-500";
+
+                document.getElementById('compCustomers').textContent = `${data.company.customers_served || 0} / ${data.company.customer_capacity || 0}`;
+                document.getElementById('compPop').textContent = data.company.popularity || 0;
 
                 // 2. จัดการสต็อกสินค้าแบบละเอียด (Stock Financials)
                 const stockTableBody = document.getElementById('stockTableBody');

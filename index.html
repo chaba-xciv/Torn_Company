@@ -48,14 +48,6 @@
 
         <div id="dashboardSection" class="hidden">
 
-            <!-- Upgrades Summary -->
-            <div id="upgradesSection" class="bg-pastel rounded-xl shadow p-3 mb-4 border border-gray-100 hidden">
-                <h3 class="text-gray-700 font-bold mb-4 border-b pb-2"><i class="fa-solid fa-level-up-alt text-mint-500"></i> Company Upgrades</h3>
-                <div class="flex flex-col space-y-3" id="upgradesContainer">
-                    <!-- Upgrades Progress Bars will be inserted here -->
-                </div>
-            </div>
-
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                 <div class="bg-pastel rounded-xl shadow p-3 border-l-4 border-blue-400 relative overflow-hidden">
                     <i class="fa-solid fa-briefcase absolute -right-2 -bottom-2 text-blue-100 text-5xl opacity-50"></i>
@@ -151,6 +143,14 @@
                                 <tbody id="employeeTableBody" class="divide-y divide-gray-200">
                                     </tbody>
                             </table>
+                        </div>
+                    </div>
+
+                    <!-- Upgrades Summary -->
+                    <div id="upgradesSection" class="bg-pastel rounded-xl shadow p-3 mb-4 border border-gray-100 hidden">
+                        <h3 class="text-gray-700 font-bold mb-4 border-b pb-2"><i class="fa-solid fa-level-up-alt text-mint-500"></i> Company Upgrades</h3>
+                        <div class="flex flex-col space-y-3" id="upgradesContainer">
+                            <!-- Upgrades Progress Bars will be inserted here -->
                         </div>
                     </div>
 
@@ -263,11 +263,24 @@
                         const upgradesContainer = document.getElementById('upgradesContainer');
                         upgradesContainer.innerHTML = '';
 
-                        // Get the company name, fallback to mapping if necessary
-                        const compType = data.company.name && TORN_COMPANIES[data.company.name] ? data.company.name : null;
-                        const compInfo = compType && TORN_COMPANIES[compType] ? TORN_COMPANIES[compType] : null;
+                        // Determine company type from name or type field for stat lookups.
+                        let compType = null;
+                        if (data.company.name && TORN_COMPANIES[data.company.name]) {
+                            compType = data.company.name;
+                        } else if (data.company.company_type && TORN_COMPANIES[data.company.company_type]) {
+                            compType = data.company.company_type;
+                        }
 
-                        if ((upg.company_size || upg.staffroom_size || upg.storage_size) && compInfo) {
+                        let compInfo = compType && TORN_COMPANIES[compType] ? TORN_COMPANIES[compType] : null;
+
+                        // Fallback: If company type lookup fails, still render upgrades with dummy data to avoid hiding the UI completely.
+                        let isFallback = false;
+                        if (!compInfo) {
+                            compInfo = { cost: 0, size: 0 };
+                            isFallback = true;
+                        }
+
+                        if (upg.company_size || upg.staffroom_size || upg.storage_size) {
                             document.getElementById('upgradesSection').classList.remove('hidden');
                             document.getElementById('upgradesContainer').classList.remove('hidden');
 
@@ -305,8 +318,8 @@
                                                 ${nextEffectDisplay}
                                             </div>
                                             <div class="flex justify-between md:justify-end gap-3 mt-1 text-xs">
-                                                <span class="text-gray-500">Spent: ${formatCurrency(spent)}</span>
-                                                ${nextCostDisplay}
+                                                <span class="text-gray-500">${isFallback ? '' : 'Spent: ' + formatCurrency(spent)}</span>
+                                                ${isFallback ? '<span class="text-gray-400">Req Cost N/A</span>' : nextCostDisplay}
                                             </div>
                                         </div>
                                     </div>

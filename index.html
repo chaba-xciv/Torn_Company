@@ -6,6 +6,7 @@
     <title>Company Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="company_data.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -50,8 +51,8 @@
             <!-- Upgrades Summary -->
             <div id="upgradesSection" class="bg-pastel rounded-xl shadow p-3 mb-4 border border-gray-100 hidden">
                 <h3 class="text-gray-700 font-bold mb-4 border-b pb-2"><i class="fa-solid fa-level-up-alt text-mint-500"></i> Company Upgrades</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="upgradesContainer">
-                    <!-- Upgrades will be inserted here -->
+                <div class="flex flex-col space-y-3" id="upgradesContainer">
+                    <!-- Upgrades Progress Bars will be inserted here -->
                 </div>
             </div>
 
@@ -241,7 +242,7 @@
                     document.getElementById('compTrains').textContent = (data.company_detailed.trains_available || 0) + " Trains";
                     document.getElementById('compAd').textContent = "$" + (data.company_detailed.advertising_budget || 0).toLocaleString();
 
-                    // จัดการข้อมูล Upgrades แปะไว้บนตารางพนักงาน
+                    // จัดการข้อมูล Upgrades แบบ Progress Bar
                     let upgradesHtml = 'None';
 
                     if (data.company_detailed.upgrades) {
@@ -249,31 +250,129 @@
                         const upgradesContainer = document.getElementById('upgradesContainer');
                         upgradesContainer.innerHTML = '';
 
-                        if (upg.company_size || upg.staffroom_size || upg.storage_size) {
-                            document.getElementById('upgradesSection').classList.remove('hidden');
+                        // Get the company name, fallback to mapping if necessary
+                        const compType = data.company.name && TORN_COMPANIES[data.company.name] ? data.company.name : null;
+                        const compInfo = compType && TORN_COMPANIES[compType] ? TORN_COMPANIES[compType] : null;
 
-                            const addUpgradeCard = (icon, title, value) => {
+                        if ((upg.company_size || upg.staffroom_size || upg.storage_size) && compInfo) {
+                            document.getElementById('upgradesSection').classList.remove('hidden');
+                            document.getElementById('upgradesContainer').classList.remove('hidden');
+
+                            const renderProgressBar = (icon, title, currentLevel, maxLevel, currentEffect, nextEffect, spent, nextCost) => {
+                                const percentage = (currentLevel / maxLevel) * 100;
+                                let segmentsHtml = '';
+                                for (let i = 0; i < maxLevel; i++) {
+                                    segmentsHtml += `<div class="flex-1 h-2 rounded-sm ${i < currentLevel ? 'bg-mint-500' : 'bg-gray-200'} mx-0.5"></div>`;
+                                }
+
+                                const formatCurrency = (val) => val >= 1000000 ? '$' + (val/1000000).toFixed(2) + 'M' : (val >= 1000 ? '$' + (val/1000).toFixed(0) + 'k' : '$' + val);
+
+                                let nextCostDisplay = nextCost ? `<span class="text-orange-500 font-medium">Req: ${formatCurrency(nextCost)}</span>` : `<span class="text-green-500 font-medium">Max Level</span>`;
+                                let nextEffectDisplay = nextEffect ? `<span class="text-mint-600 font-medium whitespace-nowrap"><i class="fa-solid fa-arrow-right text-xs mx-1"></i> ${nextEffect}</span>` : '';
+
                                 upgradesContainer.insertAdjacentHTML('beforeend', `
-                                    <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                        <div class="bg-white p-2 rounded-full shadow-sm text-mint-500">
-                                            <i class="${icon} text-xl"></i>
+                                    <div class="flex flex-col md:flex-row items-center md:justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm gap-4">
+                                        <div class="flex items-center gap-3 md:w-1/4 shrink-0 w-full">
+                                            <div class="bg-mint-100 p-2 rounded-full text-mint-600">
+                                                <i class="${icon} text-lg"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-bold text-gray-800">${title}</p>
+                                                <p class="text-xs text-gray-500">Level ${currentLevel}/${maxLevel}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p class="text-xs text-gray-500 font-bold uppercase">${title}</p>
-                                            <p class="text-gray-800 font-semibold">${value}</p>
+
+                                        <div class="flex flex-row md:w-2/4 w-full px-2">
+                                            ${segmentsHtml}
+                                        </div>
+
+                                        <div class="flex flex-col md:w-1/4 shrink-0 text-sm w-full md:text-right">
+                                            <div class="flex justify-between md:justify-end gap-2 items-center">
+                                                <span class="text-gray-700 font-medium whitespace-nowrap">${currentEffect}</span>
+                                                ${nextEffectDisplay}
+                                            </div>
+                                            <div class="flex justify-between md:justify-end gap-3 mt-1 text-xs">
+                                                <span class="text-gray-500">Spent: ${formatCurrency(spent)}</span>
+                                                ${nextCostDisplay}
+                                            </div>
                                         </div>
                                     </div>
                                 `);
                             };
 
-                            if (upg.company_size) addUpgradeCard('fa-solid fa-building', 'Company Size', upg.company_size + ' Employees');
-                            if (upg.staffroom_size) addUpgradeCard('fa-solid fa-mug-hot', 'Staff Room', upg.staffroom_size);
-                            if (upg.storage_size) addUpgradeCard('fa-solid fa-warehouse', 'Storage', upg.storage_size);
-                            if (upg.storage_space) addUpgradeCard('fa-solid fa-boxes-stacked', 'Capacity', upg.storage_space.toLocaleString() + ' items');
+                            // Company Size
+                            if (upg.company_size) {
+                                let curSizeLvl = 0;
+                                let curSizeValue = compInfo.size;
+                                // find level based on employee count
+                                for (let i = 0; i <= UPGRADE_DATA.size.maxLevel; i++) {
+                                    if (Math.round(compInfo.size * UPGRADE_DATA.size.sizeMultipliers[i]) === upg.company_size) {
+                                        curSizeLvl = i;
+                                        break;
+                                    }
+                                    if (upg.company_size > Math.round(compInfo.size * UPGRADE_DATA.size.sizeMultipliers[i])) {
+                                        curSizeLvl = i; // in case of weird numbers, get closest lower
+                                    }
+                                }
+
+                                let spent = 0;
+                                // Start from level 1 to calculate spent money correctly (level 0 is startup, cost 0)
+                                // We sum up the *additional* cost paid at each tier?
+                                // Wait, the Torn Wiki says:
+                                // "Each upgrade costs an additional 10% of the initial startup costs"
+                                // So level 1 costs 10%. Level 2 costs 20%.
+                                // Do you pay 10% then 20%? Yes, total is 210%.
+                                for (let i = 1; i <= curSizeLvl; i++) {
+                                    spent += compInfo.cost * UPGRADE_DATA.size.costMultipliers[i];
+                                }
+
+                                let nextCost = curSizeLvl < UPGRADE_DATA.size.maxLevel ? compInfo.cost * UPGRADE_DATA.size.costMultipliers[curSizeLvl + 1] : 0;
+                                let nextEffect = curSizeLvl < UPGRADE_DATA.size.maxLevel ? Math.round(compInfo.size * UPGRADE_DATA.size.sizeMultipliers[curSizeLvl + 1]) + ' Emp' : '';
+
+                                renderProgressBar('fa-solid fa-users', 'Company Size', curSizeLvl, UPGRADE_DATA.size.maxLevel, upg.company_size + ' Emp', nextEffect, spent, nextCost);
+                            }
+
+                            // Staff Room
+                            if (upg.staffroom_size) {
+                                let curStaffLvl = UPGRADE_DATA.staffRoom.levels.indexOf(upg.staffroom_size);
+                                if(curStaffLvl === -1) curStaffLvl = 0;
+
+                                let spent = 0;
+                                for (let i = 1; i <= curStaffLvl; i++) {
+                                    spent += compInfo.cost * UPGRADE_DATA.staffRoom.costMultipliers[i];
+                                }
+
+                                let nextCost = curStaffLvl < 6 ? compInfo.cost * UPGRADE_DATA.staffRoom.costMultipliers[curStaffLvl + 1] : 0;
+                                let nextEffect = curStaffLvl < 6 ? UPGRADE_DATA.staffRoom.levels[curStaffLvl + 1] : '';
+
+                                renderProgressBar('fa-solid fa-mug-hot', 'Staff Room', curStaffLvl, 6, upg.staffroom_size, nextEffect, spent, nextCost);
+                            }
+
+                            // Storage
+                            if (upg.storage_size) {
+                                let curStorageLvl = UPGRADE_DATA.storage.levels.indexOf(upg.storage_size);
+                                if(curStorageLvl === -1) curStorageLvl = 0;
+
+                                let spent = 0;
+                                for (let i = 1; i <= curStorageLvl; i++) {
+                                    spent += compInfo.cost * UPGRADE_DATA.storage.costMultipliers[i];
+                                }
+
+                                let nextCost = curStorageLvl < 6 ? compInfo.cost * UPGRADE_DATA.storage.costMultipliers[curStorageLvl + 1] : 0;
+                                let nextEffect = curStorageLvl < 6 ? UPGRADE_DATA.storage.levels[curStorageLvl + 1] : '';
+
+                                let currentEffectStr = upg.storage_size;
+                                if(upg.storage_space) currentEffectStr += ` (${upg.storage_space.toLocaleString()} items)`;
+
+                                renderProgressBar('fa-solid fa-warehouse', 'Storage', curStorageLvl, 6, currentEffectStr, nextEffect, spent, nextCost);
+                            }
 
                             upgradesHtml = `${upg.company_size} Emp | ${upg.staffroom_size} | ${upg.storage_size}`;
                         } else if (Array.isArray(upg) && upg.length > 0) {
                             upgradesHtml = upg.join(' | ');
+                        } else if (upg.company_size || upg.staffroom_size || upg.storage_size) {
+                            // Fallback if company type is not found in TORN_COMPANIES
+                             upgradesHtml = `${upg.company_size} Emp | ${upg.staffroom_size} | ${upg.storage_size} (Type unsupported for progress)`;
                         }
                     }
                     document.getElementById('companyUpgradesTop').innerHTML = `<i class="fa-solid fa-level-up-alt"></i> Upgrades: ${upgradesHtml}`;

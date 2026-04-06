@@ -41,6 +41,33 @@ const TORN_COMPANIES = {
     40: { name: "Gents Strip Club", icon: "fa-solid fa-person", theme: "violet" }
 };
 
+// Helper to get hex colors for Tailwind classes dynamically without precompiling
+const thmColorMap = {
+    'mint': { primary: '#1e8449', light: '#d5f5e3', dark: '#145a32' },
+    'pink': { primary: '#db2777', light: '#fce7f3', dark: '#9d174d' },
+    'gray': { primary: '#4b5563', light: '#f3f4f6', dark: '#1f2937' },
+    'blue': { primary: '#2563eb', light: '#dbeafe', dark: '#1e3a8a' },
+    'indigo': { primary: '#4f46e5', light: '#e0e7ff', dark: '#312e81' },
+    'red': { primary: '#dc2626', light: '#fee2e2', dark: '#7f1d1d' },
+    'purple': { primary: '#9333ea', light: '#f3e8ff', dark: '#581c87' },
+    'orange': { primary: '#ea580c', light: '#ffedd5', dark: '#7c2d12' },
+    'yellow': { primary: '#ca8a04', light: '#fef9c3', dark: '#713f12' },
+    'rose': { primary: '#e11d48', light: '#ffe4e6', dark: '#881337' },
+    'cyan': { primary: '#0891b2', light: '#cffafe', dark: '#164e63' },
+    'emerald': { primary: '#059669', light: '#d1fae5', dark: '#064e3b' },
+    'fuchsia': { primary: '#c026d3', light: '#fae8ff', dark: '#701a75' },
+    'sky': { primary: '#0284c7', light: '#e0f2fe', dark: '#0c4a6e' },
+    'slate': { primary: '#475569', light: '#f1f5f9', dark: '#0f172a' },
+    'lime': { primary: '#65a30d', light: '#ecfccb', dark: '#3f6212' },
+    'amber': { primary: '#d97706', light: '#fef3c7', dark: '#78350f' },
+    'zinc': { primary: '#52525b', light: '#f4f4f5', dark: '#18181b' },
+    'violet': { primary: '#7c3aed', light: '#ede9fe', dark: '#4c1d95' },
+    'stone': { primary: '#57534e', light: '#f5f5f4', dark: '#1c1917' },
+    'neutral': { primary: '#525252', light: '#f5f5f5', dark: '#171717' },
+    'teal': { primary: '#0f766e', light: '#ccfbf1', dark: '#134e4a' },
+    'green': { primary: '#16a34a', light: '#dcfce3', dark: '#14532d' }
+};
+
 // Fallback if company type is not found
 const DEFAULT_COMPANY = {
     name: "Company",

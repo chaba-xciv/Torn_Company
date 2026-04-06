@@ -17,7 +17,18 @@
                             500: '#27ae60',
                             600: '#1e8449',
                         },
-                        pastel: '#fcfefd'
+                        pastel: '#fcfefd',
+                        'theme-bg': 'var(--theme-bg)',
+                        'theme-card': 'var(--theme-card)',
+                        'theme-card-inner': 'var(--theme-card-inner)',
+                        'theme-text': 'var(--theme-text)',
+                        'theme-text-muted': 'var(--theme-text-muted)',
+                        'theme-primary': 'var(--theme-primary)',
+                        'theme-primary-light': 'var(--theme-primary-light)',
+                        'theme-primary-dark': 'var(--theme-primary-dark)',
+                        'theme-border': 'var(--theme-border)',
+                        'theme-hover': 'var(--theme-hover)',
+                        'theme-hover-strong': 'var(--theme-hover-strong)'
                     }
                 }
             }
@@ -25,17 +36,17 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body id="bodyEl" class="bg-mint-100 min-h-screen font-sans text-gray-800 p-4 transition-colors duration-300">
+<body id="bodyEl" class="bg-theme-bg min-h-screen font-sans text-theme-text p-4 transition-colors duration-300">
 
     <!-- Theme Switcher -->
-    <div class="fixed top-4 right-4 z-50 flex gap-2 bg-white/80 backdrop-blur-sm p-1.5 rounded-full shadow-sm border border-gray-200">
-        <button onclick="setTheme('company')" id="themeBtn-company" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-800 transition-colors bg-gray-100/50" title="Company Theme">
+    <div class="fixed top-4 right-4 z-50 flex gap-2 bg-theme-card/80 backdrop-blur-sm p-1.5 rounded-full shadow-sm border border-theme-border">
+        <button onclick="setTheme('company')" id="themeBtn-company" class="w-8 h-8 rounded-full flex items-center justify-center text-theme-text-muted hover:text-theme-primary transition-colors bg-theme-hover" title="Company Theme">
             <i class="fa-solid fa-briefcase text-sm"></i>
         </button>
-        <button onclick="setTheme('light')" id="themeBtn-light" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-yellow-500 transition-colors" title="Light Theme">
+        <button onclick="setTheme('light')" id="themeBtn-light" class="w-8 h-8 rounded-full flex items-center justify-center text-theme-text-muted hover:text-yellow-500 transition-colors" title="Light Theme">
             <i class="fa-solid fa-sun text-sm"></i>
         </button>
-        <button onclick="setTheme('dark')" id="themeBtn-dark" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-indigo-400 transition-colors" title="Dark Theme">
+        <button onclick="setTheme('dark')" id="themeBtn-dark" class="w-8 h-8 rounded-full flex items-center justify-center text-theme-text-muted hover:text-indigo-400 transition-colors" title="Dark Theme">
             <i class="fa-solid fa-moon text-sm"></i>
         </button>
     </div>
@@ -43,7 +54,7 @@
     <div class="max-w-7xl mx-auto">
 
         <div class="text-center mb-4">
-            <h1 id="headerTitle" class="text-3xl font-bold text-mint-600 drop-shadow-sm flex justify-center items-center gap-2 transition-colors">
+            <h1 id="headerTitle" class="text-3xl font-bold text-theme-primary drop-shadow-sm flex justify-center items-center gap-2 transition-colors">
                 <i id="mainHeaderIcon" class="fa-solid fa-seedling"></i> <span id="mainHeaderName">Loading...</span>
             </h1>
             <div id="mainHeaderRating" class="mt-2 text-xl tracking-widest" title="Company Rating">
@@ -52,69 +63,69 @@
         </div>
 
         <!-- Timer / Countdown Section -->
-        <div id="timerSection" class="theme-card text-center mb-4 bg-pastel rounded-xl shadow p-2 border border-gray-100 max-w-2xl mx-auto flex justify-around items-center text-sm hidden transition-colors">
-            <div><span class="font-bold text-gray-500">Local:</span> <span id="localTimeDisplay" class="font-mono text-gray-800">--:--:--</span></div>
-            <div><span class="font-bold text-gray-500">TCT:</span> <span id="tctTimeDisplay" class="font-mono text-blue-600">--:--:--</span></div>
-            <div><span class="font-bold text-gray-500"><i class="fa-solid fa-clock-rotate-left"></i> Daily Snapshot in:</span> <span id="countdownDisplay" class="font-mono text-red-500 font-bold">--:--:--</span></div>
+        <div id="timerSection" class="theme-card text-center mb-4 bg-theme-card rounded-xl shadow p-2 border border-theme-border max-w-2xl mx-auto flex justify-around items-center text-sm hidden transition-colors">
+            <div><span class="font-bold text-theme-text-muted">Local:</span> <span id="localTimeDisplay" class="font-mono text-theme-text">--:--:--</span></div>
+            <div><span class="font-bold text-theme-text-muted">TCT:</span> <span id="tctTimeDisplay" class="font-mono text-blue-500">--:--:--</span></div>
+            <div><span class="font-bold text-theme-text-muted"><i class="fa-solid fa-clock-rotate-left"></i> Daily Snapshot in:</span> <span id="countdownDisplay" class="font-mono text-red-500 font-bold">--:--:--</span></div>
         </div>
 
         <div id="loadingStatus" class="text-center mb-4">
-            <p id="loadingText" class="text-lg font-bold text-mint-600 transition-colors"><i class="fa-solid fa-spinner fa-spin"></i> กำลังดึงข้อมูลจาก Torn...</p>
+            <p id="loadingText" class="text-lg font-bold text-theme-primary transition-colors"><i class="fa-solid fa-spinner fa-spin"></i> กำลังดึงข้อมูลจาก Torn...</p>
         </div>
 
         <div id="dashboardSection" class="hidden">
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div class="theme-card bg-pastel rounded-xl shadow p-3 border-l-4 border-green-500 relative overflow-hidden transition-colors">
-                    <i class="fa-solid fa-sack-dollar absolute -right-2 -bottom-2 text-green-100 text-5xl opacity-20"></i>
-                    <p class="theme-text-muted text-xs text-gray-500 uppercase font-bold mb-1 relative z-10 flex justify-between items-center transition-colors">
+                <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-theme-primary relative overflow-hidden transition-colors">
+                    <i class="fa-solid fa-sack-dollar absolute -right-2 -bottom-2 text-theme-primary text-5xl opacity-10"></i>
+                    <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 relative z-10 flex justify-between items-center transition-colors">
                         <span>Finances</span>
                     </p>
-                    <div class="theme-text text-xs text-gray-600 mt-2 relative z-10 space-y-1 transition-colors">
+                    <div class="theme-text text-xs text-theme-text mt-2 relative z-10 space-y-1 transition-colors">
                         <div class="flex justify-between"><span class="font-medium">Daily Cust:</span> <span id="compDailyCust" class="font-bold"></span></div>
                         <div class="flex justify-between"><span class="font-medium">Daily Inc:</span> <span id="compDailyInc" class="font-bold text-green-500"></span></div>
                         <div class="flex justify-between"><span class="font-medium">Daily Prof:</span> <span id="compDailyProf" class="font-bold"></span></div>
-                        <div class="theme-border border-t border-gray-100 my-1 transition-colors"></div>
+                        <div class="theme-border border-t border-theme-border my-1 transition-colors"></div>
                         <div class="flex justify-between"><span class="font-medium">Weekly Cust:</span> <span id="compWeeklyCust" class="font-bold"></span></div>
                         <div class="flex justify-between"><span class="font-medium">Weekly Inc:</span> <span id="compWeeklyInc" class="font-bold text-green-500"></span></div>
                         <div class="flex justify-between"><span class="font-medium">Weekly Prof:</span> <span id="compWeeklyProf" class="font-bold"></span></div>
                     </div>
                 </div>
-                <div class="theme-card bg-pastel rounded-xl shadow p-3 border-l-4 border-purple-400 relative overflow-hidden transition-colors">
-                    <i class="fa-solid fa-people-group absolute -right-2 -bottom-2 text-purple-100 text-5xl opacity-20"></i>
-                    <p class="theme-text-muted text-xs text-gray-500 uppercase font-bold mb-1 relative z-10 transition-colors">Customers / Popularity</p>
-                    <h3 id="compCustomers" class="text-lg font-bold text-purple-600 relative z-10">-</h3>
-                    <p class="theme-text text-sm text-gray-600 mt-1 relative z-10 transition-colors">Pop: <span id="compPop" class="font-bold text-purple-500"></span></p>
+                <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-purple-400 relative overflow-hidden transition-colors">
+                    <i class="fa-solid fa-people-group absolute -right-2 -bottom-2 text-purple-500 text-5xl opacity-10"></i>
+                    <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 relative z-10 transition-colors">Customers / Popularity</p>
+                    <h3 id="compCustomers" class="text-lg font-bold text-purple-500 relative z-10">-</h3>
+                    <p class="theme-text text-sm text-theme-text mt-1 relative z-10 transition-colors">Pop: <span id="compPop" class="font-bold text-purple-500"></span></p>
                 </div>
-                <div class="theme-card bg-pastel rounded-xl shadow p-3 border-l-4 border-orange-400 relative overflow-hidden transition-colors">
-                    <i class="fa-solid fa-bullhorn absolute -right-2 -bottom-2 text-orange-100 text-5xl opacity-20"></i>
-                    <p class="theme-text-muted text-xs text-gray-500 uppercase font-bold mb-1 relative z-10 transition-colors">Management</p>
-                    <h3 id="compTrains" class="text-lg font-bold text-orange-600 relative z-10">- Trains</h3>
-                    <p class="theme-text text-sm text-gray-600 mt-1 relative z-10 transition-colors">Ad Budget: <span id="compAd" class="font-bold text-orange-500"></span></p>
+                <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-orange-400 relative overflow-hidden transition-colors">
+                    <i class="fa-solid fa-bullhorn absolute -right-2 -bottom-2 text-orange-500 text-5xl opacity-10"></i>
+                    <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 relative z-10 transition-colors">Management</p>
+                    <h3 id="compTrains" class="text-lg font-bold text-orange-500 relative z-10">- Trains</h3>
+                    <p class="theme-text text-sm text-theme-text mt-1 relative z-10 transition-colors">Ad Budget: <span id="compAd" class="font-bold text-orange-500"></span></p>
                 </div>
             </div>
 
             <!-- Full Width Inventory Stock -->
-            <div class="theme-card bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 mb-4 transition-colors">
-                <div class="theme-header-blue bg-blue-500 px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 transition-colors">
+            <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border mb-4 transition-colors">
+                <div class="theme-header bg-theme-primary px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 transition-colors">
                     <h3 class="text-white font-bold"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock Financials</h3>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm whitespace-nowrap">
-                        <thead class="theme-table-header bg-gray-50 border-b border-gray-200 text-gray-600 transition-colors">
+                        <thead class="theme-table-header bg-theme-hover border-b border-theme-border text-theme-text transition-colors">
                             <tr>
                                 <th class="py-2 px-3 font-semibold">Item Name</th>
                                 <th class="py-2 px-3 font-semibold text-right">In Stock</th>
                                 <th class="py-2 px-3 font-semibold text-right text-blue-500">On Order</th>
                                 <th class="py-2 px-3 font-semibold text-right text-red-500">Cost</th>
                                 <th class="py-2 px-3 font-semibold text-right text-orange-500">RRP</th>
-                                <th class="py-2 px-3 font-semibold text-right text-green-600">Price</th>
-                                <th class="py-2 px-3 font-semibold text-right text-purple-600">Profit / Item</th>
+                                <th class="py-2 px-3 font-semibold text-right text-green-500">Price</th>
+                                <th class="py-2 px-3 font-semibold text-right text-purple-500">Profit / Item</th>
                                 <th class="py-2 px-3 font-semibold text-right">Sold Amount</th>
                                 <th class="py-2 px-3 font-semibold text-right text-green-500">Sold Worth</th>
                             </tr>
                         </thead>
-                        <tbody id="stockTableBody" class="theme-divide divide-y divide-gray-200 transition-colors">
+                        <tbody id="stockTableBody" class="theme-divide divide-y divide-theme-border transition-colors">
                         </tbody>
                     </table>
                 </div>
@@ -123,8 +134,8 @@
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
                 <div class="lg:col-span-1 space-y-6">
                     <!-- News Timeline -->
-                    <div class="theme-card bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 transition-colors">
-                        <div class="theme-header-orange bg-orange-400 px-3 py-2 transition-colors">
+                    <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border transition-colors">
+                        <div class="theme-header bg-theme-primary px-3 py-2 transition-colors">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-newspaper"></i> Company Events</h3>
                         </div>
                         <div class="p-4 overflow-y-auto" style="max-height: 500px;">
@@ -136,52 +147,52 @@
 
                 <div class="lg:col-span-3">
 
-                    <div class="theme-card bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 mb-4 transition-colors">
-                        <div class="theme-header-mint bg-mint-500 px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 transition-colors">
+                    <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border mb-4 transition-colors">
+                        <div class="theme-header bg-theme-primary px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 transition-colors">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-users-gear"></i> Detailed Employee Status</h3>
                         </div>
                         <div class="overflow-x-auto" style="max-height: 500px;">
                             <table class="w-full text-left border-collapse text-sm whitespace-nowrap">
-                                <thead class="theme-table-header sticky top-0 bg-gray-50 shadow-sm z-20 transition-colors">
-                                    <tr class="theme-border border-b border-gray-200 text-gray-600 transition-colors">
+                                <thead class="theme-table-header sticky top-0 bg-theme-hover shadow-sm z-20 transition-colors">
+                                    <tr class="theme-border border-b border-theme-border text-theme-text transition-colors">
                                         <th class="py-1.5 px-2 font-semibold">Name</th>
                                         <th class="py-1.5 px-2 font-semibold text-center">Position</th>
                                         <th class="py-1.5 px-2 font-semibold text-right">Salary</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center text-purple-600" title="Employee Effectiveness Merits (Max 10)">Merits</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-purple-500" title="Employee Effectiveness Merits (Max 10)">Merits</th>
                                         <th class="py-1.5 px-2 font-semibold text-center">Eff.</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center text-blue-600">Daily Gains</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-blue-500">Daily Gains</th>
                                         <th class="py-1.5 px-2 font-semibold text-center">Stats (M/I/E)</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center text-mint-600">Total Stats</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-theme-primary">Total Stats</th>
                                         <th class="py-1.5 px-2 font-semibold text-center">Days</th>
                                         <th class="py-1.5 px-2 font-semibold text-right">Last Action</th>
                                     </tr>
                                 </thead>
-                                <tbody id="employeeTableBody" class="theme-divide divide-y divide-gray-200 transition-colors">
+                                <tbody id="employeeTableBody" class="theme-divide divide-y divide-theme-border transition-colors">
                                     </tbody>
                             </table>
                         </div>
                     </div>
 
                     <!-- Collapsible Graphs Section -->
-                    <div class="theme-card bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 transition-colors">
-                        <button onclick="toggleGraphs()" class="theme-btn w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 flex justify-between items-center transition-colors">
-                            <span><i class="fa-solid fa-chart-area text-blue-500 mr-2"></i> Historical Performance Graphs</span>
+                    <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border transition-colors">
+                        <button onclick="toggleGraphs()" class="theme-btn w-full bg-theme-hover hover:bg-theme-hover-strong text-theme-text font-bold py-3 px-4 flex justify-between items-center transition-colors">
+                            <span><i class="fa-solid fa-chart-area text-theme-primary mr-2"></i> Historical Performance Graphs</span>
                             <i id="graphsChevron" class="fa-solid fa-chevron-down"></i>
                         </button>
 
                         <div id="graphsContainer" class="hidden p-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <!-- Income Graph -->
-                                <div class="theme-inner-card bg-white rounded-xl border border-gray-100 p-3 transition-colors">
-                                    <h3 class="theme-text text-gray-700 font-bold mb-4 transition-colors"><i class="fa-solid fa-chart-line text-green-500"></i> Daily Gross Income</h3>
+                                <div class="theme-inner-card bg-theme-card-inner rounded-xl border border-theme-border p-3 transition-colors">
+                                    <h3 class="theme-text text-theme-text font-bold mb-4 transition-colors"><i class="fa-solid fa-chart-line text-green-500"></i> Daily Gross Income</h3>
                                     <div class="relative h-48 w-full">
                                         <canvas id="incomeChart"></canvas>
                                     </div>
                                 </div>
 
                                 <!-- Customers Graph -->
-                                <div class="theme-inner-card bg-white rounded-xl border border-gray-100 p-3 transition-colors">
-                                    <h3 class="theme-text text-gray-700 font-bold mb-4 transition-colors"><i class="fa-solid fa-users text-purple-500"></i> Daily Customers</h3>
+                                <div class="theme-inner-card bg-theme-card-inner rounded-xl border border-theme-border p-3 transition-colors">
+                                    <h3 class="theme-text text-theme-text font-bold mb-4 transition-colors"><i class="fa-solid fa-users text-purple-500"></i> Daily Customers</h3>
                                     <div class="relative h-48 w-full">
                                         <canvas id="customersChart"></canvas>
                                     </div>
@@ -215,68 +226,79 @@
 
         // Theme management
         function setTheme(mode, forceColor = null) {
-            const bodyClasses = document.getElementById('bodyEl').classList;
-
-            // Remove previous theme classes
-            bodyClasses.remove('bg-mint-100', 'bg-gray-100', 'bg-gray-900', 'text-gray-800', 'text-gray-100');
-
-            // Remove specific colors if company theme
-            const colors = ['mint', 'pink', 'gray', 'blue', 'indigo', 'red', 'purple', 'orange', 'yellow', 'rose', 'cyan', 'emerald', 'fuchsia', 'sky', 'slate', 'lime', 'amber', 'zinc', 'violet', 'stone', 'neutral', 'teal', 'green'];
-            colors.forEach(c => {
-                bodyClasses.remove(`bg-${c}-100`);
-            });
-
-            // Set active button styles
+            // Remove active button styles
             ['company', 'light', 'dark'].forEach(id => {
-                document.getElementById(`themeBtn-${id}`).classList.remove('bg-gray-100/50', 'bg-yellow-100/50', 'bg-indigo-900/50');
+                document.getElementById(`themeBtn-${id}`).classList.remove('bg-gray-100/50', 'bg-yellow-100/50', 'bg-indigo-900/50', 'text-gray-800', 'text-yellow-500', 'text-indigo-400', 'text-theme-primary');
+                document.getElementById(`themeBtn-${id}`).classList.add('text-theme-text-muted');
             });
 
-            // Setup new CSS rules
-            let styleEl = document.getElementById('theme-styles');
-            if (!styleEl) {
-                styleEl = document.createElement('style');
-                styleEl.id = 'theme-styles';
-                document.head.appendChild(styleEl);
-            }
+            // Setup CSS root variables
+            const root = document.documentElement;
+            const color = forceColor || currentThemeColor;
+            const themeColors = thmColorMap[color] || thmColorMap['gray'];
 
             if (mode === 'dark') {
-                bodyClasses.add('bg-gray-900', 'text-gray-100');
-                document.getElementById('themeBtn-dark').classList.add('bg-indigo-900/50');
+                const btn = document.getElementById('themeBtn-dark');
+                btn.classList.add('bg-indigo-900/50');
+                btn.classList.remove('text-theme-text-muted');
+                btn.style.color = '#818cf8'; // indigo-400
 
-                styleEl.innerHTML = `
-                    .theme-card { background-color: #1f2937 !important; border-color: #374151 !important; color: #f3f4f6 !important; }
-                    .theme-inner-card { background-color: #111827 !important; border-color: #374151 !important; }
-                    .theme-text { color: #d1d5db !important; }
-                    .theme-text-muted { color: #9ca3af !important; }
-                    .theme-border { border-color: #374151 !important; }
-                    .theme-divide > * { border-color: #374151 !important; }
-                    .theme-table-header { background-color: #111827 !important; color: #9ca3af !important; }
-                    .theme-btn { background-color: #374151 !important; color: #f3f4f6 !important; }
-                    .theme-btn:hover { background-color: #4b5563 !important; }
-                    #headerTitle { color: #e5e7eb !important; }
-                    /* Overrides for specific components in dark mode */
-                    td.bg-gray-50\\/50 { background-color: rgba(31, 41, 55, 0.5) !important; }
-                    tr.hover\\:bg-mint-50:hover { background-color: rgba(55, 65, 81, 0.5) !important; }
-                `;
+                root.style.setProperty('--theme-bg', '#0f172a'); // slate-900
+                root.style.setProperty('--theme-card', '#1e293b'); // slate-800
+                root.style.setProperty('--theme-card-inner', '#0f172a'); // slate-900
+                root.style.setProperty('--theme-text', '#f1f5f9'); // slate-100
+                root.style.setProperty('--theme-text-muted', '#94a3b8'); // slate-400
+
+                // Mix company color into dark theme gently
+                root.style.setProperty('--theme-primary', themeColors.primary);
+                root.style.setProperty('--theme-primary-light', '#334155'); // slate-700
+                root.style.setProperty('--theme-primary-dark', 'rgba(15, 23, 42, 0.5)');
+
+                root.style.setProperty('--theme-border', '#334155'); // slate-700
+                root.style.setProperty('--theme-hover', '#334155'); // slate-700
+                root.style.setProperty('--theme-hover-strong', '#475569'); // slate-600
+
             } else if (mode === 'light') {
-                bodyClasses.add('bg-gray-100', 'text-gray-800');
-                document.getElementById('themeBtn-light').classList.add('bg-yellow-100/50');
-                styleEl.innerHTML = `
-                    #headerTitle { color: #4b5563 !important; }
-                `; // Use tailwind defaults
+                const btn = document.getElementById('themeBtn-light');
+                btn.classList.add('bg-yellow-100/50');
+                btn.classList.remove('text-theme-text-muted');
+                btn.style.color = '#eab308'; // yellow-500
+
+                root.style.setProperty('--theme-bg', '#f3f4f6'); // gray-100
+                root.style.setProperty('--theme-card', '#ffffff');
+                root.style.setProperty('--theme-card-inner', '#ffffff');
+                root.style.setProperty('--theme-text', '#1f2937'); // gray-800
+                root.style.setProperty('--theme-text-muted', '#6b7280'); // gray-500
+
+                // Neutral primary for light mode
+                root.style.setProperty('--theme-primary', '#4b5563'); // gray-600
+                root.style.setProperty('--theme-primary-light', '#f9fafb'); // gray-50
+                root.style.setProperty('--theme-primary-dark', '#e5e7eb'); // gray-200
+
+                root.style.setProperty('--theme-border', '#e5e7eb'); // gray-200
+                root.style.setProperty('--theme-hover', '#f9fafb'); // gray-50
+                root.style.setProperty('--theme-hover-strong', '#f3f4f6'); // gray-100
+
             } else if (mode === 'company') {
-                const color = forceColor || currentThemeColor;
-                bodyClasses.add(`bg-${color}-100`, 'text-gray-800');
-                document.getElementById('themeBtn-company').classList.add('bg-gray-100/50');
+                const btn = document.getElementById('themeBtn-company');
+                btn.classList.add('bg-gray-100/50');
+                btn.classList.remove('text-theme-text-muted');
+                btn.style.color = themeColors.primary;
 
-                // Set the header text to match the company theme
-                styleEl.innerHTML = `
-                    #headerTitle { color: var(--tw-color-${color}-600, #4b5563) !important; }
-                    /* We attempt to use the color for header if available, fallback to default */
-                `;
+                root.style.setProperty('--theme-bg', themeColors.light);
+                root.style.setProperty('--theme-card', '#ffffff');
+                root.style.setProperty('--theme-card-inner', '#ffffff');
+                root.style.setProperty('--theme-text', '#1f2937'); // gray-800
+                root.style.setProperty('--theme-text-muted', '#6b7280'); // gray-500
 
-                // Add specific color to style rule if needed, or rely on Tailwind utility mapping if possible.
-                // Since arbitrary dynamic tailwind classes need to be compiled, we inject basic inline styles or let it fallback gracefully.
+                // Use full company theme
+                root.style.setProperty('--theme-primary', themeColors.primary);
+                root.style.setProperty('--theme-primary-light', themeColors.light);
+                root.style.setProperty('--theme-primary-dark', themeColors.light); // Use light bg for accents
+
+                root.style.setProperty('--theme-border', '#e5e7eb'); // gray-200
+                root.style.setProperty('--theme-hover', themeColors.light); // use company light color for hover
+                root.style.setProperty('--theme-hover-strong', '#e5e7eb'); // gray-200
             }
         }
 
@@ -325,31 +347,6 @@
                 // Setup Theme
                 currentThemeColor = companyTypeInfo.theme;
 
-                // Fetch colors mapped in tailwind config to inject dynamically for headers if needed
-                const thmColorMap = {
-                    'mint': '#1e8449', 'pink': '#db2777', 'gray': '#4b5563', 'blue': '#2563eb',
-                    'indigo': '#4f46e5', 'red': '#dc2626', 'purple': '#9333ea', 'orange': '#ea580c',
-                    'yellow': '#ca8a04', 'rose': '#e11d48', 'cyan': '#0891b2', 'emerald': '#059669',
-                    'fuchsia': '#c026d3', 'sky': '#0284c7', 'slate': '#475569', 'lime': '#65a30d',
-                    'amber': '#d97706', 'zinc': '#52525b', 'violet': '#7c3aed', 'stone': '#57534e',
-                    'neutral': '#525252', 'teal': '#0f766e', 'green': '#16a34a'
-                };
-
-                // Override the style injection for company theme with precise color
-                const originalSetTheme = setTheme;
-                window.setTheme = function(mode, forceColor = null) {
-                    originalSetTheme(mode, forceColor);
-                    if (mode === 'company') {
-                        const c = forceColor || currentThemeColor;
-                        const hex = thmColorMap[c] || '#4b5563';
-                        const styleEl = document.getElementById('theme-styles');
-                        if (styleEl) {
-                            styleEl.innerHTML += `
-                                #headerTitle { color: ${hex} !important; }
-                            `;
-                        }
-                    }
-                };
 
                 // Initial theme setup
                 window.setTheme('company', currentThemeColor);
@@ -420,27 +417,27 @@
                         const soldAmt = details.sold_amount || 0;
                         const soldWorth = details.sold_worth || 0;
 
-                        let stockColor = inStock < 100 ? 'text-red-500 font-bold' : 'text-gray-800 font-medium';
-                        let orderColor = onOrder > 0 ? 'text-blue-500 font-medium bg-blue-50/50' : 'text-gray-400';
-                        let profitColor = profit > 0 ? 'text-purple-600 font-bold' : (profit < 0 ? 'text-red-500 font-bold' : 'text-gray-500');
+                        let stockColor = inStock < 100 ? 'text-red-500 font-bold' : 'text-theme-text font-medium';
+                        let orderColor = onOrder > 0 ? 'text-blue-500 font-medium bg-blue-500/10' : 'text-theme-text-muted';
+                        let profitColor = profit > 0 ? 'text-purple-500 font-bold' : (profit < 0 ? 'text-red-500 font-bold' : 'text-theme-text-muted');
 
                         return `
-                            <tr class="hover:bg-mint-50 transition duration-150">
-                                <td class="py-2 px-3 font-bold text-gray-700">${escapeHTML(itemName)}</td>
+                            <tr class="hover:bg-theme-hover transition duration-150">
+                                <td class="py-2 px-3 font-bold text-theme-text">${escapeHTML(itemName)}</td>
                                 <td class="py-2 px-3 text-right ${stockColor}">${inStock.toLocaleString()}</td>
                                 <td class="py-2 px-3 text-right ${orderColor}">${onOrder > 0 ? '+' + onOrder.toLocaleString() : '-'}</td>
                                 <td class="py-2 px-3 text-right text-red-500 font-mono">$${cost.toLocaleString()}</td>
                                 <td class="py-2 px-3 text-right text-orange-500 font-mono">$${rrp.toLocaleString()}</td>
-                                <td class="py-2 px-3 text-right text-green-600 font-mono font-bold">$${price.toLocaleString()}</td>
+                                <td class="py-2 px-3 text-right text-green-500 font-mono font-bold">$${price.toLocaleString()}</td>
                                 <td class="py-2 px-3 text-right ${profitColor} font-mono">$${profit.toLocaleString()}</td>
-                                <td class="py-2 px-3 text-right text-gray-600">${soldAmt.toLocaleString()}</td>
+                                <td class="py-2 px-3 text-right text-theme-text-muted">${soldAmt.toLocaleString()}</td>
                                 <td class="py-2 px-3 text-right text-green-500 font-mono font-bold">$${soldWorth.toLocaleString()}</td>
                             </tr>
                         `;
                     }).join('');
                     stockTableBody.innerHTML = stockHtml;
                 } else {
-                    stockTableBody.innerHTML = '<tr><td colspan="9" class="py-4 text-center text-gray-500">No stock data available.</td></tr>';
+                    stockTableBody.innerHTML = '<tr><td colspan="9" class="py-4 text-center text-theme-text-muted">No stock data available.</td></tr>';
                 }
 
                 // 3. Extract and plot historical data from news
@@ -481,7 +478,7 @@
 
                         let icon = '<i class="fa-solid fa-circle-info text-blue-400 mt-1"></i>';
                         if (event.news.includes('report')) icon = '<i class="fa-solid fa-chart-pie text-green-500 mt-1"></i>';
-                        else if (event.news.includes('deposit') || event.news.includes('funds')) icon = '<i class="fa-solid fa-money-bill-wave text-green-600 mt-1"></i>';
+                        else if (event.news.includes('deposit') || event.news.includes('funds')) icon = '<i class="fa-solid fa-money-bill-wave text-green-500 mt-1"></i>';
                         else if (event.news.includes('upgraded')) icon = '<i class="fa-solid fa-arrow-up text-orange-500 mt-1"></i>';
                         else if (event.news.includes('accept') || event.news.includes('join')) icon = '<i class="fa-solid fa-user-plus text-purple-500 mt-1"></i>';
 
@@ -489,8 +486,8 @@
                             <li class="flex space-x-3 text-sm">
                                 <div>${icon}</div>
                                 <div>
-                                    <p class="text-xs text-gray-400 font-medium">${dateStr}</p>
-                                    <p class="text-gray-700 leading-tight">${escapeHTML(event.news.replace(/<[^>]+>/g, ''))}</p>
+                                    <p class="text-xs text-theme-text-muted font-medium">${dateStr}</p>
+                                    <p class="text-theme-text leading-tight">${escapeHTML(event.news.replace(/<[^>]+>/g, ''))}</p>
                                 </div>
                             </li>
                         `;
@@ -560,7 +557,7 @@
                 const fmtCeoTotal = ceoTotal > 1000 ? (ceoTotal/1000).toFixed(1)+'k' : ceoTotal;
 
                 let ceoAction = userData.last_action ? userData.last_action.relative : '-';
-                let ceoActionColor = 'text-gray-500';
+                let ceoActionColor = 'text-theme-text-muted';
                 if (ceoAction.includes('day') || ceoAction.includes('offline')) ceoActionColor = 'text-red-500 font-bold';
 
                 let ceoStatusIcon = '';
@@ -571,18 +568,18 @@
                 }
 
                 const ceoRow = `
-                    <tr class="hover:bg-mint-50 transition duration-150 border-b border-gray-100 last:border-0 bg-blue-50/20">
-                        <td class="py-1.5 px-2 font-bold text-gray-800">${escapeHTML(userData.name) || 'Director'} ${ceoStatusIcon}</td>
-                        <td class="py-1.5 px-2 text-center text-gray-600 bg-gray-50/50">Director</td>
-                        <td class="py-1.5 px-2 text-right font-medium text-green-600">0</td>
-                        <td class="py-1.5 px-2 text-center text-gray-400 bg-purple-50/30">0/10</td>
-                        <td class="py-1.5 px-2 font-bold text-gray-400 text-center cursor-help" title="No effectiveness data for Director">
+                    <tr class="hover:bg-theme-hover transition duration-150 border-b border-theme-border last:border-0 bg-blue-500/10">
+                        <td class="py-1.5 px-2 font-bold text-theme-text">${escapeHTML(userData.name) || 'Director'} ${ceoStatusIcon}</td>
+                        <td class="py-1.5 px-2 text-center text-theme-text-muted bg-theme-bg/50">Director</td>
+                        <td class="py-1.5 px-2 text-right font-medium text-green-500">0</td>
+                        <td class="py-1.5 px-2 text-center text-theme-text-muted bg-purple-500/10">0/10</td>
+                        <td class="py-1.5 px-2 font-bold text-theme-text-muted text-center cursor-help" title="No effectiveness data for Director">
                             <span class="underline decoration-dashed decoration-1 underline-offset-4">0%</span>
                         </td>
-                        <td class="py-1.5 px-2 text-center font-medium text-blue-600 bg-blue-50/30 text-xs">0</td>
-                        <td class="py-1.5 px-2 text-gray-500 text-center text-xs">${fmtCeoM} / ${fmtCeoI} / ${fmtCeoE}</td>
-                        <td class="py-1.5 px-2 font-bold text-mint-600 text-center bg-mint-50/50">${fmtCeoTotal}</td>
-                        <td class="py-1.5 px-2 text-center text-gray-600">${data.company.days_old || 0}</td>
+                        <td class="py-1.5 px-2 text-center font-medium text-blue-500 bg-blue-500/10 text-xs">0</td>
+                        <td class="py-1.5 px-2 text-theme-text-muted text-center text-xs">${fmtCeoM} / ${fmtCeoI} / ${fmtCeoE}</td>
+                        <td class="py-1.5 px-2 font-bold text-theme-primary text-center bg-theme-primary-dark">${fmtCeoTotal}</td>
+                        <td class="py-1.5 px-2 text-center text-theme-text-muted">${data.company.days_old || 0}</td>
                         <td class="py-1.5 px-2 text-right ${ceoActionColor} text-xs">${escapeHTML(ceoAction)}</td>
                     </tr>
                 `;
@@ -592,7 +589,7 @@
 
                 // --- 3.2 สร้างแถวของลูกจ้างทั้งหมด ---
                 if (!data.company_employees) {
-                    employeesHtml += `<tr><td colspan="10" class="py-3 text-center text-red-500 bg-red-50 font-bold">ไม่พบข้อมูลลูกจ้างเพิ่มเติม (สิทธิ์ API อาจไม่เพียงพอ)</td></tr>`;
+                    employeesHtml += `<tr><td colspan="10" class="py-3 text-center text-red-500 bg-red-500/10 font-bold">ไม่พบข้อมูลลูกจ้างเพิ่มเติม (สิทธิ์ API อาจไม่เพียงพอ)</td></tr>`;
                 } else {
                     const staffs = Object.values(data.company_employees);
 
@@ -603,10 +600,10 @@
                         if (effTotal < 50) effColor = 'text-red-500';
 
                         const merits = emp.effectiveness && emp.effectiveness.merits ? emp.effectiveness.merits : 0;
-                        let meritsColor = 'text-gray-400';
+                        let meritsColor = 'text-theme-text-muted';
                         if (merits >= 10) meritsColor = 'text-green-500 font-bold';
                         else if (merits >= 5) meritsColor = 'text-yellow-500 font-bold';
-                        else if (merits > 0) meritsColor = 'text-orange-400 font-bold';
+                        else if (merits > 0) meritsColor = 'text-orange-500 font-bold';
 
                         let effTooltip = "Effectiveness Breakdown:\n";
                         if (emp.effectiveness) {
@@ -625,7 +622,7 @@
                         }
 
                         let lastActionText = emp.last_action ? emp.last_action.relative : '-';
-                        let actionColor = 'text-gray-500';
+                        let actionColor = 'text-theme-text-muted';
                         if (lastActionText.includes('day') || lastActionText.includes('offline')) {
                             actionColor = 'text-red-500 font-bold';
                         }
@@ -651,18 +648,18 @@
                         const totalStats = rawTotal > 1000 ? (rawTotal/1000).toFixed(1)+'k' : rawTotal;
 
                         return `
-                            <tr class="hover:bg-mint-50 transition duration-150 border-b border-gray-100 last:border-0">
-                                <td class="py-1.5 px-2 font-bold text-gray-800">${escapeHTML(emp.name) || 'Unknown'} ${statusIcon}</td>
-                                <td class="py-1.5 px-2 text-center text-gray-600 bg-gray-50/50">${escapeHTML(emp.position) || '-'}</td>
-                                <td class="py-1.5 px-2 text-right font-medium text-green-600">${salaryStr}</td>
-                                <td class="py-1.5 px-2 text-center ${meritsColor} bg-purple-50/30">${merits}/10</td>
+                            <tr class="hover:bg-theme-hover transition duration-150 border-b border-theme-border last:border-0">
+                                <td class="py-1.5 px-2 font-bold text-theme-text">${escapeHTML(emp.name) || 'Unknown'} ${statusIcon}</td>
+                                <td class="py-1.5 px-2 text-center text-theme-text-muted bg-theme-bg/50">${escapeHTML(emp.position) || '-'}</td>
+                                <td class="py-1.5 px-2 text-right font-medium text-green-500">${salaryStr}</td>
+                                <td class="py-1.5 px-2 text-center ${meritsColor} bg-purple-500/10">${merits}/10</td>
                                 <td class="py-1.5 px-2 font-bold ${effColor} text-center cursor-help" title="${effTooltip}">
                                     <span class="underline decoration-dashed decoration-1 underline-offset-4">${effTotal}%</span>
                                 </td>
-                                <td class="py-1.5 px-2 text-center font-medium text-blue-600 bg-blue-50/30 text-xs">${dailyGainsStr}</td>
-                                <td class="py-1.5 px-2 text-gray-500 text-center text-xs">${m} / ${i} / ${e}</td>
-                                <td class="py-1.5 px-2 font-bold text-mint-600 text-center bg-mint-50/50">${totalStats}</td>
-                                <td class="py-1.5 px-2 text-center text-gray-600">${emp.days_in_company || 0}</td>
+                                <td class="py-1.5 px-2 text-center font-medium text-blue-500 bg-blue-500/10 text-xs">${dailyGainsStr}</td>
+                                <td class="py-1.5 px-2 text-theme-text-muted text-center text-xs">${m} / ${i} / ${e}</td>
+                                <td class="py-1.5 px-2 font-bold text-theme-primary text-center bg-theme-primary-dark">${totalStats}</td>
+                                <td class="py-1.5 px-2 text-center text-theme-text-muted">${emp.days_in_company || 0}</td>
                                 <td class="py-1.5 px-2 text-right ${actionColor} text-xs">${escapeHTML(lastActionText)}</td>
                             </tr>
                         `;

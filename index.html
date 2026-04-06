@@ -34,29 +34,18 @@
             </h1>
         </div>
 
+        <!-- Timer / Countdown Section -->
+        <div id="timerSection" class="text-center mb-4 bg-pastel rounded-xl shadow p-2 border border-gray-100 max-w-2xl mx-auto flex justify-around items-center text-sm hidden">
+            <div><span class="font-bold text-gray-500">Local:</span> <span id="localTimeDisplay" class="font-mono text-gray-800">--:--:--</span></div>
+            <div><span class="font-bold text-gray-500">TCT:</span> <span id="tctTimeDisplay" class="font-mono text-blue-600">--:--:--</span></div>
+            <div><span class="font-bold text-gray-500"><i class="fa-solid fa-clock-rotate-left"></i> Reset in:</span> <span id="countdownDisplay" class="font-mono text-red-500 font-bold">--:--:--</span></div>
+        </div>
+
         <div id="loadingStatus" class="text-center mb-4">
             <p class="text-lg font-bold text-mint-600"><i class="fa-solid fa-spinner fa-spin"></i> กำลังดึงข้อมูลจาก Torn...</p>
         </div>
 
         <div id="dashboardSection" class="hidden">
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <!-- Income Graph -->
-                <div class="bg-pastel rounded-xl shadow p-3 border border-gray-100">
-                    <h3 class="text-gray-700 font-bold mb-4"><i class="fa-solid fa-chart-line text-green-500"></i> Daily Gross Income</h3>
-                    <div class="relative h-40 w-full">
-                        <canvas id="incomeChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Customers Graph -->
-                <div class="bg-pastel rounded-xl shadow p-3 border border-gray-100">
-                    <h3 class="text-gray-700 font-bold mb-4"><i class="fa-solid fa-users text-purple-500"></i> Daily Customers</h3>
-                    <div class="relative h-40 w-full">
-                        <canvas id="customersChart"></canvas>
-                    </div>
-                </div>
-            </div>
 
             <!-- Upgrades Summary -->
             <div id="upgradesSection" class="bg-pastel rounded-xl shadow p-3 mb-4 border border-gray-100 hidden">
@@ -93,24 +82,40 @@
                 </div>
             </div>
 
+            <!-- Full Width Inventory Stock -->
+            <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 mb-4">
+                <div class="bg-blue-500 px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <h3 class="text-white font-bold"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock Financials</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm whitespace-nowrap">
+                        <thead class="bg-gray-50 border-b border-gray-200 text-gray-600">
+                            <tr>
+                                <th class="py-2 px-3 font-semibold">Item Name</th>
+                                <th class="py-2 px-3 font-semibold text-right">In Stock</th>
+                                <th class="py-2 px-3 font-semibold text-right text-blue-500">On Order</th>
+                                <th class="py-2 px-3 font-semibold text-right text-red-500">Cost</th>
+                                <th class="py-2 px-3 font-semibold text-right text-orange-500">RRP</th>
+                                <th class="py-2 px-3 font-semibold text-right text-green-600">Price</th>
+                                <th class="py-2 px-3 font-semibold text-right text-purple-600">Profit / Item</th>
+                                <th class="py-2 px-3 font-semibold text-right">Sold Amount</th>
+                                <th class="py-2 px-3 font-semibold text-right text-green-500">Sold Worth</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockTableBody" class="divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
                 <div class="lg:col-span-1 space-y-6">
-                    <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100">
-                        <div class="bg-blue-500 px-3 py-2">
-                            <h3 class="text-white font-bold"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock</h3>
-                        </div>
-                        <div class="p-4 overflow-y-auto" style="max-height: 300px;">
-                            <ul id="stockList" class="divide-y divide-gray-200">
-                                </ul>
-                        </div>
-                    </div>
-
                     <!-- News Timeline -->
                     <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100">
                         <div class="bg-orange-400 px-3 py-2">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-newspaper"></i> Company Events</h3>
                         </div>
-                        <div class="p-4 overflow-y-auto" style="max-height: 300px;">
+                        <div class="p-4 overflow-y-auto" style="max-height: 500px;">
                             <ul id="newsList" class="space-y-2">
                             </ul>
                         </div>
@@ -119,7 +124,7 @@
 
                 <div class="lg:col-span-3">
 
-                    <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100">
+                    <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100 mb-4">
                         <div class="bg-mint-500 px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-users-gear"></i> Detailed Employee Status</h3>
                             <div class="text-xs text-white/90 font-medium" id="companyUpgradesTop">
@@ -145,6 +150,34 @@
                                 <tbody id="employeeTableBody" class="divide-y divide-gray-200">
                                     </tbody>
                             </table>
+                        </div>
+                    </div>
+
+                    <!-- Collapsible Graphs Section -->
+                    <div class="bg-pastel rounded-xl shadow overflow-hidden border border-gray-100">
+                        <button onclick="toggleGraphs()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 flex justify-between items-center transition-colors">
+                            <span><i class="fa-solid fa-chart-area text-blue-500 mr-2"></i> Historical Performance Graphs</span>
+                            <i id="graphsChevron" class="fa-solid fa-chevron-down"></i>
+                        </button>
+
+                        <div id="graphsContainer" class="hidden p-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Income Graph -->
+                                <div class="bg-white rounded-xl border border-gray-100 p-3">
+                                    <h3 class="text-gray-700 font-bold mb-4"><i class="fa-solid fa-chart-line text-green-500"></i> Daily Gross Income</h3>
+                                    <div class="relative h-48 w-full">
+                                        <canvas id="incomeChart"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- Customers Graph -->
+                                <div class="bg-white rounded-xl border border-gray-100 p-3">
+                                    <h3 class="text-gray-700 font-bold mb-4"><i class="fa-solid fa-users text-purple-500"></i> Daily Customers</h3>
+                                    <div class="relative h-48 w-full">
+                                        <canvas id="customersChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -191,6 +224,7 @@
 
                 loadingStatus.classList.add('hidden');
                 document.getElementById('dashboardSection').classList.remove('hidden');
+                document.getElementById('timerSection').classList.remove('hidden');
 
                 // เปลี่ยนชื่อ Header หลักด้านบนเป็นชื่อบริษัท
                 document.getElementById('mainHeaderName').textContent = data.company.name || "Flower Shop";
@@ -245,25 +279,44 @@
                     document.getElementById('companyUpgradesTop').innerHTML = `<i class="fa-solid fa-level-up-alt"></i> Upgrades: ${upgradesHtml}`;
                 }
 
-                // 2. จัดการสต็อกสินค้า (Stock)
-                const stockList = document.getElementById('stockList');
-                stockList.innerHTML = '';
+                // 2. จัดการสต็อกสินค้าแบบละเอียด (Stock Financials)
+                const stockTableBody = document.getElementById('stockTableBody');
+                stockTableBody.innerHTML = '';
                 if(data.company_stock && Object.keys(data.company_stock).length > 0) {
                     // ⚡ Bolt Performance Optimization: Batch DOM updates
                     let stockHtml = '';
                     Object.entries(data.company_stock).forEach(([itemName, details]) => {
-                        let stockColor = details.in_stock < 100 ? 'text-red-500 font-bold' : 'text-gray-800';
-                        const li = `
-                            <li class="py-1.5 flex justify-between items-center">
-                                <span class="font-medium text-gray-700">${itemName}</span>
-                                <span class="${stockColor} bg-gray-100 px-3 py-1 rounded-full text-xs font-bold">${details.in_stock.toLocaleString()} pcs</span>
-                            </li>
+                        const inStock = details.in_stock || 0;
+                        const onOrder = details.on_order || 0;
+                        const cost = details.cost || 0;
+                        const rrp = details.rrp || 0;
+                        const price = details.price || 0;
+                        const profit = price - cost;
+                        const soldAmt = details.sold_amount || 0;
+                        const soldWorth = details.sold_worth || 0;
+
+                        let stockColor = inStock < 100 ? 'text-red-500 font-bold' : 'text-gray-800 font-medium';
+                        let orderColor = onOrder > 0 ? 'text-blue-500 font-medium bg-blue-50/50' : 'text-gray-400';
+                        let profitColor = profit > 0 ? 'text-purple-600 font-bold' : (profit < 0 ? 'text-red-500 font-bold' : 'text-gray-500');
+
+                        const row = `
+                            <tr class="hover:bg-mint-50 transition duration-150">
+                                <td class="py-2 px-3 font-bold text-gray-700">${itemName}</td>
+                                <td class="py-2 px-3 text-right ${stockColor}">${inStock.toLocaleString()}</td>
+                                <td class="py-2 px-3 text-right ${orderColor}">${onOrder > 0 ? '+' + onOrder.toLocaleString() : '-'}</td>
+                                <td class="py-2 px-3 text-right text-red-500 font-mono">$${cost.toLocaleString()}</td>
+                                <td class="py-2 px-3 text-right text-orange-500 font-mono">$${rrp.toLocaleString()}</td>
+                                <td class="py-2 px-3 text-right text-green-600 font-mono font-bold">$${price.toLocaleString()}</td>
+                                <td class="py-2 px-3 text-right ${profitColor} font-mono">$${profit.toLocaleString()}</td>
+                                <td class="py-2 px-3 text-right text-gray-600">${soldAmt.toLocaleString()}</td>
+                                <td class="py-2 px-3 text-right text-green-500 font-mono font-bold">$${soldWorth.toLocaleString()}</td>
+                            </tr>
                         `;
-                        stockHtml += li;
+                        stockHtml += row;
                     });
-                    stockList.innerHTML = stockHtml;
+                    stockTableBody.innerHTML = stockHtml;
                 } else {
-                    stockList.innerHTML = '<li class="py-2 text-center text-gray-500">No stock data available.</li>';
+                    stockTableBody.innerHTML = '<tr><td colspan="9" class="py-4 text-center text-gray-500">No stock data available.</td></tr>';
                 }
 
                 // 3. Extract and plot historical data from news
@@ -500,6 +553,51 @@
                 loadingStatus.innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-xl shadow inline-block border-l-4 border-red-500"><i class="fa-solid fa-circle-xmark text-xl"></i><br><b>Error:</b><br>${error.message}</div>`;
             }
         }
+
+        function toggleGraphs() {
+            const container = document.getElementById('graphsContainer');
+            const chevron = document.getElementById('graphsChevron');
+
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                chevron.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            } else {
+                container.classList.add('hidden');
+                chevron.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
+        }
+
+        function updateTimeAndCountdown() {
+            const now = new Date();
+
+            // Local Time
+            const localTimeString = now.toLocaleTimeString();
+            const localDateString = now.toLocaleDateString();
+            document.getElementById('localTimeDisplay').textContent = `${localDateString} ${localTimeString}`;
+
+            // TCT Time (UTC)
+            const tctTimeString = now.toLocaleTimeString('en-GB', { timeZone: 'UTC' });
+            const tctDateString = now.toLocaleDateString('en-GB', { timeZone: 'UTC' });
+            document.getElementById('tctTimeDisplay').textContent = `${tctDateString} ${tctTimeString}`;
+
+            // Countdown to 18:00 TCT (UTC)
+            let target = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 18, 0, 0));
+
+            if (now.getTime() >= target.getTime()) {
+                target.setUTCDate(target.getUTCDate() + 1);
+            }
+
+            const diff = target.getTime() - now.getTime();
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            const pad = (num) => num.toString().padStart(2, '0');
+            document.getElementById('countdownDisplay').textContent = `${pad(hours)}:${pad(mins)}:${pad(secs)}`;
+        }
+
+        setInterval(updateTimeAndCountdown, 1000);
+        updateTimeAndCountdown();
 
         window.onload = fetchCompanyData;
 

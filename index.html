@@ -38,6 +38,14 @@
 </head>
 <body id="bodyEl" class="bg-theme-bg min-h-screen font-sans text-theme-text p-4 transition-colors duration-300">
 
+    <!-- API Status Badge -->
+    <div id="apiStatusBadge" class="fixed top-4 left-4 z-50 flex items-center gap-2 bg-theme-card/80 backdrop-blur-sm p-1.5 pl-3 pr-1.5 rounded-full shadow-sm border border-theme-border hidden transition-colors">
+        <span class="text-xs font-mono text-theme-text-muted flex items-center gap-2"><i class="fa-solid fa-key text-theme-primary"></i> <span id="displayApiKey"></span></span>
+        <button onclick="handleLogout()" class="w-7 h-7 rounded-full flex items-center justify-center text-red-500 hover:bg-red-500/10 transition-colors" title="Disconnect">
+            <i class="fa-solid fa-power-off text-xs"></i>
+        </button>
+    </div>
+
     <!-- Theme Switcher -->
     <script>
         // Global variables for stock sorting
@@ -57,9 +65,35 @@
         </button>
     </div>
 
-    <div class="max-w-7xl mx-auto">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="max-w-md w-full bg-theme-card rounded-2xl shadow-lg border border-theme-border p-6 md:p-8 text-center transition-colors">
+            <div class="w-16 h-16 bg-theme-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-theme-primary">
+                <i class="fa-solid fa-link text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-theme-text mb-2 transition-colors">Connect API</h2>
+            <p class="text-sm text-theme-text-muted mb-6 transition-colors">Please enter your Torn API key to access the dashboard.</p>
 
-        <div class="text-center mb-4">
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <input type="text" id="apiKeyInput" placeholder="Enter 16-character API Key" class="w-full px-4 py-3 rounded-xl bg-theme-bg border border-theme-border text-theme-text focus:outline-none focus:ring-2 focus:ring-theme-primary transition-colors font-mono" required autocomplete="off" minlength="16" maxlength="16">
+                <button type="submit" class="w-full bg-theme-primary hover:opacity-90 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-sm">
+                    Connect
+                </button>
+            </form>
+
+            <div class="mt-8 text-left text-xs text-theme-text-muted space-y-3 p-4 bg-theme-bg/50 rounded-xl border border-theme-border/50 transition-colors">
+                <p class="font-semibold text-theme-text flex items-center gap-1 text-sm mb-1"><i class="fa-solid fa-shield-halved text-theme-primary"></i> Privacy & Security</p>
+                <p>• <strong>Client-Side Only:</strong> This application runs entirely in your browser. Your API key and data are <strong>never</strong> transmitted to our servers.</p>
+                <p>• <strong>Local Storage:</strong> Your preferences and session are cached securely in your browser's local storage and can be cleared by disconnecting.</p>
+                <p>• <strong>Access Level:</strong> We recommend using a <strong>Full Access</strong> API key to ensure all dashboard features and statistics display correctly.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="max-w-7xl mx-auto hidden flex-col">
+
+        <div class="text-center mb-4 mt-8">
             <h1 id="headerTitle" class="text-3xl font-bold text-theme-primary drop-shadow-sm flex justify-center items-center gap-2 transition-colors">
                 <i id="mainHeaderIcon" class="fa-solid fa-seedling"></i> <span id="mainHeaderName">Loading...</span>
             </h1>
@@ -75,8 +109,8 @@
             <div><span class="font-bold text-theme-text-muted"><i class="fa-solid fa-clock-rotate-left"></i> Daily Snapshot in:</span> <span id="countdownDisplay" class="font-mono text-red-500 font-bold">--:--:--</span></div>
         </div>
 
-        <div id="loadingStatus" class="text-center mb-4">
-            <p id="loadingText" class="text-lg font-bold text-theme-primary transition-colors"><i class="fa-solid fa-spinner fa-spin"></i> กำลังดึงข้อมูลจาก Torn...</p>
+        <div id="loadingStatus" class="text-center mb-4 hidden">
+            <p id="loadingText" class="text-lg font-bold text-theme-primary transition-colors"><i class="fa-solid fa-spinner fa-spin"></i> Fetching data from Torn...</p>
         </div>
 
         <div id="dashboardSection" class="hidden">
@@ -228,8 +262,6 @@
     </div>
 
     <script>
-        const MY_API_KEY = "9tXBZpdj9XekBNVf";
-
         function escapeHTML(str) {
             if (!str) return str;
             return String(str).replace(/[&<>"']/g, function(m) {
@@ -401,19 +433,80 @@
             stockTableBody.innerHTML = stockHtml;
         }
 
+        let activeApiKey = null;
+
+        function checkLogin() {
+            const savedKey = localStorage.getItem('tornApiKey');
+            if (savedKey) {
+                activeApiKey = savedKey;
+                showMainApp();
+                fetchCompanyData();
+            } else {
+                showLoginScreen();
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const keyInput = document.getElementById('apiKeyInput').value.trim();
+            if (keyInput.length >= 16) {
+                localStorage.setItem('tornApiKey', keyInput);
+                activeApiKey = keyInput;
+                showMainApp();
+                fetchCompanyData();
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('tornApiKey');
+            activeApiKey = null;
+            document.getElementById('apiKeyInput').value = '';
+
+            // Reset UI
+            document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('timerSection').classList.add('hidden');
+            document.getElementById('mainHeaderName').textContent = 'Loading...';
+            document.getElementById('mainHeaderRating').innerHTML = '';
+
+            showLoginScreen();
+        }
+
+        function showLoginScreen() {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('loginScreen').classList.add('flex');
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('flex');
+            document.getElementById('apiStatusBadge').classList.add('hidden');
+            document.getElementById('apiStatusBadge').classList.remove('flex');
+        }
+
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('flex');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('flex');
+            document.getElementById('apiStatusBadge').classList.remove('hidden');
+            document.getElementById('apiStatusBadge').classList.add('flex');
+
+            // Mask the API key
+            const masked = activeApiKey.length >= 16
+                ? activeApiKey.substring(0, 4) + '********' + activeApiKey.substring(activeApiKey.length - 4)
+                : '****';
+            document.getElementById('displayApiKey').textContent = masked;
+        }
+
         async function fetchCompanyData() {
             const loadingStatus = document.getElementById('loadingStatus');
+            loadingStatus.classList.remove('hidden');
+            loadingStatus.innerHTML = '<p id="loadingText" class="text-lg font-bold text-theme-primary transition-colors"><i class="fa-solid fa-spinner fa-spin"></i> Fetching data from Torn...</p>';
 
-            if (!MY_API_KEY || MY_API_KEY === "ใส่_API_KEY_ของคุณที่นี่") {
-                loadingStatus.innerHTML = '<div class="bg-red-100 text-red-700 p-4 rounded-xl shadow inline-block border-l-4 border-red-500"><i class="fa-solid fa-triangle-exclamation text-xl"></i><br><b>ข้อผิดพลาด:</b><br>กรุณานำ API Key ไปวางในโค้ดก่อนครับ</div>';
-                return;
-            }
+            if (!activeApiKey) return;
 
             try {
-                // ยิง API 2 เส้นพร้อมกัน (ดึงบริษัท + ดึงไอดีตัวเอง)
+                // Fetch Company and User data
                 const [compRes, userRes] = await Promise.all([
-                    fetch(`https://api.torn.com/company/?selections=profile,employees,detailed,stock,news&key=${MY_API_KEY}`),
-                    fetch(`https://api.torn.com/user/?selections=profile,workstats&key=${MY_API_KEY}`)
+                    fetch(`https://api.torn.com/company/?selections=profile,employees,detailed,stock,news&key=${activeApiKey}`),
+                    fetch(`https://api.torn.com/user/?selections=profile,workstats&key=${activeApiKey}`)
                 ]);
 
                 const data = await compRes.json();
@@ -707,7 +800,7 @@
 
                 // --- 3.2 สร้างแถวของลูกจ้างทั้งหมด ---
                 if (!data.company_employees) {
-                    employeesHtml += `<tr><td colspan="10" class="py-3 text-center text-red-500 bg-red-500/10 font-bold">ไม่พบข้อมูลลูกจ้างเพิ่มเติม (สิทธิ์ API อาจไม่เพียงพอ)</td></tr>`;
+                    employeesHtml += `<tr><td colspan="10" class="py-3 text-center text-red-500 bg-red-500/10 font-bold">No employee data found. (Insufficient API Key access level)</td></tr>`;
                 } else {
                     const staffs = Object.values(data.company_employees);
 
@@ -835,7 +928,19 @@
         setInterval(updateTimeAndCountdown, 1000);
         updateTimeAndCountdown();
 
-        window.onload = fetchCompanyData;
+        window.onload = () => {
+            // Check for initial theme
+            const savedTheme = localStorage.getItem('themePreference');
+            if (savedTheme) {
+                window.setTheme(savedTheme, currentThemeColor);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                window.setTheme('dark', currentThemeColor);
+            } else {
+                window.setTheme('company', currentThemeColor);
+            }
+
+            checkLogin();
+        };
 
     </script>
 </body>

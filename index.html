@@ -100,16 +100,14 @@
                     <p class="theme-text text-sm text-theme-text mt-1 relative z-10 transition-colors">Pop: <span id="compPop" class="font-bold text-purple-500"></span></p>
                 </div>
                 <!-- Management Card with Hover Effect -->
-                <div class="theme-card bg-theme-card rounded-xl shadow border-l-4 border-orange-400 relative overflow-hidden transition-colors group">
-                    <div class="p-3 relative z-10 h-full flex flex-col justify-center">
-                        <i class="fa-solid fa-bullhorn absolute -right-2 -bottom-2 text-orange-500 text-5xl opacity-10 pointer-events-none"></i>
-                        <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 transition-colors">Management</p>
-                        <h3 id="compTrains" class="text-lg font-bold text-orange-500">- Trains</h3>
+                <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-orange-400 relative overflow-hidden transition-colors group">
+                    <i class="fa-solid fa-bullhorn absolute -right-2 -bottom-2 text-orange-500 text-5xl opacity-10 pointer-events-none"></i>
+                    <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 relative z-10 transition-colors">Management</p>
+                    <h3 id="compTrains" class="text-lg font-bold text-orange-500 relative z-10">- Trains</h3>
 
-                        <!-- Short view (recent 2) -->
-                        <div id="shortTrainLog" class="mt-1 space-y-1 text-xs transition-opacity duration-300 group-hover:opacity-0 group-hover:h-0">
-                            <!-- Injected via JS -->
-                        </div>
+                    <!-- Short view (recent 2) -->
+                    <div id="shortTrainLog" class="mt-1 space-y-1 text-xs relative z-10 transition-opacity duration-300 group-hover:opacity-0 group-hover:h-0">
+                        <!-- Injected via JS -->
                     </div>
 
                     <!-- Expanded hover view -->

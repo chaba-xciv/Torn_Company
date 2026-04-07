@@ -39,6 +39,12 @@
 <body id="bodyEl" class="bg-theme-bg min-h-screen font-sans text-theme-text p-4 transition-colors duration-300">
 
     <!-- Theme Switcher -->
+    <script>
+        // Global variables for stock sorting
+        let stockDataArr = [];
+        let stockSortCol = 'profit';
+        let stockSortAsc = true; // true = น้อยไปมาก
+    </script>
     <div class="fixed top-4 right-4 z-50 flex gap-2 bg-theme-card/80 backdrop-blur-sm p-1.5 rounded-full shadow-sm border border-theme-border">
         <button onclick="setTheme('company')" id="themeBtn-company" class="w-8 h-8 rounded-full flex items-center justify-center text-theme-text-muted hover:text-theme-primary transition-colors bg-theme-hover" title="Company Theme">
             <i class="fa-solid fa-briefcase text-sm"></i>
@@ -129,15 +135,15 @@
                     <table class="w-full text-left border-collapse text-sm whitespace-nowrap">
                         <thead class="theme-table-header bg-theme-hover border-b border-theme-border text-theme-text transition-colors">
                             <tr>
-                                <th class="py-2 px-3 font-semibold">Item Name</th>
-                                <th class="py-2 px-3 font-semibold text-right">In Stock</th>
-                                <th class="py-2 px-3 font-semibold text-right text-blue-500">On Order</th>
-                                <th class="py-2 px-3 font-semibold text-right text-red-500">Cost</th>
-                                <th class="py-2 px-3 font-semibold text-right text-orange-500">RRP</th>
-                                <th class="py-2 px-3 font-semibold text-right text-green-500">Price</th>
-                                <th class="py-2 px-3 font-semibold text-right text-purple-500">Profit / Item</th>
-                                <th class="py-2 px-3 font-semibold text-right">Sold Amount</th>
-                                <th class="py-2 px-3 font-semibold text-right text-green-500">Sold Worth</th>
+                                <th class="py-2 px-3 font-semibold cursor-pointer hover:bg-theme-primary/20 transition-colors" onclick="handleStockSort('itemName')">Item Name <i id="sortIcon-itemName" class="fa-solid fa-sort ml-1 opacity-30"></i></th>
+                                <th class="py-2 px-3 font-semibold text-right cursor-pointer hover:bg-theme-primary/20 transition-colors" onclick="handleStockSort('inStock')">In Stock <i id="sortIcon-inStock" class="fa-solid fa-sort ml-1 opacity-30"></i></th>
+                                <th class="py-2 px-3 font-semibold text-right text-blue-500 cursor-pointer hover:bg-theme-primary/20 transition-colors" onclick="handleStockSort('onOrder')">On Order <i id="sortIcon-onOrder" class="fa-solid fa-sort ml-1 opacity-30"></i></th>
+                                <th class="py-2 px-3 font-semibold text-right text-red-500 cursor-pointer hover:bg-theme-primary/20 transition-colors" onclick="handleStockSort('cost')">Cost <i id="sortIcon-cost" class="fa-solid fa-sort ml-1 opacity-30"></i></th>
+                                <th class="py-2 px-3 font-semibold text-right text-orange-500 cursor-pointer hover:bg-theme-primary/20 transition-colors" onclick="handleStockSort('rrp')">RRP <i id="sortIcon-rrp" class="fa-solid fa-sort ml-1 opacity-30"></i></th>
+                                <th class="py-2 px-3 font-semibold text-right text-green-500 cursor-pointer hover:bg-theme-primary/20 transition-colors" onclick="handleStockSort('price')">Price <i id="sortIcon-price" class="fa-solid fa-sort ml-1 opacity-30"></i></th>
+                                <th class="py-2 px-3 font-semibold text-right text-purple-500 cursor-pointer hover:bg-theme-primary/20 transition-colors" onclick="handleStockSort('profit')">Profit / Item <i id="sortIcon-profit" class="fa-solid fa-sort ml-1 opacity-30"></i></th>
+                                <th class="py-2 px-3 font-semibold text-right cursor-pointer hover:bg-theme-primary/20 transition-colors" onclick="handleStockSort('soldAmt')">Sold Amount <i id="sortIcon-soldAmt" class="fa-solid fa-sort ml-1 opacity-30"></i></th>
+                                <th class="py-2 px-3 font-semibold text-right text-green-500 cursor-pointer hover:bg-theme-primary/20 transition-colors" onclick="handleStockSort('soldWorth')">Sold Worth <i id="sortIcon-soldWorth" class="fa-solid fa-sort ml-1 opacity-30"></i></th>
                             </tr>
                         </thead>
                         <tbody id="stockTableBody" class="theme-divide divide-y divide-theme-border transition-colors">
@@ -329,6 +335,71 @@
             "Director": "0"
         };
 
+        function handleStockSort(col) {
+            if (stockSortCol === col) {
+                stockSortAsc = !stockSortAsc; // Toggle direction
+            } else {
+                stockSortCol = col;
+                stockSortAsc = false; // Default to descending when changing column, except for initial load which is ascending
+            }
+            sortAndRenderStockTable();
+        }
+
+        function sortAndRenderStockTable() {
+            if (!stockDataArr || stockDataArr.length === 0) return;
+
+            // Update icons
+            const headers = ['itemName', 'inStock', 'onOrder', 'cost', 'rrp', 'price', 'profit', 'soldAmt', 'soldWorth'];
+            headers.forEach(h => {
+                const iconEl = document.getElementById(`sortIcon-${h}`);
+                if (iconEl) {
+                    iconEl.className = 'fa-solid ml-1 opacity-30 fa-sort'; // Reset all
+                    if (h === stockSortCol) {
+                        iconEl.className = stockSortAsc ? 'fa-solid ml-1 text-theme-primary fa-sort-up' : 'fa-solid ml-1 text-theme-primary fa-sort-down';
+                    }
+                }
+            });
+
+            // Sort data
+            stockDataArr.sort((a, b) => {
+                let valA = a[stockSortCol];
+                let valB = b[stockSortCol];
+
+                if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                    if (valA < valB) return stockSortAsc ? -1 : 1;
+                    if (valA > valB) return stockSortAsc ? 1 : -1;
+                    return 0;
+                } else {
+                    return stockSortAsc ? valA - valB : valB - valA;
+                }
+            });
+
+            // Render
+            const stockTableBody = document.getElementById('stockTableBody');
+            const stockHtml = stockDataArr.map(item => {
+                let stockColor = item.inStock < 100 ? 'text-red-500 font-bold' : 'text-theme-text font-medium';
+                let orderColor = item.onOrder > 0 ? 'text-blue-500 font-medium bg-blue-500/10' : 'text-theme-text-muted';
+                let profitColor = item.profit > 0 ? 'text-purple-500 font-bold' : (item.profit < 0 ? 'text-red-500 font-bold' : 'text-theme-text-muted');
+
+                return `
+                    <tr class="hover:bg-theme-hover transition duration-150">
+                        <td class="py-2 px-3 font-bold text-theme-text">${escapeHTML(item.itemName)}</td>
+                        <td class="py-2 px-3 text-right ${stockColor}">${item.inStock.toLocaleString()}</td>
+                        <td class="py-2 px-3 text-right ${orderColor}">${item.onOrder > 0 ? '+' + item.onOrder.toLocaleString() : '-'}</td>
+                        <td class="py-2 px-3 text-right text-red-500 font-mono">$${item.cost.toLocaleString()}</td>
+                        <td class="py-2 px-3 text-right text-orange-500 font-mono">$${item.rrp.toLocaleString()}</td>
+                        <td class="py-2 px-3 text-right text-green-500 font-mono font-bold">$${item.price.toLocaleString()}</td>
+                        <td class="py-2 px-3 text-right ${profitColor} font-mono">$${item.profit.toLocaleString()}</td>
+                        <td class="py-2 px-3 text-right text-theme-text-muted">${item.soldAmt.toLocaleString()}</td>
+                        <td class="py-2 px-3 text-right text-green-500 font-mono font-bold">$${item.soldWorth.toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
+            stockTableBody.innerHTML = stockHtml;
+        }
+
         async function fetchCompanyData() {
             const loadingStatus = document.getElementById('loadingStatus');
 
@@ -418,40 +489,23 @@
                 document.getElementById('compPop').textContent = data.company.popularity || 0;
 
                 // 2. จัดการสต็อกสินค้าแบบละเอียด (Stock Financials)
-                const stockTableBody = document.getElementById('stockTableBody');
-                stockTableBody.innerHTML = '';
                 if(data.company_stock && Object.keys(data.company_stock).length > 0) {
-                    // ⚡ Bolt Performance Optimization: Refactored string concatenation to map().join('')
-                    const stockHtml = Object.entries(data.company_stock).map(([itemName, details]) => {
-                        const inStock = details.in_stock || 0;
-                        const onOrder = details.on_order || 0;
-                        const cost = details.cost || 0;
-                        const rrp = details.rrp || 0;
-                        const price = details.price || 0;
-                        const profit = price - cost;
-                        const soldAmt = details.sold_amount || 0;
-                        const soldWorth = details.sold_worth || 0;
-
-                        let stockColor = inStock < 100 ? 'text-red-500 font-bold' : 'text-theme-text font-medium';
-                        let orderColor = onOrder > 0 ? 'text-blue-500 font-medium bg-blue-500/10' : 'text-theme-text-muted';
-                        let profitColor = profit > 0 ? 'text-purple-500 font-bold' : (profit < 0 ? 'text-red-500 font-bold' : 'text-theme-text-muted');
-
-                        return `
-                            <tr class="hover:bg-theme-hover transition duration-150">
-                                <td class="py-2 px-3 font-bold text-theme-text">${escapeHTML(itemName)}</td>
-                                <td class="py-2 px-3 text-right ${stockColor}">${inStock.toLocaleString()}</td>
-                                <td class="py-2 px-3 text-right ${orderColor}">${onOrder > 0 ? '+' + onOrder.toLocaleString() : '-'}</td>
-                                <td class="py-2 px-3 text-right text-red-500 font-mono">$${cost.toLocaleString()}</td>
-                                <td class="py-2 px-3 text-right text-orange-500 font-mono">$${rrp.toLocaleString()}</td>
-                                <td class="py-2 px-3 text-right text-green-500 font-mono font-bold">$${price.toLocaleString()}</td>
-                                <td class="py-2 px-3 text-right ${profitColor} font-mono">$${profit.toLocaleString()}</td>
-                                <td class="py-2 px-3 text-right text-theme-text-muted">${soldAmt.toLocaleString()}</td>
-                                <td class="py-2 px-3 text-right text-green-500 font-mono font-bold">$${soldWorth.toLocaleString()}</td>
-                            </tr>
-                        `;
-                    }).join('');
-                    stockTableBody.innerHTML = stockHtml;
+                    stockDataArr = Object.entries(data.company_stock).map(([itemName, details]) => {
+                        return {
+                            itemName: itemName,
+                            inStock: details.in_stock || 0,
+                            onOrder: details.on_order || 0,
+                            cost: details.cost || 0,
+                            rrp: details.rrp || 0,
+                            price: details.price || 0,
+                            profit: (details.price || 0) - (details.cost || 0),
+                            soldAmt: details.sold_amount || 0,
+                            soldWorth: details.sold_worth || 0
+                        };
+                    });
+                    sortAndRenderStockTable();
                 } else {
+                    const stockTableBody = document.getElementById('stockTableBody');
                     stockTableBody.innerHTML = '<tr><td colspan="9" class="py-4 text-center text-theme-text-muted">No stock data available.</td></tr>';
                 }
 

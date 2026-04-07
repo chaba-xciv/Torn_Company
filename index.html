@@ -470,18 +470,26 @@
                     // Sort news by timestamp ascending (oldest first for graph)
                     const newsEvents = Object.values(data.news).sort((a, b) => a.timestamp - b.timestamp);
 
-                    const trainRegex = /trained (.+)/i;
+                    // Catch phrases like "Manager MrQueen96 has been trained by the director"
+                    // Group 1 catches everything before " has been trained"
+                    const trainRegex = /(.*) has been trained/i;
 
                     newsEvents.forEach(event => {
                         // Check for training events
-                        const trainMatch = event.news.match(trainRegex);
+                        // Make sure to strip HTML tags from event.news first in case it's a link
+                        const cleanNews = event.news.replace(/<[^>]+>/g, '');
+                        const trainMatch = cleanNews.match(trainRegex);
                         if (trainMatch) {
                             const date = new Date(event.timestamp * 1000);
                             const dateStr = date.toLocaleDateString(undefined, {month: 'short', day: 'numeric'});
-                            // Strip any HTML that might be in the name
-                            const cleanName = trainMatch[1].replace(/<[^>]+>/g, '').trim();
-                            // Prepend to array to have newest first later without reversing again
-                            trainLogs.unshift({ date: dateStr, name: cleanName });
+
+                            // e.g. "Manager MrQueen96"
+                            let rawName = trainMatch[1].trim();
+
+                            // Optional: Strip common position names if we just want the username
+                            // For simplicity, we just display what was matched which is often "Position Username"
+
+                            trainLogs.unshift({ date: dateStr, name: rawName });
                         }
 
                         const match = event.news.match(reportRegex);

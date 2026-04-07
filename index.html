@@ -82,6 +82,8 @@
                         <span>Finances</span>
                     </p>
                     <div class="theme-text text-xs text-theme-text mt-2 relative z-10 space-y-1 transition-colors">
+                        <div class="flex justify-between"><span class="font-medium">Ad Budget:</span> <span id="compAd" class="font-bold text-orange-500"></span></div>
+                        <div class="theme-border border-t border-theme-border my-1 transition-colors"></div>
                         <div class="flex justify-between"><span class="font-medium">Daily Cust:</span> <span id="compDailyCust" class="font-bold"></span></div>
                         <div class="flex justify-between"><span class="font-medium">Daily Inc:</span> <span id="compDailyInc" class="font-bold text-green-500"></span></div>
                         <div class="flex justify-between"><span class="font-medium">Daily Prof:</span> <span id="compDailyProf" class="font-bold"></span></div>
@@ -97,11 +99,26 @@
                     <h3 id="compCustomers" class="text-lg font-bold text-purple-500 relative z-10">-</h3>
                     <p class="theme-text text-sm text-theme-text mt-1 relative z-10 transition-colors">Pop: <span id="compPop" class="font-bold text-purple-500"></span></p>
                 </div>
-                <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-orange-400 relative overflow-hidden transition-colors">
-                    <i class="fa-solid fa-bullhorn absolute -right-2 -bottom-2 text-orange-500 text-5xl opacity-10"></i>
-                    <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 relative z-10 transition-colors">Management</p>
-                    <h3 id="compTrains" class="text-lg font-bold text-orange-500 relative z-10">- Trains</h3>
-                    <p class="theme-text text-sm text-theme-text mt-1 relative z-10 transition-colors">Ad Budget: <span id="compAd" class="font-bold text-orange-500"></span></p>
+                <!-- Management Card with Hover Effect -->
+                <div class="theme-card bg-theme-card rounded-xl shadow border-l-4 border-orange-400 relative overflow-hidden transition-colors group">
+                    <div class="p-3 relative z-10 h-full flex flex-col justify-center">
+                        <i class="fa-solid fa-bullhorn absolute -right-2 -bottom-2 text-orange-500 text-5xl opacity-10 pointer-events-none"></i>
+                        <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 transition-colors">Management</p>
+                        <h3 id="compTrains" class="text-lg font-bold text-orange-500">- Trains</h3>
+
+                        <!-- Short view (recent 2) -->
+                        <div id="shortTrainLog" class="mt-1 space-y-1 text-xs transition-opacity duration-300 group-hover:opacity-0 group-hover:h-0">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Expanded hover view -->
+                    <div class="absolute inset-x-0 top-full bg-theme-card border-t border-orange-400/30 p-3 text-xs opacity-0 transition-all duration-300 group-hover:-translate-y-full group-hover:opacity-100 z-20 shadow-lg">
+                        <p class="font-bold text-orange-500 mb-2 border-b border-orange-400/30 pb-1">Recent Training History</p>
+                        <div id="fullTrainLog" class="space-y-1 max-h-[120px] overflow-y-auto custom-scrollbar">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -440,11 +457,12 @@
                     stockTableBody.innerHTML = '<tr><td colspan="9" class="py-4 text-center text-theme-text-muted">No stock data available.</td></tr>';
                 }
 
-                // 3. Extract and plot historical data from news
+                // 3. Extract and plot historical data from news & Training Logs
                 if (data.news) {
                     const days = [];
                     const incomeData = [];
                     const customersData = [];
+                    const trainLogs = [];
 
                     // Regex to parse daily reports
                     const reportRegex = /([A-Za-z]+) report: We had a total of (\d+) customers and made a gross income of \$([\d,]+)\./;
@@ -452,7 +470,20 @@
                     // Sort news by timestamp ascending (oldest first for graph)
                     const newsEvents = Object.values(data.news).sort((a, b) => a.timestamp - b.timestamp);
 
+                    const trainRegex = /trained (.+)/i;
+
                     newsEvents.forEach(event => {
+                        // Check for training events
+                        const trainMatch = event.news.match(trainRegex);
+                        if (trainMatch) {
+                            const date = new Date(event.timestamp * 1000);
+                            const dateStr = date.toLocaleDateString(undefined, {month: 'short', day: 'numeric'});
+                            // Strip any HTML that might be in the name
+                            const cleanName = trainMatch[1].replace(/<[^>]+>/g, '').trim();
+                            // Prepend to array to have newest first later without reversing again
+                            trainLogs.unshift({ date: dateStr, name: cleanName });
+                        }
+
                         const match = event.news.match(reportRegex);
                         if (match) {
                             const day = match[1];
@@ -493,6 +524,25 @@
                         `;
                     }).join('');
                     newsList.innerHTML = newsHtml;
+
+                    // Render Training Logs in Management Card
+                    const shortTrainLog = document.getElementById('shortTrainLog');
+                    const fullTrainLog = document.getElementById('fullTrainLog');
+
+                    if (trainLogs.length > 0) {
+                        // Short View: Top 2
+                        shortTrainLog.innerHTML = trainLogs.slice(0, 2).map(log =>
+                            `<div class="flex justify-between text-theme-text-muted"><span><i class="fa-solid fa-user-graduate text-[10px] mr-1"></i>${escapeHTML(log.name)}</span><span>${log.date}</span></div>`
+                        ).join('');
+
+                        // Full View: Top 10
+                        fullTrainLog.innerHTML = trainLogs.slice(0, 10).map(log =>
+                            `<div class="flex justify-between hover:bg-theme-hover p-1 rounded transition-colors text-theme-text"><span>${escapeHTML(log.name)}</span><span class="text-theme-text-muted">${log.date}</span></div>`
+                        ).join('');
+                    } else {
+                        shortTrainLog.innerHTML = `<div class="text-theme-text-muted italic">No recent trains.</div>`;
+                        fullTrainLog.innerHTML = `<div class="text-theme-text-muted italic">No training data found in logs.</div>`;
+                    }
 
                     // Render charts if we have data
                     if (days.length > 0) {

@@ -247,6 +247,7 @@
 
         // Theme management
         function setTheme(mode, forceColor = null) {
+            localStorage.setItem('themePreference', mode);
             // Remove active button styles
             ['company', 'light', 'dark'].forEach(id => {
                 document.getElementById(`themeBtn-${id}`).classList.remove('bg-gray-100/50', 'bg-yellow-100/50', 'bg-indigo-900/50', 'text-gray-800', 'text-yellow-500', 'text-indigo-400', 'text-theme-primary');
@@ -435,7 +436,14 @@
 
 
                 // Initial theme setup
-                window.setTheme('company', currentThemeColor);
+                const savedTheme = localStorage.getItem('themePreference');
+                if (savedTheme) {
+                    window.setTheme(savedTheme, currentThemeColor);
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    window.setTheme('dark', currentThemeColor);
+                } else {
+                    window.setTheme('company', currentThemeColor);
+                }
 
                 // สร้างดาวเรตติ้ง
                 const rating = data.company.rating || 0;

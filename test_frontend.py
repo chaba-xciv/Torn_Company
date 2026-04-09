@@ -10,7 +10,7 @@ def run_cuj(page):
     page.get_by_role("button", name="Connect").click()
 
     # รอให้หน้าโหลดเสร็จ (API Status Badge จะขึ้นมา)
-    page.wait_for_timeout(3000)
+    page.wait_for_timeout(6000)
 
     # เลื่อนลงมาให้เห็น Timer Section ชัดเจน
     page.evaluate("window.scrollBy(0, 100)")

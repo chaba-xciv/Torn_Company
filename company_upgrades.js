@@ -1,5 +1,5 @@
 const TORN_COMPANY_UPGRADES = {
-    "1": {
+    "Hair Salon": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -61,7 +61,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "2": {
+    "Law Firm": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -123,7 +123,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "3": {
+    "Flower Shop": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -185,7 +185,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "4": {
+    "Car Dealership": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -247,7 +247,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "5": {
+    "Clothing Store": {
         "company_size": [
             {
                 "size": "5 employees",
@@ -309,7 +309,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "6": {
+    "Gun Shop": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -371,7 +371,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "7": {
+    "Game Shop": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -433,7 +433,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "8": {
+    "Candle Shop": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -495,7 +495,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "9": {
+    "Toy Shop": {
         "company_size": [
             {
                 "size": "5 employees",
@@ -557,7 +557,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "10": {
+    "Adult Novelties": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -619,7 +619,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "11": {
+    "Cyber Cafe": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -681,7 +681,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "12": {
+    "Grocery Store": {
         "company_size": [
             {
                 "size": "5 employees",
@@ -743,7 +743,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "13": {
+    "Theater": {
         "company_size": [
             {
                 "size": "6 employees",
@@ -805,7 +805,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "14": {
+    "Sweet Shop": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -867,7 +867,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "15": {
+    "Cruise Line": {
         "company_size": [
             {
                 "size": "6 employees",
@@ -929,7 +929,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "16": {
+    "Television Network": {
         "company_size": [
             {
                 "size": "8 employees",
@@ -991,7 +991,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "17": {
+    "Zoo": {
         "company_size": [
             {
                 "size": "6 employees",
@@ -1053,7 +1053,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "18": {
+    "Amusement Park": {
         "company_size": [
             {
                 "size": "8 employees",
@@ -1115,7 +1115,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "19": {
+    "Furniture Store": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -1177,7 +1177,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "20": {
+    "Gas Station": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -1239,7 +1239,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "21": {
+    "Music Store": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -1301,7 +1301,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "22": {
+    "Nightclub": {
         "company_size": [
             {
                 "size": "5 employees",
@@ -1363,7 +1363,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "23": {
+    "Pub": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -1425,7 +1425,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "24": {
+    "Restaurant": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -1487,7 +1487,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "25": {
+    "Software Corporation": {
         "company_size": [
             {
                 "size": "5 employees",
@@ -1549,7 +1549,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "26": {
+    "Mechanic Shop": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -1611,7 +1611,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "27": {
+    "Fitness Center": {
         "company_size": [
             {
                 "size": "8 employees",
@@ -1673,7 +1673,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "28": {
+    "Lingerie Store": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -1735,7 +1735,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "29": {
+    "Farm": {
         "company_size": [
             {
                 "size": "5 employees",
@@ -1797,7 +1797,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "30": {
+    "Mining Corporation": {
         "company_size": [
             {
                 "size": "8 employees",
@@ -1859,7 +1859,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "31": {
+    "Oil Rig": {
         "company_size": [
             {
                 "size": "12 employees",
@@ -1921,7 +1921,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "32": {
+    "Property Broker": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -1983,7 +1983,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "33": {
+    "Private Security Firm": {
         "company_size": [
             {
                 "size": "6 employees",
@@ -2045,7 +2045,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "34": {
+    "Detective Agency": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -2107,7 +2107,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "35": {
+    "Firework Stand": {
         "company_size": [
             {
                 "size": "4 employees",
@@ -2169,7 +2169,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "37": {
+    "Meat Warehouse": {
         "company_size": [
             {
                 "size": "5 employees",
@@ -2231,7 +2231,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "38": {
+    "Logistics Management": {
         "company_size": [
             {
                 "size": "6 employees",
@@ -2293,7 +2293,7 @@ const TORN_COMPANY_UPGRADES = {
             }
         ]
     },
-    "40": {
+    "Gents Strip Club": {
         "company_size": [
             {
                 "size": "4 employees",

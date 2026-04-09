@@ -1,5 +1,5 @@
 const TORN_COMPANY_SPECIALS = {
-    "1": [
+    "Hair Salon": [
         {
             "stars": 1,
             "name": "Debate",
@@ -36,7 +36,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "20% slashing weapon damage"
         }
     ],
-    "2": [
+    "Law Firm": [
         {
             "stars": 1,
             "name": "Bail Bondsman",
@@ -73,7 +73,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "View success chance of potential busts"
         }
     ],
-    "3": [
+    "Flower Shop": [
         {
             "stars": 1,
             "name": "Rare Import",
@@ -110,7 +110,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "View stock analysis of flowers in all countries"
         }
     ],
-    "4": [
+    "Car Dealership": [
         {
             "stars": 1,
             "name": "Test Drive",
@@ -147,7 +147,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "Escape button always enabled"
         }
     ],
-    "5": [
+    "Clothing Store": [
         {
             "stars": 1,
             "name": "Fashion Show",
@@ -184,7 +184,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "+20% Armor Bonus"
         }
     ],
-    "6": [
+    "Gun Shop": [
         {
             "stars": 1,
             "name": "Sales Discount",
@@ -221,7 +221,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "10% primary & secondary weapon damage"
         }
     ],
-    "7": [
+    "Game Shop": [
         {
             "stars": 1,
             "name": "Ub3rg33k",
@@ -258,7 +258,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "1 nerve, 5 energy, 50 happiness"
         }
     ],
-    "8": [
+    "Candle Shop": [
         {
             "stars": 1,
             "name": "Warming Therapy",
@@ -295,7 +295,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "View someone's true level if they are level holding"
         }
     ],
-    "9": [
+    "Toy Shop": [
         {
             "stars": 1,
             "name": "Memory Lane",
@@ -332,7 +332,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "View stock analysis of plushies in all countries"
         }
     ],
-    "10": [
+    "Adult Novelties": [
         {
             "stars": 1,
             "name": "Blackmail",
@@ -369,7 +369,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "100% bonus to Erotic DVDs"
         }
     ],
-    "11": [
+    "Cyber Cafe": [
         {
             "stars": 1,
             "name": "Ub3rg33k",
@@ -406,7 +406,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "View details of someone's investment account"
         }
     ],
-    "12": [
+    "Grocery Store": [
         {
             "stars": 1,
             "name": "Bagged Down",
@@ -443,7 +443,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "Can of (premium) Energy Drink"
         }
     ],
-    "13": [
+    "Theater": [
         {
             "stars": 1,
             "name": "Stagecraft",
@@ -480,7 +480,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "Hidden traveling status & destination"
         }
     ],
-    "14": [
+    "Sweet Shop": [
         {
             "stars": 1,
             "name": "Sweet Tooth",
@@ -517,7 +517,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "4,500 happiness"
         }
     ],
-    "15": [
+    "Cruise Line": [
         {
             "stars": 1,
             "name": "Bursar",
@@ -554,7 +554,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "3 extra travel items"
         }
     ],
-    "16": [
+    "Television Network": [
         {
             "stars": 1,
             "name": "Propaganda",
@@ -591,7 +591,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "Receive special privileges"
         }
     ],
-    "17": [
+    "Zoo": [
         {
             "stars": 1,
             "name": "Fulfillment",
@@ -628,8 +628,8 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "+3.00 Accuracy"
         }
     ],
-    "18": [],
-    "19": [
+    "Amusement Park": [],
+    "Furniture Store": [
         {
             "stars": 1,
             "name": "Coffee Break",
@@ -666,7 +666,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "100% fist & kick damage"
         }
     ],
-    "20": [
+    "Gas Station": [
         {
             "stars": 1,
             "name": "Molotov Cocktail",
@@ -703,7 +703,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "50% bonus to Burning damage dealt"
         }
     ],
-    "21": [
+    "Music Store": [
         {
             "stars": 1,
             "name": "Ambience",
@@ -740,7 +740,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "+15% passive on all stats"
         }
     ],
-    "22": [
+    "Nightclub": [
         {
             "stars": 1,
             "name": "Criminal Connections",
@@ -777,7 +777,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "Education is unaffected by drug addiction"
         }
     ],
-    "23": [
+    "Pub": [
         {
             "stars": 1,
             "name": "Pub Lunch",
@@ -814,7 +814,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "+15 maximum nerve"
         }
     ],
-    "24": [
+    "Restaurant": [
         {
             "stars": 1,
             "name": "Free Meals",
@@ -851,7 +851,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "25% consumable cooldown reduction"
         }
     ],
-    "25": [
+    "Software Corporation": [
         {
             "stars": 1,
             "name": "Ub3rg33k",
@@ -888,7 +888,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "View financial details of a company"
         }
     ],
-    "26": [
+    "Mechanic Shop": [
         {
             "stars": 1,
             "name": "Machinist",
@@ -925,7 +925,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "50% driving skill gain"
         }
     ],
-    "27": [
+    "Fitness Center": [
         {
             "stars": 1,
             "name": "Healthy Mind",
@@ -962,7 +962,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "3% gym gains"
         }
     ],
-    "28": [
+    "Lingerie Store": [
         {
             "stars": 1,
             "name": "Nine to Five",
@@ -999,7 +999,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "Provides Free Business Class Travel"
         }
     ],
-    "29": [
+    "Farm": [
         {
             "stars": 1,
             "name": "Fullfillment",
@@ -1036,7 +1036,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "7 energy"
         }
     ],
-    "30": [
+    "Mining Corporation": [
         {
             "stars": 1,
             "name": "Mining Boom",
@@ -1073,7 +1073,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "Boost current life to 150% of maximum"
         }
     ],
-    "31": [
+    "Oil Rig": [
         {
             "stars": 1,
             "name": "Danger Money",
@@ -1110,7 +1110,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "50% investment banking limit"
         }
     ],
-    "32": [
+    "Property Broker": [
         {
             "stars": 1,
             "name": "Commission",
@@ -1147,7 +1147,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "10% property upgrade cost reduction"
         }
     ],
-    "33": [
+    "Private Security Firm": [
         {
             "stars": 1,
             "name": "Off the Grid",
@@ -1184,7 +1184,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "3 mission credits"
         }
     ],
-    "34": [
+    "Detective Agency": [
         {
             "stars": 1,
             "name": "References",
@@ -1221,7 +1221,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "View a list of people with the highest wanted rewards"
         }
     ],
-    "35": [
+    "Firework Stand": [
         {
             "stars": 1,
             "name": "Audaciousness",
@@ -1258,7 +1258,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "Random incendiary ammunition, supplying currently equipped weapons if applicable"
         }
     ],
-    "37": [
+    "Meat Warehouse": [
         {
             "stars": 1,
             "name": "Blood Thirst",
@@ -1295,7 +1295,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "3% life regeneration per tick"
         }
     ],
-    "38": [
+    "Logistics Management": [
         {
             "stars": 1,
             "name": "Efficiency",
@@ -1332,7 +1332,7 @@ const TORN_COMPANY_SPECIALS = {
             "effect": "Targeted company productivity boost"
         }
     ],
-    "40": [
+    "Gents Strip Club": [
         {
             "stars": 1,
             "name": "Happy Ending",

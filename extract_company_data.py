@@ -76,7 +76,6 @@ def main():
 
     # Look for each company
     for company_name in company_map.values():
-        company_id = name_to_id[company_name]
 
         # ID in wiki is usually the name with spaces replaced by underscores
         wiki_id = company_name.replace(' ', '_')
@@ -215,10 +214,10 @@ def main():
 
             current = current.find_next_sibling()
 
-        all_positions[company_id] = company_positions
-        all_specials[company_id] = company_specials
-        all_stock[company_id] = company_stock
-        all_upgrades[company_id] = {
+        all_positions[company_name] = company_positions
+        all_specials[company_name] = company_specials
+        all_stock[company_name] = company_stock
+        all_upgrades[company_name] = {
             'company_size': company_size_upgrades,
             'staff_room': staff_room_upgrades
         }

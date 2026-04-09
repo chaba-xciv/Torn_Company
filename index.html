@@ -716,11 +716,11 @@
                 }
 
                 // 3. Extract and plot historical data from news & Training Logs
+                let trainLogs = [];
                 if (data.news) {
                     const days = [];
                     const incomeData = [];
                     const customersData = [];
-                    const trainLogs = [];
 
                     // Regex to parse daily reports
                     const reportRegex = /([A-Za-z]+) report: We had a total of (\d+) customers and made a gross income of \$([\d,]+)\./;
@@ -730,24 +730,34 @@
 
                     // Catch phrases like "Manager MrQueen96 has been trained by the director"
                     // Group 1 catches everything before " has been trained"
-                    const trainRegex = /(.*) has been trained/i;
+                    // We extract name directly from the <a> tag if possible, otherwise fallback
+                    const trainRegexHTML = /<a href[^>]*>(.*?)<\/a>\s*has been trained/i;
+                    const trainRegexFallback = /(.*) has been trained/i;
 
                     newsEvents.forEach(event => {
-                        // Check for training events
-                        // Make sure to strip HTML tags from event.news first in case it's a link
-                        const cleanNews = event.news.replace(/<[^>]+>/g, '');
-                        const trainMatch = cleanNews.match(trainRegex);
-                        if (trainMatch) {
+                        let name = "Unknown";
+                        let pos = "Unknown";
+
+                        const htmlMatch = event.news.match(trainRegexHTML);
+                        if (htmlMatch) {
+                            name = htmlMatch[1].trim();
+                            // Position is whatever comes before the <a> tag
+                            const posMatch = event.news.match(/^(.*?)\s*<a href/i);
+                            if (posMatch) pos = posMatch[1].trim();
+                        } else {
+                            const cleanNews = event.news.replace(/<[^>]+>/g, '');
+                            const fallbackMatch = cleanNews.match(trainRegexFallback);
+                            if (fallbackMatch) {
+                                let rawName = fallbackMatch[1].trim();
+                                const parts = rawName.split(' ');
+                                pos = parts.length > 1 ? parts[0] : 'Unknown';
+                                name = parts.length > 1 ? parts.slice(1).join(' ') : rawName;
+                            }
+                        }
+
+                        if (name !== "Unknown") {
                             const date = new Date(event.timestamp * 1000);
                             const dateStr = date.toLocaleDateString(undefined, {month: 'short', day: 'numeric'});
-
-                            // e.g. "Manager MrQueen96"
-                            let rawName = trainMatch[1].trim();
-
-                            // Split pos and name
-                            const parts = rawName.split(' ');
-                            let pos = parts.length > 1 ? parts[0] : 'Unknown';
-                            let name = parts.length > 1 ? parts.slice(1).join(' ') : rawName;
 
                             // Get stat gain (Train is always 50/25, we just need the stat types)
                             const statGainRaw = getStatGainFromData(companyTypeInfo.name, pos);
@@ -1019,7 +1029,7 @@
                 let recentTrains = [];
                 let staffCount = data.company_employees ? Object.keys(data.company_employees).length : 0;
                 if (typeof trainLogs !== 'undefined' && trainLogs.length > 0 && staffCount > 0) {
-                    recentTrains = trainLogs.map(log => log.name).slice(0, staffCount);
+                    recentTrains = trainLogs.map(log => log.name.trim()).slice(0, staffCount);
                 }
 
                 // --- 3.2 สร้างแถวของลูกจ้างทั้งหมด ---
@@ -1077,24 +1087,42 @@
                         const rawE = emp.endurance || 0;
                         const rawTotal = rawM + rawI + rawE;
 
-                        const m = rawM > 1000 ? (rawM/1000).toFixed(1)+'k' : rawM;
-                        const i = rawI > 1000 ? (rawI/1000).toFixed(1)+'k' : rawI;
-                        const e = rawE > 1000 ? (rawE/1000).toFixed(1)+'k' : rawE;
-                        const totalStats = rawTotal > 1000 ? (rawTotal/1000).toFixed(1)+'k' : rawTotal;
+                        const formatStat = (val) => val > 1000 ? (val/1000).toFixed(1)+'k' : val;
+                        let m = formatStat(rawM);
+                        let i = formatStat(rawI);
+                        let e = formatStat(rawE);
+                        const totalStats = formatStat(rawTotal);
 
-                        // Calculate Rec Stats
-                        let recStatsStr = '-';
+                        // Highlight logic
+                        let hlM = false, hlI = false, hlE = false;
+                        let recStatsStr = '0 / 0 / 0';
+
                         if (TORN_COMPANY_POSITIONS[companyTypeInfo.name]) {
                             const posData = TORN_COMPANY_POSITIONS[companyTypeInfo.name].find(p => p.rank.toLowerCase() === (emp.position || '').toLowerCase());
-                            if (posData && posData.recommended_stats) {
-                                const rs = posData.recommended_stats;
-                                const rM = rs.MAN > 1000 ? (rs.MAN/1000).toFixed(1)+'k' : rs.MAN;
-                                const rI = rs.INT > 1000 ? (rs.INT/1000).toFixed(1)+'k' : rs.INT;
-                                const rE = rs.END > 1000 ? (rs.END/1000).toFixed(1)+'k' : rs.END;
-                                if (rs.MAN > 0 || rs.INT > 0 || rs.END > 0) {
-                                    recStatsStr = `${rM} / ${rI} / ${rE}`;
+                            if (posData) {
+                                // Check stat_gains to determine highlights
+                                if (posData.stat_gains) {
+                                    if (posData.stat_gains.MAN > 0) hlM = true;
+                                    if (posData.stat_gains.INT > 0) hlI = true;
+                                    if (posData.stat_gains.END > 0) hlE = true;
+                                }
+
+                                // Format Rec Stats
+                                if (posData.recommended_stats) {
+                                    const rs = posData.recommended_stats;
+                                    recStatsStr = `${formatStat(rs.MAN)} / ${formatStat(rs.INT)} / ${formatStat(rs.END)}`;
                                 }
                             }
+                        }
+
+                        // Apply highlighting to employee stats
+                        const wrapHl = (str, isHl) => isHl ? `<b><u>${str}</u></b>` : str;
+                        let empStatsStr = `${wrapHl(m, hlM)} / ${wrapHl(i, hlI)} / ${wrapHl(e, hlE)}`;
+
+                        // Apply highlighting to rec stats
+                        if (recStatsStr !== '0 / 0 / 0') {
+                            const rsParts = recStatsStr.split(' / ');
+                            recStatsStr = `${wrapHl(rsParts[0], hlM)} / ${wrapHl(rsParts[1], hlI)} / ${wrapHl(rsParts[2], hlE)}`;
                         }
 
                         // Train tracking column logic
@@ -1134,7 +1162,7 @@
                                 </td>
                                 <td class="py-1.5 px-2 text-center font-medium text-blue-500 bg-blue-500/10 text-xs">${dailyGainsStr}</td>
                                 ${trainHtml}
-                                <td class="py-1.5 px-2 text-theme-text-muted text-center text-xs">${m} / ${i} / ${e}</td>
+                                <td class="py-1.5 px-2 text-theme-text-muted text-center text-xs">${empStatsStr}</td>
                                 <td class="py-1.5 px-2 text-center text-theme-text-muted text-xs">${recStatsStr}</td>
                                 <td class="py-1.5 px-2 font-bold text-theme-primary text-center bg-theme-primary-dark">${totalStats}</td>
                                 <td class="py-1.5 px-2 text-center text-theme-text-muted">${emp.days_in_company || 0}</td>

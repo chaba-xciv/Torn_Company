@@ -7,6 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="company_data.js"></script>
+    <script src="company_positions.js"></script>
+    <script src="company_specials.js"></script>
+    <script src="company_stock.js"></script>
+    <script src="company_upgrades.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -359,17 +363,29 @@
             }
         }
 
-        const dailyGainsMap = {
-            "Manager": "36 END / 18 INT",
-            "Marketer": "36 INT / 18 END",
-            "Accountant": "34 END / 17 INT",
-            "Florist": "30 END / 15 MAN",
-            "Arranger": "30 INT / 15 MAN",
-            "Apprentice": "25 END / 13 MAN",
-            "Cleaner": "25 MAN / 13 END",
-            "Trainer": "0",
-            "Director": "0"
-        };
+        // Helper to get stat gain from our extracted data
+        function getStatGainFromData(companyType, positionName) {
+            if (!TORN_COMPANY_POSITIONS[companyType]) return "0";
+            const positions = TORN_COMPANY_POSITIONS[companyType];
+
+            // Allow matching "Director" or other roles, though standard positions are mapped
+            const pos = positions.find(p => p.rank.toLowerCase() === positionName.toLowerCase());
+            if (!pos) return "0";
+
+            // Reconstruct the string format or use the object data directly
+            const gains = pos.stat_gains;
+            const nonZeroGains = [];
+
+            // Prioritize higher stats first
+            const entries = Object.entries(gains).filter(([_, val]) => val > 0).sort((a, b) => b[1] - a[1]);
+
+            if (entries.length === 0) return "0";
+
+            for (const [stat, val] of entries) {
+                nonZeroGains.push(`${val} ${stat}`);
+            }
+            return nonZeroGains.join(' / ');
+        }
 
         function handleStockSort(col) {
             if (stockSortCol === col) {
@@ -654,7 +670,7 @@
                             let name = parts.length > 1 ? parts.slice(1).join(' ') : rawName;
 
                             // Get stat gain (Train is always 50/25, we just need the stat types)
-                            const statGainRaw = dailyGainsMap[pos] || "0";
+                            const statGainRaw = getStatGainFromData(companyType, pos);
 
                             let statShort = "-";
                             let statTooltip = "Unknown";
@@ -884,7 +900,7 @@
                         }
 
                         const salaryStr = emp.wage > 0 ? "$" + emp.wage.toLocaleString() : `0`;
-                        const dailyGainsStr = dailyGainsMap[emp.position] || '0';
+                        const dailyGainsStr = getStatGainFromData(companyType, emp.position);
 
                         const rawM = emp.manual_labor || 0;
                         const rawI = emp.intelligence || 0;

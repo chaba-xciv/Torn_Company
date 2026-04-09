@@ -85,7 +85,7 @@
                 <p class="font-semibold text-theme-text flex items-center gap-1 text-sm mb-1"><i class="fa-solid fa-shield-halved text-theme-primary"></i> Privacy & Security</p>
                 <p>• <strong>Client-Side Only:</strong> This application runs entirely in your browser. Your API key and data are <strong>never</strong> transmitted to our servers.</p>
                 <p>• <strong>Local Storage:</strong> Your preferences and session are cached securely in your browser's local storage and can be cleared by disconnecting.</p>
-                <p>• <strong>Access Level:</strong> We recommend using a <strong>Full Access</strong> API key to ensure all dashboard features and statistics display correctly.</p>
+                <p>• <strong>Access Level:</strong> We recommend using a <strong class="bg-yellow-600 text-white px-1 py-0.5 rounded">Limited Access</strong> API key to ensure all dashboard features and statistics display correctly. (<a href="https://www.torn.com/preferences.php#tab=api" target="_blank" class="text-theme-primary hover:underline">API Settings</a>)</p>
             </div>
         </div>
     </div>
@@ -139,21 +139,19 @@
                     <h3 id="compCustomers" class="text-lg font-bold text-purple-500 relative z-10">-</h3>
                     <p class="theme-text text-sm text-theme-text mt-1 relative z-10 transition-colors">Pop: <span id="compPop" class="font-bold text-purple-500"></span></p>
                 </div>
-                <!-- Management Card with Hover Effect -->
-                <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-orange-400 relative overflow-hidden transition-colors group">
+                <!-- Management Card (Hover effect removed) -->
+                <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-orange-400 relative overflow-hidden transition-colors flex flex-col h-full min-h-[160px]">
                     <i class="fa-solid fa-bullhorn absolute -right-2 -bottom-2 text-orange-500 text-5xl opacity-10 pointer-events-none"></i>
                     <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 relative z-10 transition-colors">Management</p>
-                    <h3 id="compTrains" class="text-lg font-bold text-orange-500 relative z-10">- Trains</h3>
+                    <h3 id="compTrains" class="text-lg font-bold text-orange-500 relative z-10 mb-2">- Trains</h3>
 
-                    <!-- Short view (recent 2) -->
-                    <div id="shortTrainLog" class="mt-1 space-y-1 text-xs relative z-10 transition-opacity duration-300 group-hover:opacity-0 group-hover:h-0">
-                        <!-- Injected via JS -->
-                    </div>
-
-                    <!-- Expanded hover view -->
-                    <div class="absolute inset-x-0 top-full bg-theme-card border-t border-orange-400/30 p-3 text-xs opacity-0 transition-all duration-300 group-hover:-translate-y-full group-hover:opacity-100 z-20 shadow-lg">
-                        <p class="font-bold text-orange-500 mb-2 border-b border-orange-400/30 pb-1">Recent Training History</p>
-                        <div id="fullTrainLog" class="space-y-1 max-h-[120px] overflow-y-auto custom-scrollbar">
+                    <div class="flex-grow flex flex-col relative z-10">
+                        <p class="font-bold text-orange-500 text-xs mb-1 border-b border-orange-400/30 pb-1 flex justify-between">
+                            <span>Name</span>
+                            <span>Pos</span>
+                            <span>Stat</span>
+                        </p>
+                        <div id="shortTrainLog" class="space-y-1 text-xs overflow-y-auto max-h-[100px] custom-scrollbar pr-1">
                             <!-- Injected via JS -->
                         </div>
                     </div>
@@ -639,10 +637,35 @@
                             // e.g. "Manager MrQueen96"
                             let rawName = trainMatch[1].trim();
 
-                            // Optional: Strip common position names if we just want the username
-                            // For simplicity, we just display what was matched which is often "Position Username"
+                            // Split pos and name
+                            const parts = rawName.split(' ');
+                            let pos = parts.length > 1 ? parts[0] : 'Unknown';
+                            let name = parts.length > 1 ? parts.slice(1).join(' ') : rawName;
 
-                            trainLogs.unshift({ date: dateStr, name: rawName });
+                            // Get stat gain
+                            const statGainRaw = dailyGainsMap[pos] || "0";
+
+                            // Transform "36 END / 18 INT" to "36/18" and tooltip "END/INT"
+                            let statShort = statGainRaw;
+                            let statTooltip = statGainRaw;
+
+                            if(statGainRaw !== "0") {
+                                const statParts = statGainRaw.split(' / ');
+                                if(statParts.length === 2) {
+                                    const val1 = statParts[0].split(' ')[0];
+                                    const type1 = statParts[0].split(' ')[1];
+                                    const val2 = statParts[1].split(' ')[0];
+                                    const type2 = statParts[1].split(' ')[1];
+
+                                    statShort = `${val1}/${val2}`;
+                                    statTooltip = `${type1}/${type2}`;
+                                }
+                            }
+
+                            // Add local time
+                            const localTimeStr = date.toLocaleTimeString(undefined, {hour: '2-digit', minute:'2-digit'});
+
+                            trainLogs.unshift({ date: dateStr, time: localTimeStr, name: name, pos: pos, statShort: statShort, statTooltip: statTooltip });
                         }
 
                         const match = event.news.match(reportRegex);
@@ -688,21 +711,20 @@
 
                     // Render Training Logs in Management Card
                     const shortTrainLog = document.getElementById('shortTrainLog');
-                    const fullTrainLog = document.getElementById('fullTrainLog');
 
                     if (trainLogs.length > 0) {
-                        // Short View: Top 2
-                        shortTrainLog.innerHTML = trainLogs.slice(0, 2).map(log =>
-                            `<div class="flex justify-between text-theme-text-muted"><span><i class="fa-solid fa-user-graduate text-[10px] mr-1"></i>${escapeHTML(log.name)}</span><span>${log.date}</span></div>`
-                        ).join('');
-
-                        // Full View: Top 10
-                        fullTrainLog.innerHTML = trainLogs.slice(0, 10).map(log =>
-                            `<div class="flex justify-between hover:bg-theme-hover p-1 rounded transition-colors text-theme-text"><span>${escapeHTML(log.name)}</span><span class="text-theme-text-muted">${log.date}</span></div>`
+                        shortTrainLog.innerHTML = trainLogs.map(log =>
+                            `<div class="flex justify-between items-center text-theme-text py-0.5 border-b border-theme-border/30 last:border-0 hover:bg-theme-hover rounded px-1 transition-colors group/row">
+                                <div class="flex flex-col min-w-[70px]">
+                                    <span class="font-medium truncate max-w-[80px]" title="${escapeHTML(log.name)}">${escapeHTML(log.name)}</span>
+                                    <span class="text-[10px] text-theme-text-muted">${log.date} ${log.time}</span>
+                                </div>
+                                <span class="text-[10px] bg-theme-bg/50 px-1.5 py-0.5 rounded text-theme-text-muted text-center min-w-[50px]">${escapeHTML(log.pos)}</span>
+                                <span class="text-[11px] font-mono text-orange-500 text-right min-w-[45px] cursor-help" title="${escapeHTML(log.statTooltip)}">${escapeHTML(log.statShort)}</span>
+                            </div>`
                         ).join('');
                     } else {
-                        shortTrainLog.innerHTML = `<div class="text-theme-text-muted italic">No recent trains.</div>`;
-                        fullTrainLog.innerHTML = `<div class="text-theme-text-muted italic">No training data found in logs.</div>`;
+                        shortTrainLog.innerHTML = `<div class="text-theme-text-muted italic text-center py-2">No recent trains.</div>`;
                     }
 
                     // Render charts if we have data

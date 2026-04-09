@@ -1,4 +1,4 @@
-const TORN_COMPANY_UPGRADES = {
+window.TORN_COMPANY_UPGRADES = {
     "Hair Salon": {
         "company_size": [
             {

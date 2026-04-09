@@ -101,9 +101,16 @@
             <h1 id="headerTitle" class="text-3xl font-bold text-theme-primary drop-shadow-sm flex justify-center items-center gap-2 transition-colors">
                 <i id="mainHeaderIcon" class="fa-solid fa-seedling"></i> <span id="mainHeaderName">Loading...</span>
             </h1>
+
             <div id="mainHeaderRating" class="mt-2 text-xl tracking-widest" title="Company Rating">
                 <!-- Stars will be injected here -->
             </div>
+
+            <!-- Company Specials / Perks -->
+            <div id="companySpecials" class="mt-3 flex flex-wrap justify-center gap-2 max-w-2xl mx-auto">
+                <!-- Specials injected here -->
+            </div>
+
         </div>
 
         <!-- Timer / Countdown Section -->
@@ -117,7 +124,12 @@
             <p id="loadingText" class="text-lg font-bold text-theme-primary transition-colors"><i class="fa-solid fa-spinner fa-spin"></i> Fetching data from Torn...</p>
         </div>
 
-        <div id="dashboardSection" class="hidden">
+
+        <!-- Actionable Alerts -->
+        <div id="alertsSection" class="mb-4 hidden flex-col gap-2">
+            <!-- Alerts injected via JS -->
+        </div>
+<div id="dashboardSection" class="hidden">
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-theme-primary relative overflow-hidden transition-colors">
@@ -127,6 +139,7 @@
                     </p>
                     <div class="theme-text text-xs text-theme-text mt-2 relative z-10 space-y-1 transition-colors">
                         <div class="flex justify-between"><span class="font-medium">Ad Budget:</span> <span id="compAd" class="font-bold text-orange-500"></span></div>
+                        <div class="flex justify-between"><span class="font-medium">Total Wages:</span> <span id="compWages" class="font-bold text-red-500"></span></div>
                         <div class="theme-border border-t border-theme-border my-1 transition-colors"></div>
                         <div class="flex justify-between"><span class="font-medium">Daily Cust:</span> <span id="compDailyCust" class="font-bold"></span></div>
                         <div class="flex justify-between"><span class="font-medium">Daily Inc:</span> <span id="compDailyInc" class="font-bold text-green-500"></span></div>
@@ -166,6 +179,49 @@
                     </div>
                 </div>
             </div>
+            <!-- Full Width Employee Status -->
+<div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border mb-4 transition-colors">
+                        <div class="theme-header bg-theme-primary px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 transition-colors">
+                            <h3 class="text-white font-bold"><i class="fa-solid fa-users-gear"></i> Detailed Employee Status</h3>
+                        </div>
+                        <div class="overflow-x-auto" style="max-height: 500px;">
+                            <table class="w-full text-left border-collapse text-sm whitespace-nowrap">
+                                <thead class="theme-table-header sticky top-0 bg-theme-hover shadow-sm z-20 transition-colors">
+                                    <tr class="theme-border border-b border-theme-border text-theme-text transition-colors">
+                                        <th class="py-1.5 px-2 font-semibold">Name</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center">Position</th>
+                                        <th class="py-1.5 px-2 font-semibold text-right">Salary</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-purple-500" title="Employee Effectiveness Merits (Max 10)">Merits</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center">Eff.</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-blue-500">Daily Gains</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center">Stats (M/I/E)</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-theme-primary">Total Stats</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center">Days</th>
+                                        <th class="py-1.5 px-2 font-semibold text-right">Last Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeTableBody" class="theme-divide divide-y divide-theme-border transition-colors">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- News Timeline -->
+                    <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border transition-colors">
+                        <div class="theme-header bg-theme-primary px-3 py-2 transition-colors">
+                            <h3 class="text-white font-bold"><i class="fa-solid fa-newspaper"></i> Company Events</h3>
+                        </div>
+                        <div class="p-4 overflow-y-auto" style="max-height: 500px;">
+                            <ul id="newsList" class="space-y-2">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-3">
+
 
             <!-- Full Width Inventory Stock -->
             <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border mb-4 transition-colors">
@@ -193,47 +249,6 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
-                <div class="lg:col-span-1 space-y-6">
-                    <!-- News Timeline -->
-                    <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border transition-colors">
-                        <div class="theme-header bg-theme-primary px-3 py-2 transition-colors">
-                            <h3 class="text-white font-bold"><i class="fa-solid fa-newspaper"></i> Company Events</h3>
-                        </div>
-                        <div class="p-4 overflow-y-auto" style="max-height: 500px;">
-                            <ul id="newsList" class="space-y-2">
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-3">
-
-                    <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border mb-4 transition-colors">
-                        <div class="theme-header bg-theme-primary px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 transition-colors">
-                            <h3 class="text-white font-bold"><i class="fa-solid fa-users-gear"></i> Detailed Employee Status</h3>
-                        </div>
-                        <div class="overflow-x-auto" style="max-height: 500px;">
-                            <table class="w-full text-left border-collapse text-sm whitespace-nowrap">
-                                <thead class="theme-table-header sticky top-0 bg-theme-hover shadow-sm z-20 transition-colors">
-                                    <tr class="theme-border border-b border-theme-border text-theme-text transition-colors">
-                                        <th class="py-1.5 px-2 font-semibold">Name</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center">Position</th>
-                                        <th class="py-1.5 px-2 font-semibold text-right">Salary</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center text-purple-500" title="Employee Effectiveness Merits (Max 10)">Merits</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center">Eff.</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center text-blue-500">Daily Gains</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center">Stats (M/I/E)</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center text-theme-primary">Total Stats</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center">Days</th>
-                                        <th class="py-1.5 px-2 font-semibold text-right">Last Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="employeeTableBody" class="theme-divide divide-y divide-theme-border transition-colors">
-                                    </tbody>
-                            </table>
-                        </div>
-                    </div>
 
                     <!-- Collapsible Graphs Section -->
                     <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border transition-colors">
@@ -572,6 +587,23 @@
                 }
                 document.getElementById('mainHeaderRating').innerHTML = starsHtml;
 
+
+                // Display Company Specials
+                const companySpecialsDiv = document.getElementById('companySpecials');
+                companySpecialsDiv.innerHTML = '';
+                if (TORN_COMPANY_SPECIALS[companyTypeInfo.name]) {
+                    const specials = TORN_COMPANY_SPECIALS[companyTypeInfo.name];
+                    const activeSpecials = specials.filter(s => s.rating_required <= rating);
+
+                    if (activeSpecials.length > 0) {
+                        companySpecialsDiv.innerHTML = activeSpecials.map(s => {
+                            return `<div class="bg-theme-primary/10 border border-theme-primary/20 text-theme-primary px-2 py-1 rounded text-xs cursor-help shadow-sm" title="Cost: ${s.cost} JP">${s.effect}</div>`;
+                        }).join('');
+                    } else {
+                        companySpecialsDiv.innerHTML = '<span class="text-xs text-theme-text-muted">No specials unlocked yet</span>';
+                    }
+                }
+
                 // 1. ใส่ข้อมูล Overview Cards
 
                 // Calculate Total Wages
@@ -592,6 +624,7 @@
 
                     adBudget = data.company_detailed.advertising_budget || 0;
                     document.getElementById('compAd').textContent = "$" + adBudget.toLocaleString();
+                document.getElementById('compWages').textContent = "$" + totalWages.toLocaleString();
                 }
 
                 // Finances calculations
@@ -673,7 +706,7 @@
                             let name = parts.length > 1 ? parts.slice(1).join(' ') : rawName;
 
                             // Get stat gain (Train is always 50/25, we just need the stat types)
-                            const statGainRaw = getStatGainFromData(companyType, pos);
+                            const statGainRaw = getStatGainFromData(data.company.company_type, pos);
 
                             let statShort = "-";
                             let statTooltip = "Unknown";
@@ -809,6 +842,95 @@
                     }
                 }
 
+
+                // 5. Generate Actionable Alerts
+                const alertsSection = document.getElementById('alertsSection');
+                alertsSection.innerHTML = '';
+                let hasAlerts = false;
+
+                // Alert: Trains Available
+                if (data.company_detailed && data.company_detailed.trains_available > 0) {
+                    hasAlerts = true;
+                    alertsSection.innerHTML += `
+                        <div class="bg-orange-500/10 border border-orange-500/30 text-orange-600 rounded-lg p-3 flex items-start gap-3 shadow-sm">
+                            <i class="fa-solid fa-graduation-cap mt-1"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">Trains Available</h4>
+                                <p class="text-xs mt-0.5">You have <strong>${data.company_detailed.trains_available}</strong> training slot(s) available. Don't forget to train your staff!</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Alert: Inactive or Low Eff Staff
+                if (data.company_employees) {
+                    let inactiveStaff = [];
+                    let lowEffStaff = [];
+                    Object.values(data.company_employees).forEach(emp => {
+                        if (emp.last_action && (emp.last_action.relative.includes('day') || emp.last_action.relative.includes('offline'))) {
+                            inactiveStaff.push(emp.name);
+                        }
+                        if (emp.effectiveness && emp.effectiveness.total < 80) {
+                            lowEffStaff.push(emp.name);
+                        }
+                    });
+
+                    if (inactiveStaff.length > 0) {
+                        hasAlerts = true;
+                        alertsSection.innerHTML += `
+                            <div class="bg-red-500/10 border border-red-500/30 text-red-600 rounded-lg p-3 flex items-start gap-3 shadow-sm">
+                                <i class="fa-solid fa-user-clock mt-1"></i>
+                                <div>
+                                    <h4 class="font-bold text-sm">Inactive Staff Detected</h4>
+                                    <p class="text-xs mt-0.5">${inactiveStaff.join(', ')}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    if (lowEffStaff.length > 0) {
+                        hasAlerts = true;
+                        alertsSection.innerHTML += `
+                            <div class="bg-yellow-500/10 border border-yellow-500/30 text-yellow-600 rounded-lg p-3 flex items-start gap-3 shadow-sm">
+                                <i class="fa-solid fa-battery-quarter mt-1"></i>
+                                <div>
+                                    <h4 class="font-bold text-sm">Low Effectiveness (< 80%)</h4>
+                                    <p class="text-xs mt-0.5">${lowEffStaff.join(', ')}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+
+                // Alert: Low Stock
+                if (data.company_stock) {
+                    let lowStockItems = [];
+                    Object.entries(data.company_stock).forEach(([itemName, details]) => {
+                        if (details.in_stock < 100) {
+                            lowStockItems.push(itemName);
+                        }
+                    });
+                    if (lowStockItems.length > 0) {
+                        hasAlerts = true;
+                        alertsSection.innerHTML += `
+                            <div class="bg-blue-500/10 border border-blue-500/30 text-blue-600 rounded-lg p-3 flex items-start gap-3 shadow-sm">
+                                <i class="fa-solid fa-box-open mt-1"></i>
+                                <div>
+                                    <h4 class="font-bold text-sm">Low Stock Alert (< 100)</h4>
+                                    <p class="text-xs mt-0.5">${lowStockItems.join(', ')}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+
+                if (hasAlerts) {
+                    alertsSection.classList.remove('hidden');
+                    alertsSection.classList.add('flex');
+                } else {
+                    alertsSection.classList.add('hidden');
+                    alertsSection.classList.remove('flex');
+                }
+
                 // 4. จัดการตารางพนักงาน (สร้างแถว CEO + แถวพนักงาน)
                 const tbody = document.getElementById('employeeTableBody');
                 tbody.innerHTML = '';
@@ -903,7 +1025,7 @@
                         }
 
                         const salaryStr = emp.wage > 0 ? "$" + emp.wage.toLocaleString() : `0`;
-                        const dailyGainsStr = getStatGainFromData(companyType, emp.position);
+                        const dailyGainsStr = getStatGainFromData(data.company.company_type, emp.position);
 
                         const rawM = emp.manual_labor || 0;
                         const rawI = emp.intelligence || 0;

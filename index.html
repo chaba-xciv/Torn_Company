@@ -6,11 +6,6 @@
     <title>Company Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="company_data.js"></script>
-    <script src="company_positions.js"></script>
-    <script src="company_specials.js"></script>
-    <script src="company_stock.js"></script>
-    <script src="company_upgrades.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -1273,6 +1268,13 @@
         window.handleLogin = handleLogin;
         window.handleEmpSort = handleEmpSort;
         window.handleStockSort = handleStockSort;
+    </script>
+    <script type="module">
+    import './company_data.js';
+    import './company_positions.js';
+    import './company_specials.js';
+    import './company_stock.js';
+    import './company_upgrades.js';
     </script>
 </body>
 </html>

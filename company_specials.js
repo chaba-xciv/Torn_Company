@@ -1,4 +1,4 @@
-const TORN_COMPANY_SPECIALS = {
+window.TORN_COMPANY_SPECIALS = {
     "Hair Salon": [
         {
             "stars": 1,

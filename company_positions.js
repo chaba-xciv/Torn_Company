@@ -1,4 +1,4 @@
-const TORN_COMPANY_POSITIONS = {
+window.TORN_COMPANY_POSITIONS = {
     "Hair Salon": [
         {
             "rank": "Stylist",

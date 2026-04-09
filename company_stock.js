@@ -1,4 +1,4 @@
-const TORN_COMPANY_STOCK = {
+window.TORN_COMPANY_STOCK = {
     "Hair Salon": [
         {
             "name": "Standard Treatment",

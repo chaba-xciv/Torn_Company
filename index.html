@@ -642,23 +642,24 @@
                             let pos = parts.length > 1 ? parts[0] : 'Unknown';
                             let name = parts.length > 1 ? parts.slice(1).join(' ') : rawName;
 
-                            // Get stat gain
+                            // Get stat gain (Train is always 50/25, we just need the stat types)
                             const statGainRaw = dailyGainsMap[pos] || "0";
 
-                            // Transform "36 END / 18 INT" to "36/18" and tooltip "END/INT"
-                            let statShort = statGainRaw;
-                            let statTooltip = statGainRaw;
+                            let statShort = "-";
+                            let statTooltip = "Unknown";
 
                             if(statGainRaw !== "0") {
                                 const statParts = statGainRaw.split(' / ');
                                 if(statParts.length === 2) {
-                                    const val1 = statParts[0].split(' ')[0];
                                     const type1 = statParts[0].split(' ')[1];
-                                    const val2 = statParts[1].split(' ')[0];
                                     const type2 = statParts[1].split(' ')[1];
 
-                                    statShort = `${val1}/${val2}`;
+                                    // Train is always 50 main stat / 25 secondary stat
+                                    statShort = `50/25`;
                                     statTooltip = `${type1}/${type2}`;
+                                } else {
+                                    statShort = `0`;
+                                    statTooltip = `None`;
                                 }
                             }
 

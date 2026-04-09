@@ -232,14 +232,13 @@
             </div>
 
 
-                    <!-- Collapsible Graphs Section -->
+                    <!-- Historical Graphs Section -->
                     <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border transition-colors">
-                        <button onclick="toggleGraphs()" class="theme-btn w-full bg-theme-hover hover:bg-theme-hover-strong text-theme-text font-bold py-3 px-4 flex justify-between items-center transition-colors">
-                            <span><i class="fa-solid fa-chart-area text-theme-primary mr-2"></i> Historical Performance Graphs</span>
-                            <i id="graphsChevron" class="fa-solid fa-chevron-down"></i>
-                        </button>
+                        <div class="theme-header bg-theme-primary px-3 py-2 transition-colors">
+                            <h3 class="text-white font-bold"><i class="fa-solid fa-chart-area mr-2"></i> Historical Performance Graphs</h3>
+                        </div>
 
-                        <div id="graphsContainer" class="hidden p-4">
+                        <div id="graphsContainer" class="p-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <!-- Income Graph -->
                                 <div class="theme-inner-card bg-theme-card-inner rounded-xl border border-theme-border p-3 transition-colors">
@@ -783,7 +782,7 @@
                             // Add local time
                             const localTimeStr = date.toLocaleTimeString(undefined, {hour: '2-digit', minute:'2-digit'});
 
-                            trainLogs.unshift({ date: dateStr, time: localTimeStr, name: name, pos: pos, statShort: statShort, statTooltip: statTooltip });
+                            trainLogs.unshift({ date: dateStr, time: localTimeStr, name: name, pos: pos, statShort: statShort, statTooltip: statTooltip, timestamp: event.timestamp });
                         }
 
                         const match = event.news.match(reportRegex);
@@ -854,14 +853,17 @@
 
                         const customersCtx = document.getElementById('customersChart').getContext('2d');
                         new Chart(customersCtx, {
-                            type: 'bar',
+                            type: 'line',
                             data: {
                                 labels: days,
                                 datasets: [{
                                     label: 'Customers',
                                     data: customersData,
-                                    backgroundColor: '#a855f7', // purple-500
-                                    borderRadius: 4
+                                    borderColor: '#a855f7', // purple-500
+                                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                                    borderWidth: 2,
+                                    fill: true,
+                                    tension: 0.3
                                 }]
                             },
                             options: {
@@ -1026,10 +1028,21 @@
                 empDataArr = [];
 
                 // Prepare Train Tracking history
+                // Function to format relative time
+                function getRelativeTime(timestampSecs) {
+                    const diffMs = Date.now() - (timestampSecs * 1000);
+                    const diffMins = Math.floor(diffMs / 60000);
+                    if (diffMins < 60) return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
+                    const diffHours = Math.floor(diffMins / 60);
+                    if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+                    const diffDays = Math.floor(diffHours / 24);
+                    return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+                }
+
                 let recentTrains = [];
                 let staffCount = data.company_employees ? Object.keys(data.company_employees).length : 0;
                 if (typeof trainLogs !== 'undefined' && trainLogs.length > 0 && staffCount > 0) {
-                    recentTrains = trainLogs.map(log => log.name.trim()).slice(0, staffCount);
+                    recentTrains = trainLogs.slice(0, staffCount); // Keep the object to access timestamp
                 }
 
                 // --- 3.2 สร้างแถวของลูกจ้างทั้งหมด ---
@@ -1126,11 +1139,13 @@
                         }
 
                         // Train tracking column logic
-                        let trainIndex = recentTrains.indexOf(emp.name);
+                        let trainIndex = recentTrains.findIndex(log => log.name.trim() === emp.name);
                         let trainHtml = '';
                         let sortTrainValue = 999; // Default to 'z' (worst)
 
                         if (trainIndex !== -1) {
+                            const trainEvent = recentTrains[trainIndex];
+                            const relTime = getRelativeTime(trainEvent.timestamp);
                             sortTrainValue = trainIndex;
                             let opacity = 1 - (trainIndex / staffCount);
                             // Adjust slightly so the oldest doesn't completely disappear
@@ -1138,7 +1153,7 @@
 
                             let glowClass = trainIndex === 0 ? 'drop-shadow-[0_0_8px_rgba(234,88,12,0.8)]' : '';
 
-                            trainHtml = `<td class="py-1.5 px-2 text-center"><i class="fa-solid fa-dumbbell text-orange-500 ${glowClass}" style="opacity: ${opacity};" title="Trained rank: ${trainIndex + 1}"></i></td>`;
+                            trainHtml = `<td class="py-1.5 px-2 text-center"><i class="fa-solid fa-dumbbell text-orange-500 ${glowClass}" style="opacity: ${opacity};" title="Trained ${relTime}"></i></td>`;
                         } else {
                             trainHtml = `<td class="py-1.5 px-2 text-center text-theme-text-muted text-xs font-mono" title="Not recently trained">z</td>`;
                         }
@@ -1187,19 +1202,6 @@
 
             } catch (error) {
                 loadingStatus.innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-xl shadow inline-block border-l-4 border-red-500"><i class="fa-solid fa-circle-xmark text-xl"></i><br><b>Error:</b><br>${escapeHTML(error.message)}</div>`;
-            }
-        }
-
-        function toggleGraphs() {
-            const container = document.getElementById('graphsContainer');
-            const chevron = document.getElementById('graphsChevron');
-
-            if (container.classList.contains('hidden')) {
-                container.classList.remove('hidden');
-                chevron.classList.replace('fa-chevron-down', 'fa-chevron-up');
-            } else {
-                container.classList.add('hidden');
-                chevron.classList.replace('fa-chevron-up', 'fa-chevron-down');
             }
         }
 

@@ -1,5 +1,5 @@
 const TORN_COMPANY_STOCK = {
-    "1": [
+    "Hair Salon": [
         {
             "name": "Standard Treatment",
             "cost": -1,
@@ -16,14 +16,14 @@ const TORN_COMPANY_STOCK = {
             "rrp": 350
         }
     ],
-    "2": [
+    "Law Firm": [
         {
             "name": "Per Hour",
             "cost": -1,
             "rrp": 1500
         }
     ],
-    "3": [
+    "Flower Shop": [
         {
             "name": "Card",
             "cost": 1,
@@ -55,7 +55,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 400
         }
     ],
-    "4": [
+    "Car Dealership": [
         {
             "name": "Compact",
             "cost": 5000,
@@ -92,7 +92,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 99000
         }
     ],
-    "5": [
+    "Clothing Store": [
         {
             "name": "Sandals",
             "cost": 15,
@@ -159,7 +159,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 1250
         }
     ],
-    "6": [
+    "Gun Shop": [
         {
             "name": "Pistol",
             "cost": 250,
@@ -186,7 +186,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 1300
         }
     ],
-    "7": [
+    "Game Shop": [
         {
             "name": "Handheld Game",
             "cost": 28,
@@ -218,7 +218,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 855
         }
     ],
-    "8": [
+    "Candle Shop": [
         {
             "name": "Tealight",
             "cost": 2,
@@ -245,7 +245,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 40
         }
     ],
-    "9": [
+    "Toy Shop": [
         {
             "name": "Jigsaw",
             "cost": 6,
@@ -322,7 +322,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 1250
         }
     ],
-    "10": [
+    "Adult Novelties": [
         {
             "name": "Blow Up Doll",
             "cost": 4,
@@ -364,7 +364,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 75
         }
     ],
-    "11": [
+    "Cyber Cafe": [
         {
             "name": "Per Hour",
             "cost": -1,
@@ -381,7 +381,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 250
         }
     ],
-    "12": [
+    "Grocery Store": [
         {
             "name": "Fruit",
             "cost": 1,
@@ -413,14 +413,14 @@ const TORN_COMPANY_STOCK = {
             "rrp": 12
         }
     ],
-    "13": [
+    "Theater": [
         {
             "name": "Ticket",
             "cost": -1,
             "rrp": 175
         }
     ],
-    "14": [
+    "Sweet Shop": [
         {
             "name": "Marshmallow Selection",
             "cost": 3,
@@ -457,21 +457,21 @@ const TORN_COMPANY_STOCK = {
             "rrp": 120
         }
     ],
-    "15": [
+    "Cruise Line": [
         {
             "name": "Ticket",
             "cost": -1,
             "rrp": 3500
         }
     ],
-    "16": [
+    "Television Network": [
         {
             "name": "Commercial Contract",
             "cost": -1,
             "rrp": 75000
         }
     ],
-    "17": [
+    "Zoo": [
         {
             "name": "Entry Fee",
             "cost": -1,
@@ -488,14 +488,14 @@ const TORN_COMPANY_STOCK = {
             "rrp": 25
         }
     ],
-    "18": [
+    "Amusement Park": [
         {
             "name": "Day Pass",
             "cost": -1,
             "rrp": 100
         }
     ],
-    "19": [
+    "Furniture Store": [
         {
             "name": "Dining Chair",
             "cost": 50,
@@ -537,7 +537,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 1800
         }
     ],
-    "20": [
+    "Gas Station": [
         {
             "name": "Gasoline (Gallon)",
             "cost": 2,
@@ -549,7 +549,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 6
         }
     ],
-    "21": [
+    "Music Store": [
         {
             "name": "Ukulele",
             "cost": 121,
@@ -601,7 +601,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 7000
         }
     ],
-    "22": [
+    "Nightclub": [
         {
             "name": "Entry Fee",
             "cost": -1,
@@ -633,7 +633,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 7
         }
     ],
-    "23": [
+    "Pub": [
         {
             "name": "Beer",
             "cost": -1,
@@ -670,7 +670,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 8
         }
     ],
-    "24": [
+    "Restaurant": [
         {
             "name": "Starter Course",
             "cost": -1,
@@ -697,7 +697,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 100
         }
     ],
-    "25": [
+    "Software Corporation": [
         {
             "name": "Website",
             "cost": -1,
@@ -714,7 +714,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 67500
         }
     ],
-    "26": [
+    "Mechanic Shop": [
         {
             "name": "Inspection",
             "cost": -1,
@@ -751,14 +751,14 @@ const TORN_COMPANY_STOCK = {
             "rrp": 50
         }
     ],
-    "27": [
+    "Fitness Center": [
         {
             "name": "Membership Fee",
             "cost": -1,
             "rrp": 500
         }
     ],
-    "28": [
+    "Lingerie Store": [
         {
             "name": "Knickers",
             "cost": 4,
@@ -790,7 +790,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 125
         }
     ],
-    "29": [
+    "Farm": [
         {
             "name": "Bushel of Crops",
             "cost": -1,
@@ -822,21 +822,21 @@ const TORN_COMPANY_STOCK = {
             "rrp": 5
         }
     ],
-    "30": [
+    "Mining Corporation": [
         {
             "name": "Salt (ton)",
             "cost": 0,
             "rrp": 7500
         }
     ],
-    "31": [
+    "Oil Rig": [
         {
             "name": "Oil (Barrel)",
             "cost": -1,
             "rrp": 100
         }
     ],
-    "32": [
+    "Property Broker": [
         {
             "name": "Trailer Commission",
             "cost": -1,
@@ -883,7 +883,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 90000
         }
     ],
-    "33": [
+    "Private Security Firm": [
         {
             "name": "Training Contract",
             "cost": 0,
@@ -905,7 +905,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 25000000
         }
     ],
-    "34": [
+    "Detective Agency": [
         {
             "name": "Private Surveillance Contract",
             "cost": -1,
@@ -922,21 +922,21 @@ const TORN_COMPANY_STOCK = {
             "rrp": 40000
         }
     ],
-    "35": [
+    "Firework Stand": [
         {
             "name": "Firework",
             "cost": -1,
             "rrp": 140
         }
     ],
-    "37": [
+    "Meat Warehouse": [
         {
             "name": "Meat",
             "cost": -1,
             "rrp": 15
         }
     ],
-    "38": [
+    "Logistics Management": [
         {
             "name": "Local Logistics contract",
             "cost": -1,
@@ -953,7 +953,7 @@ const TORN_COMPANY_STOCK = {
             "rrp": 50000000
         }
     ],
-    "40": [
+    "Gents Strip Club": [
         {
             "name": "Admission",
             "cost": -1,

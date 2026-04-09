@@ -365,8 +365,11 @@
 
         // Helper to get stat gain from our extracted data
         function getStatGainFromData(companyType, positionName) {
-            if (!TORN_COMPANY_POSITIONS[companyType]) return "0";
-            const positions = TORN_COMPANY_POSITIONS[companyType];
+            const companyData = getCompanyData(companyType);
+            const companyName = companyData.name;
+
+            if (!TORN_COMPANY_POSITIONS[companyName]) return "0";
+            const positions = TORN_COMPANY_POSITIONS[companyName];
 
             // Allow matching "Director" or other roles, though standard positions are mapped
             const pos = positions.find(p => p.rank.toLowerCase() === positionName.toLowerCase());

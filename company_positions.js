@@ -1,5 +1,5 @@
 const TORN_COMPANY_POSITIONS = {
-    "1": [
+    "Hair Salon": [
         {
             "rank": "Stylist",
             "recommended_stats": {
@@ -127,7 +127,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "2": [
+    "Law Firm": [
         {
             "rank": "Cleaner",
             "recommended_stats": {
@@ -213,7 +213,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "3": [
+    "Flower Shop": [
         {
             "rank": "Florist",
             "recommended_stats": {
@@ -313,7 +313,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Secretary"
         }
     ],
-    "4": [
+    "Car Dealership": [
         {
             "rank": "Training Adviser",
             "recommended_stats": {
@@ -427,7 +427,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "5": [
+    "Clothing Store": [
         {
             "rank": "Line Manager",
             "recommended_stats": {
@@ -555,7 +555,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "6": [
+    "Gun Shop": [
         {
             "rank": "Clerk",
             "recommended_stats": {
@@ -655,7 +655,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Trainer"
         }
     ],
-    "7": [
+    "Game Shop": [
         {
             "rank": "Clerk",
             "recommended_stats": {
@@ -741,7 +741,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Marketer"
         }
     ],
-    "8": [
+    "Candle Shop": [
         {
             "rank": "Chandler",
             "recommended_stats": {
@@ -827,7 +827,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Cleaner"
         }
     ],
-    "9": [
+    "Toy Shop": [
         {
             "rank": "Sales Assistant",
             "recommended_stats": {
@@ -927,7 +927,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "10": [
+    "Adult Novelties": [
         {
             "rank": "Human Resources",
             "recommended_stats": {
@@ -1027,7 +1027,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Cleaner"
         }
     ],
-    "11": [
+    "Cyber Cafe": [
         {
             "rank": "Cashier",
             "recommended_stats": {
@@ -1141,7 +1141,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "12": [
+    "Grocery Store": [
         {
             "rank": "Cashier",
             "recommended_stats": {
@@ -1269,7 +1269,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "13": [
+    "Theater": [
         {
             "rank": "Ticketing Agent",
             "recommended_stats": {
@@ -1383,7 +1383,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "14": [
+    "Sweet Shop": [
         {
             "rank": "Confectionist",
             "recommended_stats": {
@@ -1483,7 +1483,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "15": [
+    "Cruise Line": [
         {
             "rank": "Captain",
             "recommended_stats": {
@@ -1667,7 +1667,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "16": [
+    "Television Network": [
         {
             "rank": "Producer",
             "recommended_stats": {
@@ -1837,7 +1837,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "17": [
+    "Zoo": [
         {
             "rank": "Zoo Keeper",
             "recommended_stats": {
@@ -1979,7 +1979,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "18": [
+    "Amusement Park": [
         {
             "rank": "Inspector",
             "recommended_stats": {
@@ -2121,7 +2121,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Cleaner"
         }
     ],
-    "19": [
+    "Furniture Store": [
         {
             "rank": "Sales Clerk",
             "recommended_stats": {
@@ -2235,7 +2235,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Trainer"
         }
     ],
-    "20": [
+    "Gas Station": [
         {
             "rank": "Attendant",
             "recommended_stats": {
@@ -2307,7 +2307,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Trainer"
         }
     ],
-    "21": [
+    "Music Store": [
         {
             "rank": "Sales Assistant",
             "recommended_stats": {
@@ -2407,7 +2407,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Trainer"
         }
     ],
-    "22": [
+    "Nightclub": [
         {
             "rank": "Bartender",
             "recommended_stats": {
@@ -2535,7 +2535,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "23": [
+    "Pub": [
         {
             "rank": "Bartender",
             "recommended_stats": {
@@ -2649,7 +2649,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Marketer"
         }
     ],
-    "24": [
+    "Restaurant": [
         {
             "rank": "Waiter",
             "recommended_stats": {
@@ -2777,7 +2777,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "25": [
+    "Software Corporation": [
         {
             "rank": "Developer",
             "recommended_stats": {
@@ -2905,7 +2905,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Trainer"
         }
     ],
-    "26": [
+    "Mechanic Shop": [
         {
             "rank": "Technician",
             "recommended_stats": {
@@ -2991,7 +2991,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Trainer"
         }
     ],
-    "27": [
+    "Fitness Center": [
         {
             "rank": "Personal Trainer",
             "recommended_stats": {
@@ -3133,7 +3133,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "28": [
+    "Lingerie Store": [
         {
             "rank": "Salesperson",
             "recommended_stats": {
@@ -3219,7 +3219,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "29": [
+    "Farm": [
         {
             "rank": "Harvester",
             "recommended_stats": {
@@ -3347,7 +3347,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "30": [
+    "Mining Corporation": [
         {
             "rank": "Sales Executive",
             "recommended_stats": {
@@ -3461,7 +3461,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Secretary"
         }
     ],
-    "31": [
+    "Oil Rig": [
         {
             "rank": "Driller",
             "recommended_stats": {
@@ -3561,7 +3561,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "32": [
+    "Property Broker": [
         {
             "rank": "Property Broker",
             "recommended_stats": {
@@ -3675,7 +3675,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Trainer"
         }
     ],
-    "33": [
+    "Private Security Firm": [
         {
             "rank": "Security Contractor",
             "recommended_stats": {
@@ -3831,7 +3831,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "34": [
+    "Detective Agency": [
         {
             "rank": "Private Investigator",
             "recommended_stats": {
@@ -3931,7 +3931,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "35": [
+    "Firework Stand": [
         {
             "rank": "Salesperson",
             "recommended_stats": {
@@ -4031,7 +4031,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Trainer"
         }
     ],
-    "37": [
+    "Meat Warehouse": [
         {
             "rank": "Quality Controller",
             "recommended_stats": {
@@ -4159,7 +4159,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "None"
         }
     ],
-    "38": [
+    "Logistics Management": [
         {
             "rank": "Lumper",
             "recommended_stats": {
@@ -4273,7 +4273,7 @@ const TORN_COMPANY_POSITIONS = {
             "special": "Marketer"
         }
     ],
-    "40": [
+    "Gents Strip Club": [
         {
             "rank": "Stripper",
             "recommended_stats": {

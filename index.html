@@ -131,7 +131,7 @@
         </div>
 <div id="dashboardSection" class="hidden">
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-theme-primary relative overflow-hidden transition-colors">
                     <i class="fa-solid fa-sack-dollar absolute -right-2 -bottom-2 text-theme-primary text-5xl opacity-10"></i>
                     <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 relative z-10 flex justify-between items-center transition-colors">
@@ -156,27 +156,6 @@
                     <h3 id="compCustomers" class="text-lg font-bold text-purple-500 relative z-10">-</h3>
                     <p class="theme-text text-sm text-theme-text mt-1 relative z-10 transition-colors">Pop: <span id="compPop" class="font-bold text-purple-500"></span></p>
                 </div>
-                <!-- Management Card (Hover effect removed) -->
-                <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-orange-400 relative overflow-hidden transition-colors flex flex-col h-full min-h-[160px]">
-                    <i class="fa-solid fa-bullhorn absolute -right-2 -bottom-2 text-orange-500 text-5xl opacity-10 pointer-events-none"></i>
-                    <div class="flex justify-between items-center mb-1 relative z-10">
-                        <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold transition-colors">Management</p>
-                        <p id="compTotalTrains" class="text-[10px] text-theme-text-muted bg-theme-bg/50 px-1.5 py-0.5 rounded" title="Total trains found in recent history">Total: 0</p>
-                    </div>
-                    <div class="flex items-baseline gap-2 relative z-10 mb-2">
-                        <h3 id="compTrains" class="text-lg font-bold text-orange-500">- / - Trains</h3>
-                    </div>
-
-                    <div class="flex-grow flex flex-col relative z-10">
-                        <p class="font-bold text-orange-500 text-xs mb-1 border-b border-orange-400/30 pb-1 flex justify-between">
-                            <span>Name</span>
-                            <span>Pos</span>
-                            <span>Stat</span>
-                        </p>
-                        <div id="shortTrainLog" class="space-y-1 text-xs overflow-y-auto max-h-[100px] custom-scrollbar pr-1">
-                            <!-- Injected via JS -->
-                        </div>
-                    </div>
                 </div>
             </div>
             <!-- Full Width Employee Status -->
@@ -195,6 +174,7 @@
                                         <th class="py-1.5 px-2 font-semibold text-center text-purple-500 cursor-pointer hover:bg-theme-primary/20" onclick="handleEmpSort('merits')" title="Employee Effectiveness Merits (Max 10)">Merits <i id="sortIcon-emp-merits" class="fa-solid fa-sort ml-1 opacity-30 text-[10px]"></i></th>
                                         <th class="py-1.5 px-2 font-semibold text-center cursor-pointer hover:bg-theme-primary/20" onclick="handleEmpSort('effectiveness')">Eff. <i id="sortIcon-emp-effectiveness" class="fa-solid fa-sort ml-1 opacity-30 text-[10px]"></i></th>
                                         <th class="py-1.5 px-2 font-semibold text-center text-blue-500">Daily Gains</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center cursor-pointer hover:bg-theme-primary/20" onclick="handleEmpSort('train_index')">Train <i id="sortIcon-emp-train_index" class="fa-solid fa-sort ml-1 opacity-30 text-[10px]"></i></th>
                                         <th class="py-1.5 px-2 font-semibold text-center">Stats (M/I/E)</th>
                                         <th class="py-1.5 px-2 font-semibold text-center text-theme-text-muted">Rec. Stats</th>
                                         <th class="py-1.5 px-2 font-semibold text-center text-theme-primary cursor-pointer hover:bg-theme-primary/20" onclick="handleEmpSort('total_stats')">Total Stats <i id="sortIcon-emp-total_stats" class="fa-solid fa-sort ml-1 opacity-30 text-[10px]"></i></th>
@@ -381,10 +361,7 @@
         }
 
         // Helper to get stat gain from our extracted data
-        function getStatGainFromData(companyType, positionName) {
-            const companyData = getCompanyData(companyType);
-            const companyName = companyData.name;
-
+        function getStatGainFromData(companyName, positionName) {
             if (!TORN_COMPANY_POSITIONS[companyName]) return "0";
             const positions = TORN_COMPANY_POSITIONS[companyName];
 
@@ -506,7 +483,7 @@
             }
 
             // Update icons
-            const headers = ['name', 'position', 'wage', 'merits', 'effectiveness', 'total_stats', 'days_in_company'];
+            const headers = ['name', 'position', 'wage', 'merits', 'effectiveness', 'total_stats', 'days_in_company', 'train_index'];
             headers.forEach(h => {
                 const iconEl = document.getElementById(`sortIcon-emp-${h}`);
                 if (iconEl) {
@@ -689,10 +666,6 @@
                     const maxTrains = data.company.rating || 0; // 1 star = 1 train per day
                     const trainsAvail = data.company_detailed.trains_available || 0;
 
-                    const compTrainsEl = document.getElementById('compTrains');
-                    compTrainsEl.innerHTML = `${trainsAvail} / ${maxTrains} <span class="text-xs text-theme-text-muted font-normal ml-1">Trains</span>`;
-                    compTrainsEl.title = `Available: ${trainsAvail} | Daily generation: ${maxTrains} (based on ${maxTrains} stars)`;
-
                     adBudget = data.company_detailed.advertising_budget || 0;
                     document.getElementById('compAd').textContent = "$" + adBudget.toLocaleString();
                 document.getElementById('compWages').textContent = "$" + totalWages.toLocaleString();
@@ -843,28 +816,6 @@
                         `;
                     }).join('');
                     newsList.innerHTML = newsHtml;
-
-                    // Render Training Logs in Management Card
-                    const shortTrainLog = document.getElementById('shortTrainLog');
-                    const compTotalTrains = document.getElementById('compTotalTrains');
-                    if (compTotalTrains) {
-                        compTotalTrains.textContent = `Total: ${trainLogs.length}`;
-                    }
-
-                    if (trainLogs.length > 0) {
-                        shortTrainLog.innerHTML = trainLogs.map(log =>
-                            `<div class="flex justify-between items-center text-theme-text py-0.5 border-b border-theme-border/30 last:border-0 hover:bg-theme-hover rounded px-1 transition-colors group/row">
-                                <div class="flex flex-col min-w-[70px]">
-                                    <span class="font-medium truncate max-w-[80px]" title="${escapeHTML(log.name)}">${escapeHTML(log.name)}</span>
-                                    <span class="text-[10px] text-theme-text-muted">${log.date} ${log.time}</span>
-                                </div>
-                                <span class="text-[10px] bg-theme-bg/50 px-1.5 py-0.5 rounded text-theme-text-muted text-center min-w-[50px]">${escapeHTML(log.pos)}</span>
-                                <span class="text-[11px] font-mono text-orange-500 text-right min-w-[45px] cursor-help" title="${escapeHTML(log.statTooltip)}">${escapeHTML(log.statShort)}</span>
-                            </div>`
-                        ).join('');
-                    } else {
-                        shortTrainLog.innerHTML = `<div class="text-theme-text-muted italic text-center py-2">No recent trains.</div>`;
-                    }
 
                     // Render charts if we have data
                     if (days.length > 0) {
@@ -1051,6 +1002,7 @@
                             <span class="underline decoration-dashed decoration-1 underline-offset-4">0%</span>
                         </td>
                         <td class="py-1.5 px-2 text-center font-medium text-blue-500 bg-blue-500/10 text-xs">0</td>
+                        <td class="py-1.5 px-2 text-center text-theme-text-muted">-</td>
                         <td class="py-1.5 px-2 text-theme-text-muted text-center text-xs">${fmtCeoM} / ${fmtCeoI} / ${fmtCeoE}</td>
                         <td class="py-1.5 px-2 text-center text-theme-text-muted">-</td>
                         <td class="py-1.5 px-2 font-bold text-theme-primary text-center bg-theme-primary-dark">${fmtCeoTotal}</td>
@@ -1062,6 +1014,13 @@
                 // ⚡ Bolt Performance Optimization: Refactored string concatenation to map().join('')
                 ceoDataRow = ceoRow;
                 empDataArr = [];
+
+                // Prepare Train Tracking history
+                let recentTrains = [];
+                let staffCount = data.company_employees ? Object.keys(data.company_employees).length : 0;
+                if (typeof trainLogs !== 'undefined' && trainLogs.length > 0 && staffCount > 0) {
+                    recentTrains = trainLogs.map(log => log.name).slice(0, staffCount);
+                }
 
                 // --- 3.2 สร้างแถวของลูกจ้างทั้งหมด ---
                 if (!data.company_employees) {
@@ -1138,6 +1097,24 @@
                             }
                         }
 
+                        // Train tracking column logic
+                        let trainIndex = recentTrains.indexOf(emp.name);
+                        let trainHtml = '';
+                        let sortTrainValue = 999; // Default to 'z' (worst)
+
+                        if (trainIndex !== -1) {
+                            sortTrainValue = trainIndex;
+                            let opacity = 1 - (trainIndex / staffCount);
+                            // Adjust slightly so the oldest doesn't completely disappear
+                            opacity = Math.max(0.1, opacity);
+
+                            let glowClass = trainIndex === 0 ? 'drop-shadow-[0_0_8px_rgba(234,88,12,0.8)]' : '';
+
+                            trainHtml = `<td class="py-1.5 px-2 text-center"><i class="fa-solid fa-dumbbell text-orange-500 ${glowClass}" style="opacity: ${opacity};" title="Trained rank: ${trainIndex + 1}"></i></td>`;
+                        } else {
+                            trainHtml = `<td class="py-1.5 px-2 text-center text-theme-text-muted text-xs font-mono" title="Not recently trained">z</td>`;
+                        }
+
                         // Determine Special
                         let specialHtml = '<td class="py-1.5 px-2 text-center text-theme-text-muted">-</td>';
                         if (POSITION_SPECIALS[emp.position]) {
@@ -1156,6 +1133,7 @@
                                     <span class="underline decoration-dashed decoration-1 underline-offset-4">${effTotal}%</span>
                                 </td>
                                 <td class="py-1.5 px-2 text-center font-medium text-blue-500 bg-blue-500/10 text-xs">${dailyGainsStr}</td>
+                                ${trainHtml}
                                 <td class="py-1.5 px-2 text-theme-text-muted text-center text-xs">${m} / ${i} / ${e}</td>
                                 <td class="py-1.5 px-2 text-center text-theme-text-muted text-xs">${recStatsStr}</td>
                                 <td class="py-1.5 px-2 font-bold text-theme-primary text-center bg-theme-primary-dark">${totalStats}</td>
@@ -1172,6 +1150,7 @@
                             effectiveness: effTotal,
                             total_stats: rawTotal,
                             days_in_company: emp.days_in_company || 0,
+                            train_index: sortTrainValue,
                             htmlRow: htmlRow
                         });
                     });

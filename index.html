@@ -188,15 +188,17 @@
                             <table class="w-full text-left border-collapse text-sm whitespace-nowrap">
                                 <thead class="theme-table-header sticky top-0 bg-theme-hover shadow-sm z-20 transition-colors">
                                     <tr class="theme-border border-b border-theme-border text-theme-text transition-colors">
-                                        <th class="py-1.5 px-2 font-semibold">Name</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center">Position</th>
-                                        <th class="py-1.5 px-2 font-semibold text-right">Salary</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center text-purple-500" title="Employee Effectiveness Merits (Max 10)">Merits</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center">Eff.</th>
+                                        <th class="py-1.5 px-2 font-semibold cursor-pointer hover:bg-theme-primary/20" onclick="handleEmpSort('name')">Name <i id="sortIcon-emp-name" class="fa-solid fa-sort ml-1 opacity-30 text-[10px]"></i></th>
+                                        <th class="py-1.5 px-2 font-semibold text-center cursor-pointer hover:bg-theme-primary/20" onclick="handleEmpSort('position')">Position <i id="sortIcon-emp-position" class="fa-solid fa-sort ml-1 opacity-30 text-[10px]"></i></th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-orange-500">Special</th>
+                                        <th class="py-1.5 px-2 font-semibold text-right cursor-pointer hover:bg-theme-primary/20" onclick="handleEmpSort('wage')">Salary <i id="sortIcon-emp-wage" class="fa-solid fa-sort ml-1 opacity-30 text-[10px]"></i></th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-purple-500 cursor-pointer hover:bg-theme-primary/20" onclick="handleEmpSort('merits')" title="Employee Effectiveness Merits (Max 10)">Merits <i id="sortIcon-emp-merits" class="fa-solid fa-sort ml-1 opacity-30 text-[10px]"></i></th>
+                                        <th class="py-1.5 px-2 font-semibold text-center cursor-pointer hover:bg-theme-primary/20" onclick="handleEmpSort('effectiveness')">Eff. <i id="sortIcon-emp-effectiveness" class="fa-solid fa-sort ml-1 opacity-30 text-[10px]"></i></th>
                                         <th class="py-1.5 px-2 font-semibold text-center text-blue-500">Daily Gains</th>
                                         <th class="py-1.5 px-2 font-semibold text-center">Stats (M/I/E)</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center text-theme-primary">Total Stats</th>
-                                        <th class="py-1.5 px-2 font-semibold text-center">Days</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-theme-text-muted">Rec. Stats</th>
+                                        <th class="py-1.5 px-2 font-semibold text-center text-theme-primary cursor-pointer hover:bg-theme-primary/20" onclick="handleEmpSort('total_stats')">Total Stats <i id="sortIcon-emp-total_stats" class="fa-solid fa-sort ml-1 opacity-30 text-[10px]"></i></th>
+                                        <th class="py-1.5 px-2 font-semibold text-center cursor-pointer hover:bg-theme-primary/20" onclick="handleEmpSort('days_in_company')">Days <i id="sortIcon-emp-days_in_company" class="fa-solid fa-sort ml-1 opacity-30 text-[10px]"></i></th>
                                         <th class="py-1.5 px-2 font-semibold text-right">Last Action</th>
                                     </tr>
                                 </thead>
@@ -470,6 +472,74 @@
             stockTableBody.innerHTML = stockHtml;
         }
 
+
+        const POSITION_SPECIALS = {
+            'Cleaner': 'Helps keep your environment up.',
+            'Manager': 'Increases the effectiveness of underperforming employees.',
+            'Marketer': 'Increases the effectiveness of your advertising budget.',
+            'Secretary': 'Shows you how much your employees are earning you in detail.',
+            'Trainer': 'Generates 0.1 trains for every 10 effectiveness, which is sum of all trainers effectiveness, rounded to closest number.'
+        };
+
+
+        let empDataArr = [];
+        let empSortCol = 'days_in_company';
+        let empSortAsc = false; // Default to descending for days
+        let ceoDataRow = null;
+
+        function handleEmpSort(col) {
+            if (empSortCol === col) {
+                empSortAsc = !empSortAsc;
+            } else {
+                empSortCol = col;
+                empSortAsc = false;
+            }
+            sortAndRenderEmpTable();
+        }
+
+        function sortAndRenderEmpTable() {
+            if (!empDataArr || empDataArr.length === 0) {
+                if(ceoDataRow) {
+                    document.getElementById('employeeTableBody').innerHTML = ceoDataRow;
+                }
+                return;
+            }
+
+            // Update icons
+            const headers = ['name', 'position', 'wage', 'merits', 'effectiveness', 'total_stats', 'days_in_company'];
+            headers.forEach(h => {
+                const iconEl = document.getElementById(`sortIcon-emp-${h}`);
+                if (iconEl) {
+                    iconEl.className = 'fa-solid ml-1 opacity-30 fa-sort text-[10px]'; // Reset
+                    if (h === empSortCol) {
+                        iconEl.className = empSortAsc ? 'fa-solid ml-1 text-theme-primary fa-sort-up text-[10px]' : 'fa-solid ml-1 text-theme-primary fa-sort-down text-[10px]';
+                    }
+                }
+            });
+
+            // Sort data
+            empDataArr.sort((a, b) => {
+                let valA = a[empSortCol];
+                let valB = b[empSortCol];
+
+                if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                    if (valA < valB) return empSortAsc ? -1 : 1;
+                    if (valA > valB) return empSortAsc ? 1 : -1;
+                    return 0;
+                } else {
+                    return empSortAsc ? valA - valB : valB - valA;
+                }
+            });
+
+            // Render
+            const tbody = document.getElementById('employeeTableBody');
+            let employeesHtml = ceoDataRow ? ceoDataRow : '';
+            employeesHtml += empDataArr.map(emp => emp.htmlRow).join('');
+            tbody.innerHTML = employeesHtml;
+        }
+
         let activeApiKey = null;
 
         function checkLogin() {
@@ -593,11 +663,12 @@
                 companySpecialsDiv.innerHTML = '';
                 if (TORN_COMPANY_SPECIALS[companyTypeInfo.name]) {
                     const specials = TORN_COMPANY_SPECIALS[companyTypeInfo.name];
-                    const activeSpecials = specials.filter(s => s.rating_required <= rating);
+                    const activeSpecials = specials.filter(s => s.stars <= rating);
 
                     if (activeSpecials.length > 0) {
                         companySpecialsDiv.innerHTML = activeSpecials.map(s => {
-                            return `<div class="bg-theme-primary/10 border border-theme-primary/20 text-theme-primary px-2 py-1 rounded text-xs cursor-help shadow-sm" title="Cost: ${s.cost} JP">${s.effect}</div>`;
+                            const costStr = s.is_passive ? 'Passive' : (s.cost ? s.cost + ' JP' : 'Unknown');
+                            return `<div class="bg-theme-primary/10 border border-theme-primary/20 text-theme-primary px-2 py-1 rounded text-xs cursor-help shadow-sm" title="${escapeHTML(s.effect)} (Cost: ${costStr})"><b>${s.stars}<i class="fa-solid fa-star text-yellow-500 text-[10px] mx-0.5"></i> ${escapeHTML(s.name)}</b></div>`;
                         }).join('');
                     } else {
                         companySpecialsDiv.innerHTML = '<span class="text-xs text-theme-text-muted">No specials unlocked yet</span>';
@@ -706,7 +777,7 @@
                             let name = parts.length > 1 ? parts.slice(1).join(' ') : rawName;
 
                             // Get stat gain (Train is always 50/25, we just need the stat types)
-                            const statGainRaw = getStatGainFromData(data.company.company_type, pos);
+                            const statGainRaw = getStatGainFromData(companyTypeInfo.name, pos);
 
                             let statShort = "-";
                             let statTooltip = "Unknown";
@@ -852,12 +923,15 @@
                 if (data.company_detailed && data.company_detailed.trains_available > 0) {
                     hasAlerts = true;
                     alertsSection.innerHTML += `
-                        <div class="bg-orange-500/10 border border-orange-500/30 text-orange-600 rounded-lg p-3 flex items-start gap-3 shadow-sm">
-                            <i class="fa-solid fa-graduation-cap mt-1"></i>
-                            <div>
-                                <h4 class="font-bold text-sm">Trains Available</h4>
-                                <p class="text-xs mt-0.5">You have <strong>${data.company_detailed.trains_available}</strong> training slot(s) available. Don't forget to train your staff!</p>
+                        <div class="bg-orange-500/10 border border-orange-500/30 text-orange-600 rounded-lg p-3 flex items-start justify-between shadow-sm">
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid fa-graduation-cap mt-1"></i>
+                                <div>
+                                    <h4 class="font-bold text-sm">Trains Available</h4>
+                                    <p class="text-xs mt-0.5">You have <strong>${data.company_detailed.trains_available}</strong> training slot(s) available. Don't forget to train your staff!</p>
+                                </div>
                             </div>
+                            <button onclick="this.parentElement.style.display='none';" class="text-orange-400 hover:text-orange-600"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                     `;
                 }
@@ -878,24 +952,30 @@
                     if (inactiveStaff.length > 0) {
                         hasAlerts = true;
                         alertsSection.innerHTML += `
-                            <div class="bg-red-500/10 border border-red-500/30 text-red-600 rounded-lg p-3 flex items-start gap-3 shadow-sm">
-                                <i class="fa-solid fa-user-clock mt-1"></i>
-                                <div>
-                                    <h4 class="font-bold text-sm">Inactive Staff Detected</h4>
-                                    <p class="text-xs mt-0.5">${inactiveStaff.join(', ')}</p>
+                            <div class="bg-red-500/10 border border-red-500/30 text-red-600 rounded-lg p-3 flex items-start justify-between shadow-sm">
+                                <div class="flex items-start gap-3">
+                                    <i class="fa-solid fa-user-clock mt-1"></i>
+                                    <div>
+                                        <h4 class="font-bold text-sm">Inactive Staff Detected</h4>
+                                        <p class="text-xs mt-0.5">${inactiveStaff.join(', ')}</p>
+                                    </div>
                                 </div>
+                                <button onclick="this.parentElement.style.display='none';" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-xmark"></i></button>
                             </div>
                         `;
                     }
                     if (lowEffStaff.length > 0) {
                         hasAlerts = true;
                         alertsSection.innerHTML += `
-                            <div class="bg-yellow-500/10 border border-yellow-500/30 text-yellow-600 rounded-lg p-3 flex items-start gap-3 shadow-sm">
-                                <i class="fa-solid fa-battery-quarter mt-1"></i>
-                                <div>
-                                    <h4 class="font-bold text-sm">Low Effectiveness (< 80%)</h4>
-                                    <p class="text-xs mt-0.5">${lowEffStaff.join(', ')}</p>
+                            <div class="bg-yellow-500/10 border border-yellow-500/30 text-yellow-600 rounded-lg p-3 flex items-start justify-between shadow-sm">
+                                <div class="flex items-start gap-3">
+                                    <i class="fa-solid fa-battery-quarter mt-1"></i>
+                                    <div>
+                                        <h4 class="font-bold text-sm">Low Effectiveness (< 80%)</h4>
+                                        <p class="text-xs mt-0.5">${lowEffStaff.join(', ')}</p>
+                                    </div>
                                 </div>
+                                <button onclick="this.parentElement.style.display='none';" class="text-yellow-400 hover:text-yellow-600"><i class="fa-solid fa-xmark"></i></button>
                             </div>
                         `;
                     }
@@ -912,12 +992,15 @@
                     if (lowStockItems.length > 0) {
                         hasAlerts = true;
                         alertsSection.innerHTML += `
-                            <div class="bg-blue-500/10 border border-blue-500/30 text-blue-600 rounded-lg p-3 flex items-start gap-3 shadow-sm">
-                                <i class="fa-solid fa-box-open mt-1"></i>
-                                <div>
-                                    <h4 class="font-bold text-sm">Low Stock Alert (< 100)</h4>
-                                    <p class="text-xs mt-0.5">${lowStockItems.join(', ')}</p>
+                            <div class="bg-blue-500/10 border border-blue-500/30 text-blue-600 rounded-lg p-3 flex items-start justify-between shadow-sm">
+                                <div class="flex items-start gap-3">
+                                    <i class="fa-solid fa-box-open mt-1"></i>
+                                    <div>
+                                        <h4 class="font-bold text-sm">Low Stock Alert (< 100)</h4>
+                                        <p class="text-xs mt-0.5">${lowStockItems.join(', ')}</p>
+                                    </div>
                                 </div>
+                                <button onclick="this.parentElement.style.display='none';" class="text-blue-400 hover:text-blue-600"><i class="fa-solid fa-xmark"></i></button>
                             </div>
                         `;
                     }
@@ -961,6 +1044,7 @@
                     <tr class="hover:bg-theme-hover transition duration-150 border-b border-theme-border last:border-0 bg-blue-500/10">
                         <td class="py-1.5 px-2 font-bold text-theme-text">${escapeHTML(userData.name) || 'Director'} ${ceoStatusIcon}</td>
                         <td class="py-1.5 px-2 text-center text-theme-text-muted bg-theme-bg/50">Director</td>
+                        <td class="py-1.5 px-2 text-center text-theme-text-muted">-</td>
                         <td class="py-1.5 px-2 text-right font-medium text-green-500">0</td>
                         <td class="py-1.5 px-2 text-center text-theme-text-muted bg-purple-500/10">0/10</td>
                         <td class="py-1.5 px-2 font-bold text-theme-text-muted text-center cursor-help" title="No effectiveness data for Director">
@@ -968,6 +1052,7 @@
                         </td>
                         <td class="py-1.5 px-2 text-center font-medium text-blue-500 bg-blue-500/10 text-xs">0</td>
                         <td class="py-1.5 px-2 text-theme-text-muted text-center text-xs">${fmtCeoM} / ${fmtCeoI} / ${fmtCeoE}</td>
+                        <td class="py-1.5 px-2 text-center text-theme-text-muted">-</td>
                         <td class="py-1.5 px-2 font-bold text-theme-primary text-center bg-theme-primary-dark">${fmtCeoTotal}</td>
                         <td class="py-1.5 px-2 text-center text-theme-text-muted">${data.company.days_old || 0}</td>
                         <td class="py-1.5 px-2 text-right ${ceoActionColor} text-xs">${escapeHTML(ceoAction)}</td>
@@ -975,15 +1060,16 @@
                 `;
 
                 // ⚡ Bolt Performance Optimization: Refactored string concatenation to map().join('')
-                let employeesHtml = ceoRow;
+                ceoDataRow = ceoRow;
+                empDataArr = [];
 
                 // --- 3.2 สร้างแถวของลูกจ้างทั้งหมด ---
                 if (!data.company_employees) {
-                    employeesHtml += `<tr><td colspan="10" class="py-3 text-center text-red-500 bg-red-500/10 font-bold">No employee data found. (Insufficient API Key access level)</td></tr>`;
+                    ceoDataRow += `<tr><td colspan="12" class="py-3 text-center text-red-500 bg-red-500/10 font-bold">No employee data found. (Insufficient API Key access level)</td></tr>`;
                 } else {
                     const staffs = Object.values(data.company_employees);
 
-                    employeesHtml += staffs.map(emp => {
+                    staffs.forEach(emp => {
                         let effColor = 'text-green-500';
                         const effTotal = emp.effectiveness ? emp.effectiveness.total : 0;
                         if (effTotal < 80) effColor = 'text-yellow-500';
@@ -1025,7 +1111,7 @@
                         }
 
                         const salaryStr = emp.wage > 0 ? "$" + emp.wage.toLocaleString() : `0`;
-                        const dailyGainsStr = getStatGainFromData(data.company.company_type, emp.position);
+                        const dailyGainsStr = getStatGainFromData(companyTypeInfo.name, emp.position);
 
                         const rawM = emp.manual_labor || 0;
                         const rawI = emp.intelligence || 0;
@@ -1037,10 +1123,33 @@
                         const e = rawE > 1000 ? (rawE/1000).toFixed(1)+'k' : rawE;
                         const totalStats = rawTotal > 1000 ? (rawTotal/1000).toFixed(1)+'k' : rawTotal;
 
-                        return `
+                        // Calculate Rec Stats
+                        let recStatsStr = '-';
+                        if (TORN_COMPANY_POSITIONS[companyTypeInfo.name]) {
+                            const posData = TORN_COMPANY_POSITIONS[companyTypeInfo.name].find(p => p.rank.toLowerCase() === (emp.position || '').toLowerCase());
+                            if (posData && posData.recommended_stats) {
+                                const rs = posData.recommended_stats;
+                                const rM = rs.MAN > 1000 ? (rs.MAN/1000).toFixed(1)+'k' : rs.MAN;
+                                const rI = rs.INT > 1000 ? (rs.INT/1000).toFixed(1)+'k' : rs.INT;
+                                const rE = rs.END > 1000 ? (rs.END/1000).toFixed(1)+'k' : rs.END;
+                                if (rs.MAN > 0 || rs.INT > 0 || rs.END > 0) {
+                                    recStatsStr = `${rM} / ${rI} / ${rE}`;
+                                }
+                            }
+                        }
+
+                        // Determine Special
+                        let specialHtml = '<td class="py-1.5 px-2 text-center text-theme-text-muted">-</td>';
+                        if (POSITION_SPECIALS[emp.position]) {
+                            const desc = POSITION_SPECIALS[emp.position];
+                            specialHtml = `<td class="py-1.5 px-2 text-center text-orange-500 cursor-help" title="${escapeHTML(desc)}"><i class="fa-solid fa-star"></i></td>`;
+                        }
+
+                        const htmlRow = `
                             <tr class="hover:bg-theme-hover transition duration-150 border-b border-theme-border last:border-0">
                                 <td class="py-1.5 px-2 font-bold text-theme-text">${escapeHTML(emp.name) || 'Unknown'} ${statusIcon}</td>
                                 <td class="py-1.5 px-2 text-center text-theme-text-muted bg-theme-bg/50">${escapeHTML(emp.position) || '-'}</td>
+                                ${specialHtml}
                                 <td class="py-1.5 px-2 text-right font-medium text-green-500">${salaryStr}</td>
                                 <td class="py-1.5 px-2 text-center ${meritsColor} bg-purple-500/10">${merits}/10</td>
                                 <td class="py-1.5 px-2 font-bold ${effColor} text-center cursor-help" title="${effTooltip}">
@@ -1048,14 +1157,26 @@
                                 </td>
                                 <td class="py-1.5 px-2 text-center font-medium text-blue-500 bg-blue-500/10 text-xs">${dailyGainsStr}</td>
                                 <td class="py-1.5 px-2 text-theme-text-muted text-center text-xs">${m} / ${i} / ${e}</td>
+                                <td class="py-1.5 px-2 text-center text-theme-text-muted text-xs">${recStatsStr}</td>
                                 <td class="py-1.5 px-2 font-bold text-theme-primary text-center bg-theme-primary-dark">${totalStats}</td>
                                 <td class="py-1.5 px-2 text-center text-theme-text-muted">${emp.days_in_company || 0}</td>
                                 <td class="py-1.5 px-2 text-right ${actionColor} text-xs">${escapeHTML(lastActionText)}</td>
                             </tr>
                         `;
-                    }).join('');
+
+                        empDataArr.push({
+                            name: emp.name || '',
+                            position: emp.position || '',
+                            wage: emp.wage || 0,
+                            merits: merits,
+                            effectiveness: effTotal,
+                            total_stats: rawTotal,
+                            days_in_company: emp.days_in_company || 0,
+                            htmlRow: htmlRow
+                        });
+                    });
                 }
-                tbody.innerHTML = employeesHtml;
+                sortAndRenderEmpTable();
 
             } catch (error) {
                 loadingStatus.innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-xl shadow inline-block border-l-4 border-red-500"><i class="fa-solid fa-circle-xmark text-xl"></i><br><b>Error:</b><br>${escapeHTML(error.message)}</div>`;

@@ -138,6 +138,7 @@
                             <p class="font-bold text-theme-text-muted uppercase mb-1 border-b border-theme-border pb-1">Expenses</p>
                             <div class="flex justify-between"><span class="font-medium">Ad Budget:</span> <span id="compAd" class="font-bold text-orange-500"></span></div>
                             <div class="flex justify-between"><span class="font-medium">Total Wages:</span> <span id="compWages" class="font-bold text-red-500"></span></div>
+                            <div class="flex justify-between" title="Daily Cost of Goods Sold"><span class="font-medium">Stock Cost:</span> <span id="compStockCost" class="font-bold text-red-500"></span></div>
                         </div>
 
                         <!-- Column 2: Daily -->
@@ -683,11 +684,34 @@
                 document.getElementById('compWages').textContent = "$" + totalWages.toLocaleString();
                 }
 
+                // Calculate Daily Stock Cost
+                let dailyStockCost = 0;
+                let potentialCost = 0;
+                let potentialPrice = 0;
+
+                if (data.company_stock && Object.keys(data.company_stock).length > 0) {
+                    Object.values(data.company_stock).forEach(item => {
+                        dailyStockCost += (item.sold_amount || 0) * (item.cost || 0);
+                        potentialCost += (item.in_stock || 0) * (item.cost || 0);
+                        potentialPrice += (item.in_stock || 0) * (item.price || 0);
+                    });
+                }
+                document.getElementById('compStockCost').textContent = "$" + dailyStockCost.toLocaleString();
+
                 // Finances calculations
                 const dailyInc = data.company.daily_income || 0;
-                const dailyProf = dailyInc - adBudget - totalWages;
+                const dailyProf = dailyInc - adBudget - totalWages - dailyStockCost;
+
+                let costRatio = 0;
+                if (dailyInc > 0) {
+                    costRatio = dailyStockCost / dailyInc;
+                } else if (potentialPrice > 0) {
+                    costRatio = potentialCost / potentialPrice;
+                }
+
                 const weeklyInc = data.company.weekly_income || 0;
-                const weeklyProf = weeklyInc - (adBudget * 7) - (totalWages * 7);
+                const weeklyStockCost = weeklyInc * costRatio;
+                const weeklyProf = Math.round(weeklyInc - (adBudget * 7) - (totalWages * 7) - weeklyStockCost);
 
                 document.getElementById('compDailyCust').textContent = (data.company.daily_customers || 0).toLocaleString();
                 document.getElementById('compDailyInc').textContent = "$" + dailyInc.toLocaleString();

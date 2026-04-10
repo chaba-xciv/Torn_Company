@@ -1,4 +1,4 @@
-window.TORN_COMPANY_UPGRADES = {
+export const TORN_COMPANY_UPGRADES = {
     "Hair Salon": {
         "company_size": [
             {

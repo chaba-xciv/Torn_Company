@@ -1,4 +1,4 @@
-window.TORN_COMPANY_POSITIONS = {
+export const TORN_COMPANY_POSITIONS = {
     "Hair Salon": [
         {
             "rank": "Stylist",

@@ -1,4 +1,4 @@
-window.TORN_COMPANIES = {
+export const TORN_COMPANIES = {
     1: { name: "Hair Salon", icon: "fa-solid fa-scissors", theme: "pink" },
     2: { name: "Law Firm", icon: "fa-solid fa-scale-balanced", theme: "gray" },
     3: { name: "Flower Shop", icon: "fa-solid fa-seedling", theme: "mint" },
@@ -42,7 +42,7 @@ window.TORN_COMPANIES = {
 };
 
 // Helper to get hex colors for Tailwind classes dynamically without precompiling
-window.thmColorMap = {
+export const thmColorMap = {
     'mint': { primary: '#1e8449', light: '#d5f5e3', dark: '#145a32' },
     'pink': { primary: '#db2777', light: '#fce7f3', dark: '#9d174d' },
     'gray': { primary: '#4b5563', light: '#f3f4f6', dark: '#1f2937' },
@@ -69,12 +69,12 @@ window.thmColorMap = {
 };
 
 // Fallback if company type is not found
-window.DEFAULT_COMPANY = {
+export const DEFAULT_COMPANY = {
     name: "Company",
     icon: "fa-solid fa-building",
     theme: "blue"
 };
 
-window.getCompanyData = function(companyType) {
+export const getCompanyData = function(companyType) {
     return TORN_COMPANIES[companyType] || DEFAULT_COMPANY;
 }

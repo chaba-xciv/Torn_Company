@@ -1,4 +1,4 @@
-window.TORN_COMPANY_SPECIALS = {
+export const TORN_COMPANY_SPECIALS = {
     "Hair Salon": [
         {
             "stars": 1,

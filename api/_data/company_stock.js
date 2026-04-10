@@ -1,4 +1,4 @@
-window.TORN_COMPANY_STOCK = {
+export const TORN_COMPANY_STOCK = {
     "Hair Salon": [
         {
             "name": "Standard Treatment",

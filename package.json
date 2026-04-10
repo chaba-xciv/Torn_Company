@@ -5,6 +5,12 @@
     "build": "vite build"
   },
   "devDependencies": {
+    "vercel": "^50.42.0",
     "vite": "latest"
+  },
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
   }
 }

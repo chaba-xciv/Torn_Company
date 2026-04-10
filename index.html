@@ -1250,31 +1250,59 @@
         setInterval(updateTimeAndCountdown, 1000);
         updateTimeAndCountdown();
 
-        window.onload = () => {
-            // Check for initial theme
-            const savedTheme = localStorage.getItem('themePreference');
-            if (savedTheme) {
-                window.setTheme(savedTheme, currentThemeColor);
-            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                window.setTheme('dark', currentThemeColor);
-            } else {
-                window.setTheme('company', currentThemeColor);
-            }
+        window.getCompanyData = function(companyType) {
+            return window.TORN_COMPANIES[companyType] || window.DEFAULT_COMPANY;
+        }
 
-            checkLogin();
-        };
+        async function initApp() {
+            try {
+                // Show a brief loading indicator for static data
+                const loadingStatus = document.getElementById('loadingStatus');
+                loadingStatus.classList.remove('hidden');
+                loadingStatus.innerHTML = '<p id="loadingText" class="text-lg font-bold text-theme-primary transition-colors"><i class="fa-solid fa-spinner fa-spin"></i> Initializing App Data...</p>';
+
+                // Fetch static data from Serverless Function
+                const response = await fetch('/api/company-data');
+                if (!response.ok) throw new Error('Failed to load static game data');
+
+                const staticData = await response.json();
+
+                // Map the fetched data to global window object so existing code works
+                window.TORN_COMPANIES = staticData.TORN_COMPANIES;
+                window.thmColorMap = staticData.thmColorMap;
+                window.DEFAULT_COMPANY = staticData.DEFAULT_COMPANY;
+                window.TORN_COMPANY_POSITIONS = staticData.TORN_COMPANY_POSITIONS;
+                window.TORN_COMPANY_SPECIALS = staticData.TORN_COMPANY_SPECIALS;
+                window.TORN_COMPANY_STOCK = staticData.TORN_COMPANY_STOCK;
+                window.TORN_COMPANY_UPGRADES = staticData.TORN_COMPANY_UPGRADES;
+
+                loadingStatus.classList.add('hidden');
+
+                // Check for initial theme
+                const savedTheme = localStorage.getItem('themePreference');
+                if (savedTheme) {
+                    window.setTheme(savedTheme, currentThemeColor);
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    window.setTheme('dark', currentThemeColor);
+                } else {
+                    window.setTheme('company', currentThemeColor);
+                }
+
+                checkLogin();
+            } catch (error) {
+                console.error("Initialization Error:", error);
+                const loadingStatus = document.getElementById('loadingStatus');
+                loadingStatus.classList.remove('hidden');
+                loadingStatus.innerHTML = `<div class="bg-red-100 text-red-700 p-4 rounded-xl shadow inline-block border-l-4 border-red-500"><i class="fa-solid fa-circle-xmark text-xl"></i><br><b>Initialization Error:</b><br>${escapeHTML(error.message)}</div>`;
+            }
+        }
+
+        window.onload = initApp;
         window.setTheme = setTheme;
         window.handleLogout = handleLogout;
         window.handleLogin = handleLogin;
         window.handleEmpSort = handleEmpSort;
         window.handleStockSort = handleStockSort;
-    </script>
-    <script type="module">
-    import './company_data.js';
-    import './company_positions.js';
-    import './company_specials.js';
-    import './company_stock.js';
-    import './company_upgrades.js';
     </script>
 </body>
 </html>

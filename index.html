@@ -163,12 +163,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-purple-400 relative overflow-hidden transition-colors md:col-span-2">
                     <i class="fa-solid fa-people-group absolute -right-2 -bottom-2 text-purple-500 text-5xl opacity-10"></i>
-                    <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 relative z-10 transition-colors">Customers / Popularity</p>
+                    <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 relative z-10 transition-colors">Customers</p>
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end relative z-10">
                         <div>
                             <h3 id="compCustomers" class="text-lg font-bold text-purple-500">-</h3>
                         </div>
-                        <p class="theme-text text-sm text-theme-text mt-1 sm:mt-0 transition-colors">Pop: <span id="compPop" class="font-bold text-purple-500"></span></p>
+
                     </div>
                 </div>
             </div>
@@ -277,6 +277,9 @@
             </div>
         </div>
     </div>
+
+
+
 
     <script type="module">
         function escapeHTML(str) {
@@ -728,7 +731,7 @@
                 wProfEl.className = weeklyProf >= 0 ? "font-bold text-green-600" : "font-bold text-red-500";
 
                 document.getElementById('compCustomers').textContent = `${data.company.customers_served || 0} / ${data.company.customer_capacity || 0}`;
-                document.getElementById('compPop').textContent = data.company.popularity || 0;
+
 
                 // 2. จัดการสต็อกสินค้าแบบละเอียด (Stock Financials)
                 if(data.company_stock && Object.keys(data.company_stock).length > 0) {
@@ -752,12 +755,24 @@
                 }
 
                 // 3. Extract and plot historical data from news & Training Logs
-                let trainLogs = [];
-                if (data.news) {
-                    const days = [];
-                    const incomeData = [];
-                    const customersData = [];
+                const companyId = data.company.company_id || 'unknown';
+                const cacheKey = `companyHistory_${companyId}`;
 
+                let cachedHistory = { days: [], incomeData: [], customersData: [], trainLogs: [], lastReportTimestamp: 0 };
+                try {
+                    const parsed = JSON.parse(localStorage.getItem(cacheKey));
+                    if (parsed && Array.isArray(parsed.days)) {
+                        cachedHistory = parsed;
+                    }
+                } catch(e) { console.error('Cache read error', e); }
+
+                let trainLogs = cachedHistory.trainLogs || [];
+                const days = cachedHistory.days || [];
+                const incomeData = cachedHistory.incomeData || [];
+                const customersData = cachedHistory.customersData || [];
+                let cacheUpdated = false;
+
+                if (data.news) {
                     // Regex to parse daily reports
                     const reportRegex = /([A-Za-z]+) report: We had a total of (\d+) customers and made a gross income of \$([\d,]+)\./;
 
@@ -807,7 +822,6 @@
                                     const type1 = statParts[0].split(' ')[1];
                                     const type2 = statParts[1].split(' ')[1];
 
-                                    // Just show the stat types, tooltip explains the +50/25
                                     statShort = `${type1}/${type2}`;
                                     statTooltip = `+50 ${type1} / +25 ${type2} per training`;
                                 } else {
@@ -816,10 +830,13 @@
                                 }
                             }
 
-                            // Add local time
                             const localTimeStr = date.toLocaleTimeString(undefined, {hour: '2-digit', minute:'2-digit'});
 
-                            trainLogs.unshift({ date: dateStr, time: localTimeStr, name: name, pos: pos, statShort: statShort, statTooltip: statTooltip, timestamp: event.timestamp });
+                            // Prevent duplicate train logs based on timestamp
+                            if (!trainLogs.some(log => log.timestamp === event.timestamp)) {
+                                trainLogs.unshift({ date: dateStr, time: localTimeStr, name: name, pos: pos, statShort: statShort, statTooltip: statTooltip, timestamp: event.timestamp });
+                                cacheUpdated = true;
+                            }
                         }
 
                         const match = event.news.match(reportRegex);
@@ -829,11 +846,38 @@
                             const incomeStr = match[3].replace(/,/g, '');
                             const income = parseInt(incomeStr, 10);
 
-                            days.push(day);
-                            customersData.push(customers);
-                            incomeData.push(income);
+                            if (event.timestamp > cachedHistory.lastReportTimestamp) {
+                                days.push(day);
+                                customersData.push(customers);
+                                incomeData.push(income);
+                                cachedHistory.lastReportTimestamp = event.timestamp;
+                                cacheUpdated = true;
+                            }
                         }
                     });
+
+                    // Limit graph data to last 14 entries to prevent infinite growth
+                    if (days.length > 14) {
+                        const overflow = days.length - 14;
+                        days.splice(0, overflow);
+                        customersData.splice(0, overflow);
+                        incomeData.splice(0, overflow);
+                        cacheUpdated = true;
+                    }
+
+                    // Limit train logs to last 100
+                    if (trainLogs.length > 100) {
+                        trainLogs = trainLogs.slice(0, 100);
+                        cacheUpdated = true;
+                    }
+
+                    if (cacheUpdated) {
+                        cachedHistory.days = days;
+                        cachedHistory.incomeData = incomeData;
+                        cachedHistory.customersData = customersData;
+                        cachedHistory.trainLogs = trainLogs;
+                        localStorage.setItem(cacheKey, JSON.stringify(cachedHistory));
+                    }
 
                     // Extract and render recent news timeline
                     const newsList = document.getElementById('newsList');
@@ -1101,10 +1145,12 @@
                         else if (merits > 0) meritsColor = 'text-orange-500 font-bold';
 
                         let effTooltip = "Effectiveness Breakdown:\n";
+                        let drugPenalty = 0;
                         if (emp.effectiveness) {
                             const e = emp.effectiveness;
                             const settledIn = e.settled_in || 0;
                             const addiction = e.addiction || 0;
+                            drugPenalty = addiction;
                             const inactivity = e.inactivity || 0;
 
                             effTooltip += `• Working Stats: ${e.working_stats || 0}%\n`;
@@ -1115,6 +1161,12 @@
                         } else {
                             effTooltip = "No data available";
                         }
+
+                        let drugHtml = '';
+                        if (drugPenalty < 0) {
+                            drugHtml = `<span class="text-xs text-red-500 font-bold ml-1" title="Drug Penalty: ${drugPenalty}%"><i class="fa-solid fa-pills"></i> ${drugPenalty}%</span>`;
+                        }
+
 
                         let lastActionText = emp.last_action ? emp.last_action.relative : '-';
                         let actionColor = 'text-theme-text-muted';
@@ -1209,8 +1261,8 @@
                                 ${specialHtml}
                                 <td class="py-1.5 px-2 text-right font-medium text-green-500">${salaryStr}</td>
                                 <td class="py-1.5 px-2 text-center ${meritsColor} bg-purple-500/10">${merits}/10</td>
-                                <td class="py-1.5 px-2 font-bold ${effColor} text-center cursor-help" title="${effTooltip}">
-                                    <span class="underline decoration-dashed decoration-1 underline-offset-4">${effTotal}%</span>
+                                <td class="py-1.5 px-2 font-bold ${effColor} text-center cursor-help flex items-center justify-center gap-1" title="${effTooltip}">
+                                    <span class="underline decoration-dashed decoration-1 underline-offset-4">${effTotal}%</span> ${drugHtml}
                                 </td>
                                 <td class="py-1.5 px-2 text-center font-medium text-blue-500 bg-blue-500/10 text-xs">${dailyGainsStr}</td>
                                 ${trainHtml}
@@ -1293,6 +1345,9 @@
         window.handleEmpSort = handleEmpSort;
         window.handleStockSort = handleStockSort;
     </script>
+
+
+
     <script type="module">
     import './company_data.js';
     import './company_positions.js';
@@ -1300,5 +1355,16 @@
     import './company_stock.js';
     import './company_upgrades.js';
     </script>
+
+
+
+
+    <!-- Global Developer Alert -->
+    <div class="fixed bottom-4 right-4 z-50 bg-theme-card/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-theme-border text-xs text-theme-text flex items-center gap-2 transition-colors">
+        <i class="fa-brands fa-github text-theme-primary text-base"></i>
+        <span>This website was developed by <strong>jules AI</strong>. View source code on <a href="https://github.com/chaba-xciv/Torn_Company" target="_blank" class="text-blue-500 hover:text-blue-400 font-medium underline decoration-blue-500/30 underline-offset-2">GitHub</a></span>
+        <button onclick="this.parentElement.style.display='none';" class="ml-2 text-theme-text-muted hover:text-red-500 transition-colors" title="Dismiss"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
 </body>
 </html>

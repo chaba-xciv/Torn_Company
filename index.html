@@ -774,7 +774,7 @@
 
                 if (data.news) {
                     // Regex to parse daily reports
-                    const reportRegex = /([A-Za-z]+) report: We had a total of (\d+) customers and made a gross income of \$([\d,]+)\./;
+                    const reportRegex = /([A-Za-z]+) report: We had a total of ([\d,]+) customers and made a gross income of \$([\d,]+)\./;
 
                     // Sort news by timestamp ascending (oldest first for graph)
                     const newsEvents = Object.values(data.news).sort((a, b) => a.timestamp - b.timestamp);
@@ -842,7 +842,8 @@
                         const match = event.news.match(reportRegex);
                         if (match) {
                             const day = match[1];
-                            const customers = parseInt(match[2], 10);
+                            const customersStr = match[2].replace(/,/g, '');
+                            const customers = parseInt(customersStr, 10);
                             const incomeStr = match[3].replace(/,/g, '');
                             const income = parseInt(incomeStr, 10);
 

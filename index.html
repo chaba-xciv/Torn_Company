@@ -160,18 +160,6 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div class="theme-card bg-theme-card rounded-xl shadow p-3 border-l-4 border-purple-400 relative overflow-hidden transition-colors md:col-span-2">
-                    <i class="fa-solid fa-people-group absolute -right-2 -bottom-2 text-purple-500 text-5xl opacity-10"></i>
-                    <p class="theme-text-muted text-xs text-theme-text-muted uppercase font-bold mb-1 relative z-10 transition-colors">Customers</p>
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end relative z-10">
-                        <div>
-                            <h3 id="compCustomers" class="text-lg font-bold text-purple-500">-</h3>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
             <!-- Full Width Employee Status -->
 <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border mb-4 transition-colors">
                         <div class="theme-header bg-theme-primary px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 transition-colors">
@@ -203,23 +191,20 @@
                     </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
-                <div class="lg:col-span-1 space-y-6">
-                    <!-- News Timeline -->
-                    <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border transition-colors">
+                <div class="lg:col-span-4">
+                    <!-- News Timeline - Categorized - Full Width -->
+                    <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border transition-colors mb-4">
                         <div class="theme-header bg-theme-primary px-3 py-2 transition-colors">
                             <h3 class="text-white font-bold"><i class="fa-solid fa-newspaper"></i> Company Events</h3>
                         </div>
-                        <div class="p-4 overflow-y-auto" style="max-height: 500px;">
-                            <ul id="newsList" class="space-y-2">
-                            </ul>
+                        <div class="p-4">
+                            <div id="newsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <!-- Events will be grouped by category here -->
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="lg:col-span-3">
-
-
-            <!-- Full Width Inventory Stock -->
+            </div>
             <div class="theme-card bg-theme-card rounded-xl shadow overflow-hidden border border-theme-border mb-4 transition-colors">
                 <div class="theme-header bg-theme-primary px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 transition-colors">
                     <h3 class="text-white font-bold"><i class="fa-solid fa-boxes-stacked"></i> Inventory Stock Financials</h3>
@@ -273,7 +258,6 @@
                         </div>
                     </div>
 
-                </div>
             </div>
         </div>
     </div>
@@ -736,8 +720,6 @@
                 wProfEl.textContent = (weeklyProf >= 0 ? "+$" : "-$") + Math.abs(weeklyProf).toLocaleString();
                 wProfEl.className = weeklyProf >= 0 ? "font-bold text-green-600" : "font-bold text-red-500";
 
-                document.getElementById('compCustomers').textContent = `${data.company.customers_served || 0} / ${data.company.customer_capacity || 0}`;
-
 
                 // 2. จัดการสต็อกสินค้าแบบละเอียด (Stock Financials)
                 if(data.company_stock && Object.keys(data.company_stock).length > 0) {
@@ -774,12 +756,19 @@
 
                 let trainLogs = cachedHistory.trainLogs || [];
                 const days = cachedHistory.days || [];
+                const dates = cachedHistory.dates || [];  // Store actual dates (e.g., "Apr 13")
+                const timestamps = cachedHistory.timestamps || [];  // Store unix timestamps
                 const incomeData = cachedHistory.incomeData || [];
                 const customersData = cachedHistory.customersData || [];
                 let cacheUpdated = false;
 
+                // Initialize sets to track parsed reports (prevent duplicates)
+                if (!cachedHistory.parsedReportIds) {
+                    cachedHistory.parsedReportIds = {};
+                }
+
                 if (data.news) {
-                    // Regex to parse daily reports
+                    // Regex to parse daily reports - matches: "Monday report: We had a total of X customers and made a gross income of $Y."
                     const reportRegex = /([A-Za-z]+) report: We had a total of ([\d,]+) customers and made a gross income of \$([\d,]+)\./;
 
                     // Sort news by timestamp ascending (oldest first for graph)
@@ -845,28 +834,44 @@
                             }
                         }
 
+                        // Extract all daily reports from news
                         const match = event.news.match(reportRegex);
                         if (match) {
-                            const day = match[1];
-                            const customersStr = match[2].replace(/,/g, '');
-                            const customers = parseInt(customersStr, 10);
-                            const incomeStr = match[3].replace(/,/g, '');
-                            const income = parseInt(incomeStr, 10);
+                            // Create unique ID for this report (timestamp + day name to prevent duplicates)
+                            const reportId = `${event.timestamp}_${match[1]}`;
+                            
+                            // Only add if not already parsed
+                            if (!cachedHistory.parsedReportIds[reportId]) {
+                                const day = match[1];  // e.g., "Monday"
+                                const date = new Date(event.timestamp * 1000);
+                                const dateStr = date.toLocaleDateString(undefined, {month: 'short', day: 'numeric'});  // e.g., "Apr 13"
+                                
+                                const customersStr = match[2].replace(/,/g, '');
+                                const customers = parseInt(customersStr, 10);
+                                const incomeStr = match[3].replace(/,/g, '');
+                                const income = parseInt(incomeStr, 10);
 
-                            if (event.timestamp > cachedHistory.lastReportTimestamp) {
                                 days.push(day);
+                                dates.push(dateStr);
+                                timestamps.push(event.timestamp);
                                 customersData.push(customers);
                                 incomeData.push(income);
-                                cachedHistory.lastReportTimestamp = event.timestamp;
+                                
+                                // Mark this report as parsed
+                                cachedHistory.parsedReportIds[reportId] = true;
                                 cacheUpdated = true;
                             }
                         }
                     });
 
-                    // Limit graph data to last 14 entries to prevent infinite growth
-                    if (days.length > 14) {
-                        const overflow = days.length - 14;
+                    // Limit graph data to last 30 entries (approx 30 days of reports)
+                    // This allows 7+ days of data to persist when users switch devices
+                    // Note: If switching to a new device with no cache, API will provide latest reports
+                    if (days.length > 30) {
+                        const overflow = days.length - 30;
                         days.splice(0, overflow);
+                        dates.splice(0, overflow);
+                        timestamps.splice(0, overflow);
                         customersData.splice(0, overflow);
                         incomeData.splice(0, overflow);
                         cacheUpdated = true;
@@ -880,39 +885,85 @@
 
                     if (cacheUpdated) {
                         cachedHistory.days = days;
+                        cachedHistory.dates = dates;
+                        cachedHistory.timestamps = timestamps;
                         cachedHistory.incomeData = incomeData;
                         cachedHistory.customersData = customersData;
                         cachedHistory.trainLogs = trainLogs;
                         localStorage.setItem(cacheKey, JSON.stringify(cachedHistory));
                     }
 
-                    // Extract and render recent news timeline
-                    const newsList = document.getElementById('newsList');
-                    newsList.innerHTML = '';
-                    const recentNews = [...newsEvents].reverse().slice(0, 20); // Top 20 latest events
+                    // Extract and render categorized news timeline
+                    const newsContainer = document.getElementById('newsContainer');
+                    newsContainer.innerHTML = '';
+                    const recentNews = [...newsEvents].reverse().slice(0, 50); // Top 50 latest events
 
-                    // ⚡ Bolt Performance Optimization: Refactored string concatenation to map().join('')
-                    const newsHtml = recentNews.map(event => {
-                        const date = new Date(event.timestamp * 1000);
-                        const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    // Categorize events
+                    const categorizeEvent = (news) => {
+                        const text = news.toLowerCase();
+                        // Financial: show only reports, exclude withdrawals and deposits
+                        if (text.includes('report') && !text.includes('withdrawn') && !text.includes('deposit')) return 'financial';
+                        if ((text.includes('funds') || text.includes('vault')) && !text.includes('withdrawn') && !text.includes('deposit')) return 'financial';
+                        if (text.includes('upgraded') || text.includes('upgrade')) return 'upgrades';
+                        if (text.includes('accept') || text.includes('join') || text.includes('employee')) return 'staff';
+                        if (text.includes('stock') || text.includes('order')) return 'inventory';
+                        if (text.includes('turn') || text.includes('attack')) return 'events';
+                        return 'other';
+                    };
 
-                        let icon = '<i class="fa-solid fa-circle-info text-blue-400 mt-1"></i>';
-                        if (event.news.includes('report')) icon = '<i class="fa-solid fa-chart-pie text-green-500 mt-1"></i>';
-                        else if (event.news.includes('deposit') || event.news.includes('funds')) icon = '<i class="fa-solid fa-money-bill-wave text-green-500 mt-1"></i>';
-                        else if (event.news.includes('upgraded')) icon = '<i class="fa-solid fa-arrow-up text-orange-500 mt-1"></i>';
-                        else if (event.news.includes('accept') || event.news.includes('join')) icon = '<i class="fa-solid fa-user-plus text-purple-500 mt-1"></i>';
+                    const categoryConfig = {
+                        financial: { icon: 'fa-money-bill-wave', color: 'green', label: 'Financial (Reports)', bgColor: 'bg-green-500/10', borderColor: 'border-green-500/30', textColor: 'text-green-600' },
+                        staff: { icon: 'fa-user-plus', color: 'purple', label: 'Staff', bgColor: 'bg-purple-500/10', borderColor: 'border-purple-500/30', textColor: 'text-purple-600' },
+                        upgrades: { icon: 'fa-arrow-up', color: 'orange', label: 'Upgrades', bgColor: 'bg-orange-500/10', borderColor: 'border-orange-500/30', textColor: 'text-orange-600' },
+                        inventory: { icon: 'fa-boxes-stacked', color: 'blue', label: 'Inventory', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/30', textColor: 'text-blue-600' },
+                        events: { icon: 'fa-star', color: 'yellow', label: 'Events', bgColor: 'bg-yellow-500/10', borderColor: 'border-yellow-500/30', textColor: 'text-yellow-600' },
+                        other: { icon: 'fa-circle-info', color: 'slate', label: 'Other', bgColor: 'bg-slate-500/10', borderColor: 'border-slate-500/30', textColor: 'text-slate-600' }
+                    };
+
+                    // Group events by category
+                    const grouped = {};
+                    recentNews.forEach(event => {
+                        const cat = categorizeEvent(event.news);
+                        if (!grouped[cat]) grouped[cat] = [];
+                        grouped[cat].push(event);
+                    });
+
+                    // Render grouped categories
+                    const categoryOrder = ['financial', 'staff', 'upgrades', 'inventory', 'events', 'other'];
+                    const renderedHtml = categoryOrder.map(catName => {
+                        if (!grouped[catName] || grouped[catName].length === 0) return '';
+                        
+                        const config = categoryConfig[catName];
+                        const events = grouped[catName].slice(0, 3); // Max 3 events per category for compact display
+                        
+                        const eventCards = events.map(event => {
+                            const date = new Date(event.timestamp * 1000);
+                            const timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                            const cleanText = escapeHTML(event.news.replace(/<[^>]+>/g, ''));
+                            
+                            return `
+                                <div class="pl-3 pb-2 border-l-2 border-${config.color}-400/50 ml-2">
+                                    <p class="text-xs text-theme-text-muted font-medium">${timeStr}</p>
+                                    <p class="text-xs text-theme-text leading-snug">${cleanText}</p>
+                                </div>
+                            `;
+                        }).join('');
 
                         return `
-                            <li class="flex space-x-3 text-sm">
-                                <div>${icon}</div>
-                                <div>
-                                    <p class="text-xs text-theme-text-muted font-medium">${dateStr}</p>
-                                    <p class="text-theme-text leading-tight">${escapeHTML(event.news.replace(/<[^>]+>/g, ''))}</p>
+                            <div class="rounded-lg border ${config.borderColor} ${config.bgColor} p-3 transition-colors h-full">
+                                <div class="flex items-center gap-2 pb-2 border-b border-current/20">
+                                    <i class="fa-solid ${config.icon} ${config.textColor}"></i>
+                                    <h4 class="text-xs font-bold ${config.textColor} uppercase tracking-wider">${config.label}</h4>
+                                    <span class="ml-auto text-xs font-semibold ${config.textColor} opacity-70">${grouped[catName].length}</span>
                                 </div>
-                            </li>
+                                <div class="mt-2 space-y-1">
+                                    ${eventCards}
+                                </div>
+                            </div>
                         `;
-                    }).join('');
-                    newsList.innerHTML = newsHtml;
+                    }).filter(html => html).join('');
+
+                    newsContainer.innerHTML = renderedHtml || '<p class="text-center text-theme-text-muted text-sm py-4">No events available</p>';
 
                     // Render charts if we have data
                     if (days.length > 0) {
@@ -920,7 +971,7 @@
                         new Chart(incomeCtx, {
                             type: 'line',
                             data: {
-                                labels: days,
+                                labels: dates,  // Use actual dates (e.g., "Apr 13", "Apr 14") instead of day names
                                 datasets: [{
                                     label: 'Gross Income ($)',
                                     data: incomeData,
@@ -943,7 +994,7 @@
                         new Chart(customersCtx, {
                             type: 'line',
                             data: {
-                                labels: days,
+                                labels: dates,  // Use actual dates (e.g., "Apr 13", "Apr 14") instead of day names
                                 datasets: [{
                                     label: 'Customers',
                                     data: customersData,

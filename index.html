@@ -744,13 +744,23 @@
 
                 // 3. Extract and plot historical data from news & Training Logs
                 const companyId = data.company.company_id || 'unknown';
-                const cacheKey = `companyHistory_${companyId}`;
+                const companyName = data.company.name || 'Unknown';
+                // Include company name in cache key to prevent ID reuse mixing
+                const cacheKey = `companyHistory_${companyId}_${companyName.replace(/\s+/g, '_')}`;
 
-                let cachedHistory = { days: [], incomeData: [], customersData: [], trainLogs: [], lastReportTimestamp: 0 };
+                let cachedHistory = { days: [], incomeData: [], customersData: [], trainLogs: [], parsedReportIds: {}, companyId: companyId, companyName: companyName };
                 try {
                     const parsed = JSON.parse(localStorage.getItem(cacheKey));
-                    if (parsed && Array.isArray(parsed.days)) {
+                    // Validate cache belongs to this company (prevent ID reuse mixing)
+                    if (parsed && Array.isArray(parsed.days) && parsed.companyId === companyId && parsed.companyName === companyName) {
                         cachedHistory = parsed;
+                    } else if (parsed && !parsed.companyId) {
+                        // Migrate old cache format (backward compatibility)
+                        if (Array.isArray(parsed.days)) {
+                            parsed.companyId = companyId;
+                            parsed.companyName = companyName;
+                            cachedHistory = parsed;
+                        }
                     }
                 } catch(e) { console.error('Cache read error', e); }
 

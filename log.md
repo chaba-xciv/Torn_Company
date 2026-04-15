@@ -43,6 +43,62 @@ Add a warning banner in dashboard UI:
 
 ---
 
+## ⚠️ DESIGN FLAW (FIXED)
+
+### Issue #1: Cache Mixing Risk - Company ID Reuse
+**Date:** 2026-04-15
+**Type:** 🔧 **DESIGN FLAW** (Identified & Fixed)
+**Severity:** MEDIUM (Data Integrity Risk)
+
+**Problem Description:**
+If Torn API reuses company IDs (e.g., after company deletion), the cache system could mix data from different company instances using the same ID.
+
+**Vulnerable Code (BEFORE):**
+```javascript
+const companyId = data.company.company_id || 'unknown';
+const cacheKey = `companyHistory_${companyId}`;
+
+// No validation - blindly loads any cache with matching ID
+const parsed = localStorage.getItem(cacheKey);
+if (parsed && Array.isArray(parsed.days)) {
+    cachedHistory = parsed;  // ← Could be from different company!
+}
+```
+
+**Risk Scenario:**
+```
+1. User A: Company 123 (stores 30 days of reports)
+2. User A's Company 123 deleted
+3. User B: Company 123 (ID reused by Torn)
+4. → Loads User A's cached data! ❌ MIX!
+```
+
+**Fix Applied (Lines 746-764):**
+```javascript
+// Include company name in cache key
+const cacheKey = `companyHistory_${companyId}_${companyName.replace(/\s+/g, '_')}`;
+
+// Store company metadata
+cachedHistory = { ..., companyId: companyId, companyName: companyName };
+
+// Validate before loading cache
+if (parsed && parsed.companyId === companyId && parsed.companyName === companyName) {
+    cachedHistory = parsed;  // ✓ Safe
+} else {
+    cachedHistory = { days: [], ... };  // Reset if mismatch
+}
+```
+
+**How Fix Prevents Mixing:**
+- Company name + ID in cache key (unlikely to collide)
+- Metadata validation before loading
+- Automatic reset if company changes
+- Backward compatible (migrates old cache format)
+
+**Status:** FIXED (verified in index.html lines 746-764)
+
+---
+
 ## ❌ ERROR LOG
 
 ### Error #1: AI Analysis Error - Missing Features Misassessment
